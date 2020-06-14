@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+    <head><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></head>
+    <body>
+        <div class="container">
+            <h1>Image Search</h1>
+            <p>There are three result categories:</p>
+            <p>Results by ANN vector search - results that are contextually similar to the image</p>
+            <p>Results by description - results that have the same/similar description (could be wrong)</p>
+            <p>Results by prediction - results that have the same CNN prediction</p>
+            <form method="POST" enctype="multipart/form-data">
+                <input type="file" name="query_img"><br>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="save_image" id="save_image">
+                  <label class="form-check-label" for="save_image">
+                    Save image (will be in the dataset next time you search)
+                  </label>
+                </div>
+                <input type="submit">
+            </form>
+            <h2>Query:</h2>
+            {% if query_path %}
+            <img src="{{ query_path }}" width="300px">
+            {% endif %}
+{#            <figcaption>Description: {{ description }}</figcaption>#}
+{#            <figcaption>Prediction: {{ prediction }}</figcaption>#}
+{#            <figcaption>Prediction probability (closer to 1.0 is better): {{ prediction_probability }}</figcaption>#}
+            <div>
+                <h2>Results:</h2>
+                <div class="row">
+                    {% for score in scores.values() %}
+                        <div class="col-sm-4">
+                            <img src="{{ score['thumbnail_path'] }}" height="200px">
+                            <p>Distance (closer to 0 is better): {{ score['distance'] }}</p>
+                            <p>source_description: {{ score['data']['source_description'] }}</p>
+                            <p>source_website: {{ score['data']['source_website'] }}</p>
+                            <p>source_url: {{ score['data']['source_url'] }}</p>
+                            <p>source_id: {{ score['data']['source_id'] }}</p>
+                            <p>source_created_at: {{ score['data']['source_created_at'] }}</p>
+                            <p>source_tags: {{ score['data']['source_tags'] }}</p>
+                            <p>source_rating: {{ score['data']['source_rating'] }}</p>
+                            <p>source_image_url: {{ score['data']['source_image_url'] }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+{#            <div>#}
+{#                <h2>Results by prediction:</h2>#}
+{#                <div class="row">#}
+{#                    {% for score in scores_prediction_es %}#}
+{#                        <div class="col-sm-4">#}
+{#                            <img src="{{ score[1] }}" height="200px">#}
+{#                            <b><p>Prediction: {{ score[3] }}</p></b>#}
+{#                            <p>Prediction probability (closer to 1.0 is better): {{ score[4] }}</p>#}
+{#                            <p>Description (can be very wrong): {{ score[2] }}</p>#}
+{#                        </div>#}
+{#                    {% endfor %}#}
+{#                </div>#}
+{#            </div>#}
+{#            <div>#}
+{#                <h2>Results by description:</h2>#}
+{#                <div class="row">#}
+{#                    {% for score in scores_description_es %}#}
+{#                        <div class="col-sm-4">#}
+{#                            <img src="{{ score[1] }}" height="200px">#}
+{#                            <b><p>Prediction: {{ score[3] }}</p></b>#}
+{#                            <p>Description (can be very wrong): {{ score[2] }}</p>#}
+{#                            <p>Prediction probability (closer to 1.0 is better): {{ score[4] }}</p>#}
+{#                        </div>#}
+{#                    {% endfor %}#}
+{#                </div>#}
+{#            </div>#}
+        </div>
+    </body>
+    <footer>
+        Author: Krzysztof Kosiński
+    </footer>
+</html>
+
+

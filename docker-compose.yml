@@ -1,0 +1,69 @@
+version: "3.4"
+services:
+  image_search_python:
+    restart: always
+    build:
+      context: ./
+      dockerfile: "python-dockerfile"
+    environment:
+      - "PYTHONUNBUFFERED=1"
+    volumes:
+      - .:/app
+      - ./home/drake/.keras:/root/.keras
+    networks:
+      - image_search
+    ports:
+      - 5000
+  image_search_nginx:
+    restart: always
+    build: ./nginx
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - .:/app
+      - ./nginx/nginx-ssl-params.conf:/etc/nginx/nginx-ssl-params.conf
+      - ${DOCKER_WEB_DHPARAM}:/etc/nginx/nginx-dhparam.pem
+      - ${DOCKER_WEB_CRT}:/etc/nginx/nginx-ssl.crt
+      - ${DOCKER_WEB_KEY}:/etc/nginx/nginx-ssl.key
+    depends_on:
+      - image_search_python
+    networks:
+      - image_search
+  image_search_milvus:
+    image: milvusdb/milvus:0.9.0-cpu-d051520-cb92b1
+    volumes:
+      - ./var/milvus/db:/var/lib/milvus/db
+      - ./var/milvus/conf:/var/lib/milvus/conf
+      - ./var/milvus/logs:/var/lib/milvus/logs
+      - ./var/milvus/wal:/var/lib/milvus/wal
+    ports:
+      - 19530:19530
+      - 19121:19121
+      - 9091:9091
+    networks:
+      - image_search
+    depends_on:
+      - image_search_python
+  image_search_elastic:
+    restart: always
+    ports:
+      - 9200:9200
+    image: docker.elastic.co/elasticsearch/elasticsearch:${DOCKER_ELASTICSEARCH_VERSION}
+    volumes:
+      - ./var/elasticsearch:/usr/share/elasticsearch/data
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - bootstrap.memory_lock=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - image_search
+    depends_on:
+      - image_search_python
+networks:
+  image_search:
+    driver: "bridge"

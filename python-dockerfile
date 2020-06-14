@@ -1,0 +1,17 @@
+FROM continuumio/miniconda3:latest
+ENV ACCEPT_INTEL_PYTHON_EULA=yes
+
+ADD . /app/
+ADD requirements.txt /app/
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get clean \
+    && apt-get update -qqq \
+    && apt-get install -y -q g++ libwebp-dev \
+    && pip install --upgrade pip \
+    && pip install -r requirements.txt
+
+WORKDIR /app
+
+CMD python server.py

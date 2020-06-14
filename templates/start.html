@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+    <head><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></head>
+    <body>
+        <div class="container">
+            <h1>Image Search</h1>
+            <p>There are three ways to search:</p>
+            <p>Search by image: Upload an image (only tested with JPGs) and get the results</p>
+            <p>Search by category: Select a category (prediction) and get the results</p>
+            <p>Search by text: Write any text that describes the image (for example black dog, white dog playing, car, bench) - TRAINED ON A VERY SMALL DATASET WITH MOSTLY DOGS</p>
+            <div>
+                <h2>Search by image</h2>
+                <form method="POST" enctype="multipart/form-data">
+                    <input type="file" name="query_img"><br>
+
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="save_image" id="save_image">
+                      <label class="form-check-label" for="save_image">
+                        Save image (will be in the dataset next time you search)
+                      </label>
+                    </div>
+                    <input type="submit">
+                </form>
+            </div>
+            <form method="POST" action="/search-by-prediction.py">
+                <div class="form-group">
+                      <h2>Search by category</h2>
+                      <label for="prediction">Select image category:</label>
+                      <select class="form-control" id="prediction" name="prediction">
+                          {% for i in predictions_available %}
+                            <option value="{{ i.key }}">{{ i.key }} {{ i.doc_count }} items</option>
+                          {% endfor %}
+                      </select>
+                      <input type="submit">
+                </div>
+            </form>
+            <form method="POST" action="/search-by-text.py">
+                <div class="form-group">
+                      <h2>Search by text</h2>
+                        <label for="image_description">Image description</label>
+                        <input name="image_description" class="form-control" id="image_description" placeholder="brown dog playing">
+                      <input type="submit">
+                </div>
+            </form>
+        </div>
+    </body>
+</html>
+
+
