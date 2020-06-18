@@ -7,6 +7,7 @@ services:
       dockerfile: "python-dockerfile"
     environment:
       - "PYTHONUNBUFFERED=1"
+      - NVIDIA_VISIBLE_DEVICES=0
     volumes:
       - .:/app
       - ./home/drake/.keras:/root/.keras
@@ -23,6 +24,7 @@ services:
     volumes:
       - .:/app
       - ./nginx/nginx-ssl-params.conf:/etc/nginx/nginx-ssl-params.conf
+      - /media/kkosinski/linux/images:/app/static/images
       - ${DOCKER_WEB_DHPARAM}:/etc/nginx/nginx-dhparam.pem
       - ${DOCKER_WEB_CRT}:/etc/nginx/nginx-ssl.crt
       - ${DOCKER_WEB_KEY}:/etc/nginx/nginx-ssl.key

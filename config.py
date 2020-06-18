@@ -6,13 +6,13 @@ milvus_host = 'localhost'
 # milvus_host = 'image_search_milvus'
 milvus_port = '19530'
 milvus_pool_size = 10
-milvus_collection_name = 'images_'
+milvus_collection_name = 'images'
 
 # elasticsearch_host = ['image_search_elastic:9200']
 elasticsearch_host = ['http://localhost:9200']
 elasticsearch_verify_certs = False
 
-elasticsearch_index = 'images_sis'
+elasticsearch_index = 'images'
 elasticsearch_shards = 5
 elasticsearch_replicas = 0
 

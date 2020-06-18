@@ -23,6 +23,7 @@ class ImgMatch:
             add_perceptual_hash: bool = True,
             refresh_index: bool = False,
             image_model: Callable = Image,
+            partition_tag: str = None,
             **image_kwargs
     ) -> str:
         """
@@ -32,6 +33,7 @@ class ImgMatch:
         :param refresh_index: Refresh (reindex) the Elastic/Milvus index after adding the image.
         That guarantees that the image will be available immediately after adding, but it's slow
         :param image_model: Elasticsearch model to be persisted
+        :param partition_tag: Which Milvus partition it should search in
         :param image_kwargs: Data about the added image
         """
         if not img:
@@ -45,25 +47,32 @@ class ImgMatch:
             path,
             perceptual_hash,
             refresh_index,
+            partition_tag,
             image_model,
             **image_kwargs
         )
         return saved_id
 
-    def search_image(self, path: str, mark_subimage: bool = False) -> dict:
+    def search_image(self, path: str, mark_subimage: bool = False, pagination_from: int = 0, pagination_size: int = 10, partition_tags: list = None) -> dict:
         img = Image.open(path)
         feature_vectors = self._feature_extractor.get_features(img)
-        results = self._image_queries.find(feature_vectors)
+        results = self._image_queries.find(feature_vectors, pagination_from, pagination_size, partition_tags=partition_tags)
         if mark_subimage:
             self._mark_subimage(path, results)
         return results
 
-    def search_by_phash(self, path: str, mark_subimage: bool = False) -> dict:
+    def search_by_phash(self, path: str, mark_subimage: bool = False, pagination_from: int = 0, pagination_size: int = 10) -> dict:
         img = Image.open(path)
         perceptual_hash = self._perceptual_hasher.get_hash(img)
-        results = self._image_queries.find_by_phash(perceptual_hash)
+        results = self._image_queries.find_by_phash(perceptual_hash, pagination_from=pagination_from, pagination_size=pagination_size)
         if mark_subimage:
             self._mark_subimage(path, results)
+        return results
+
+    def search_by_id(self, image_id, mark_subimage: bool = False, pagination_from: int = 0, pagination_size: int = 10, partition_tags: list = None) -> dict:
+        results = self._image_queries.find_by_id(image_id, pagination_from=pagination_from, pagination_size=pagination_size, partition_tags=partition_tags)
+        # if mark_subimage:
+        #     self._mark_subimage(path, results)
         return results
 
     def _mark_subimage(self, path: str, results: dict, stop_on_first_match: bool = True) -> None:
@@ -76,6 +85,11 @@ class ImgMatch:
         the first match
         """
         small_img = cv2.imread(path)
+        scale_percent = 80
+        width = int(small_img.shape[1] * scale_percent / 100)
+        height = int(small_img.shape[0] * scale_percent / 100)
+        dsize = (width, height)
+        small_img = cv2.resize(small_img, dsize)
         for res in results.values():
             large_img = cv2.imread(res['thumbnail_path'])
             marked_image = self._image_finder.get_marked_found_image(small_img, large_img)

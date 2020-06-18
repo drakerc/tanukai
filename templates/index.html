@@ -8,13 +8,25 @@
             <p>Results by ANN vector search - results that are contextually similar to the image</p>
             <p>Results by description - results that have the same/similar description (could be wrong)</p>
             <p>Results by prediction - results that have the same CNN prediction</p>
-            <form method="POST" enctype="multipart/form-data">
+            <form action="/search" method="POST" enctype="multipart/form-data">
                 <input type="file" name="query_img"><br>
                 <div class="form-check">
                   <input class="form-check-input" type="checkbox" name="save_image" id="save_image">
-                  <label class="form-check-label" for="save_image">
-                    Save image (will be in the dataset next time you search)
-                  </label>
+                    <label class="form-check-label" for="save_image">
+                        Save image (will be in the dataset next time you search)
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="partition">Select partition:</label>
+                    <select class="form-control" id="partition" name="partition">
+                        {% for partition_name, partition_count in partitions.items() %}
+                            {% if partition == partition_name %}
+                                <option selected="selected" value="{{ partition_name }}">{{ partition_name }} ({{ partition_count }})</option>
+                            {% else %}
+                                <option value="{{ partition_name }}">{{ partition_name }} ({{ partition_count }})</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
                 </div>
                 <input type="submit">
             </form>
@@ -30,7 +42,9 @@
                 <div class="row">
                     {% for score in scores.values() %}
                         <div class="col-sm-4">
-                            <img src="{{ score['thumbnail_path'] }}" height="200px">
+                            <a href="/search-by-id?image_id={{ score['id'] }}&img_path={{ score['thumbnail_path'] }}">
+                                <img src="{{ score['thumbnail_path'] }}" width="200px">
+                            </a>
                             <p>Distance (closer to 0 is better): {{ score['distance'] }}</p>
                             <p>source_description: {{ score['data']['source_description'] }}</p>
                             <p>source_website: {{ score['data']['source_website'] }}</p>
@@ -44,32 +58,12 @@
                     {% endfor %}
                 </div>
             </div>
-{#            <div>#}
-{#                <h2>Results by prediction:</h2>#}
-{#                <div class="row">#}
-{#                    {% for score in scores_prediction_es %}#}
-{#                        <div class="col-sm-4">#}
-{#                            <img src="{{ score[1] }}" height="200px">#}
-{#                            <b><p>Prediction: {{ score[3] }}</p></b>#}
-{#                            <p>Prediction probability (closer to 1.0 is better): {{ score[4] }}</p>#}
-{#                            <p>Description (can be very wrong): {{ score[2] }}</p>#}
-{#                        </div>#}
-{#                    {% endfor %}#}
-{#                </div>#}
-{#            </div>#}
-{#            <div>#}
-{#                <h2>Results by description:</h2>#}
-{#                <div class="row">#}
-{#                    {% for score in scores_description_es %}#}
-{#                        <div class="col-sm-4">#}
-{#                            <img src="{{ score[1] }}" height="200px">#}
-{#                            <b><p>Prediction: {{ score[3] }}</p></b>#}
-{#                            <p>Description (can be very wrong): {{ score[2] }}</p>#}
-{#                            <p>Prediction probability (closer to 1.0 is better): {{ score[4] }}</p>#}
-{#                        </div>#}
-{#                    {% endfor %}#}
-{#                </div>#}
-{#            </div>#}
+            <div>
+            <ul class="pager">
+              <li class="previous"><a href="/search?uploaded_img_path={{ uploaded_img_path }}&pagination_from={{ pagination_from - 10 }}&pagination_size={{ pagination_size }}">Previous</a></li>
+              <li class="next"><a href="/search?uploaded_img_path={{ uploaded_img_path }}&pagination_from={{ pagination_from + 10 }}&pagination_size={{ pagination_size }}">Next</a></li>
+            </ul>
+            </div>
         </div>
     </body>
     <footer>

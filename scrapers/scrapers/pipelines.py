@@ -30,6 +30,7 @@ class ProcessingPipeline:
         self.image_match.add_image(
             path=image_path,
             img=pil_image,
+            partition_tag=item.get('website'),
             image_model=DrawsearchImage,
             source_website=item.get('website'),
             source_url=item.get('url'),
@@ -40,26 +41,10 @@ class ProcessingPipeline:
             source_description=item.get('description'),
             source_image_url=image['url']
         )
-        # self.image_match.add_scraped_image(
-        #     image_path=image_path,
-        #     image_disk_path=f"{config.images_path}/full/{image_path}",
-        #     source_website=item.get('website'),
-        #     source_url=item.get('url'),
-        #     source_id=item.get('id'),
-        #     source_created_at=item.get('created_at'),
-        #     source_tags=item.get('tags'),
-        #     source_rating=item.get('rating'),
-        #     source_description=item.get('description'),
-        #     source_image_url=image['url']
-        # )
         return item
 
     def close_spider(self, spider):
         pass
-        # index_param = {
-        #     'nlist': 16384
-        # }
-        # status = self._milvus.database.create_index(config.milvus_collection_name, IndexType.IVF_SQ8, index_param)
 
 
 class CustomImagesPipeline(ImagesPipeline):

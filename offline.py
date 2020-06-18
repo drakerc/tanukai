@@ -14,6 +14,7 @@ from milvus import Milvus, IndexType, MetricType, Status
 import config
 from img_match.img_match import ImgMatch
 from img_match.models.image import Image as Img
+from img_match.queries.image_queries import ImageQueries
 
 # Vector parameters
 _DIM = 1024  # dimension of vector
@@ -30,6 +31,15 @@ es = Elasticsearch(
 # Img.init(using=es)
 image_match = ImgMatch()
 
+img_queries = ImageQueries()
+img_queries.create_partition('danbooru')
+# img_queries.rename_source_website()
+# img_queries.move_to_partition()
+# img_queries.create_index()
+
+
+
+# img_queries.remove_duplicates()
 
 # if __name__ == '__main__':
 #     # _create_index()
@@ -60,82 +70,73 @@ image_match = ImgMatch()
 #     # milvus.compact(collection_name=config.milvus_collection_name, timeout='1')
 
 
-image_path = 'e621/c8/a1/c8a1ebcc453f8a8ed7bd20333c5610be1f7b5d1f.jpg'
-pil_image = Image.open(f"{config.images_path}/full/{image_path}")
-image_match.add_image(
-    path=image_path,
-    img=pil_image,
-    image_model=DrawsearchImage,
-    source_website='x',
-    source_url='y',
-    source_id=321321,
-    source_created_at="2020-06-11T14:27:26.124000-04:00",
-    source_tags={"general": [
-        "abs",
-        "anthro",
-        "armband",
-        "beach",
-        "biceps",
-        "biped",
-        "detailed_background",
-        "fur",
-        "genitals",
-        "green_eyes",
-        "hair",
-        "lifeguard",
-        "long_hair",
-        "male",
-        "multicolored_body",
-        "multicolored_fur",
-        "muscular",
-        "muscular_male",
-        "nipples",
-        "pecs",
-        "penis",
-        "seaside",
-        "striped_body",
-        "striped_fur",
-        "striped_tail",
-        "stripes",
-        "tan_body",
-        "tan_fur",
-        "text",
-        "two_tone_body",
-        "two_tone_fur"
-    ],
-        "species": [
-            "felid",
-            "mammal",
-            "pantherine",
-            "tiger"
-        ],
-        "character": [
-            "pang"
-        ],
-        "copyright": [
-            "sdorica",
-            "sdorica_sunset"
-        ],
-        "artist": [
-            "eurobeat"
-        ],
-        "meta": [
-            "2020",
-            "absurd_res",
-            "english_text",
-            "hi_res"
-        ]
-    },
-    source_rating='explicit',
-    source_description='e',
-    source_image_url='f'
-)
-
-
-
-
-
-
-
-
-
+# image_path = 'e621/c8/a1/c8a1ebcc453f8a8ed7bd20333c5610be1f7b5d1f.jpg'
+# pil_image = Image.open(f"{config.images_path}/full/{image_path}")
+# image_match.add_image(
+#     path=image_path,
+#     img=pil_image,
+#     image_model=DrawsearchImage,
+#     source_website='x',
+#     source_url='y',
+#     source_id=321321,
+#     source_created_at="2020-06-11T14:27:26.124000-04:00",
+#     source_tags={"general": [
+#         "abs",
+#         "anthro",
+#         "armband",
+#         "beach",
+#         "biceps",
+#         "biped",
+#         "detailed_background",
+#         "fur",
+#         "genitals",
+#         "green_eyes",
+#         "hair",
+#         "lifeguard",
+#         "long_hair",
+#         "male",
+#         "multicolored_body",
+#         "multicolored_fur",
+#         "muscular",
+#         "muscular_male",
+#         "nipples",
+#         "pecs",
+#         "penis",
+#         "seaside",
+#         "striped_body",
+#         "striped_fur",
+#         "striped_tail",
+#         "stripes",
+#         "tan_body",
+#         "tan_fur",
+#         "text",
+#         "two_tone_body",
+#         "two_tone_fur"
+#     ],
+#         "species": [
+#             "felid",
+#             "mammal",
+#             "pantherine",
+#             "tiger"
+#         ],
+#         "character": [
+#             "pang"
+#         ],
+#         "copyright": [
+#             "sdorica",
+#             "sdorica_sunset"
+#         ],
+#         "artist": [
+#             "eurobeat"
+#         ],
+#         "meta": [
+#             "2020",
+#             "absurd_res",
+#             "english_text",
+#             "hi_res"
+#         ]
+#     },
+#     source_rating='explicit',
+#     source_description='e',
+#     source_image_url='f'
+# )
