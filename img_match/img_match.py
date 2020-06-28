@@ -1,4 +1,5 @@
-from typing import Callable
+import pickle
+from typing import Callable, Tuple
 from PIL import Image
 import config
 from img_match.processing.image_finder import ImageFinder
@@ -6,7 +7,7 @@ from img_match.processing.phasher import PHasher
 from img_match.queries.image_queries import ImageQueries
 from img_match.processing.feature_extractor import FeatureExtractor
 import cv2
-
+import numpy as np
 
 class ImgMatch:
 
@@ -53,13 +54,13 @@ class ImgMatch:
         )
         return saved_id
 
-    def search_image(self, path: str, mark_subimage: bool = False, pagination_from: int = 0, pagination_size: int = 10, partition_tags: list = None) -> dict:
+    def search_image(self, path: str, mark_subimage: bool = False, pagination_from: int = 0, pagination_size: int = 10, partition_tags: list = None) -> Tuple[dict, str]:
         img = Image.open(path)
         feature_vectors = self._feature_extractor.get_features(img)
         results = self._image_queries.find(feature_vectors, pagination_from, pagination_size, partition_tags=partition_tags)
         if mark_subimage:
             self._mark_subimage(path, results)
-        return results
+        return results, feature_vectors.dumps()
 
     def search_by_phash(self, path: str, mark_subimage: bool = False, pagination_from: int = 0, pagination_size: int = 10) -> dict:
         img = Image.open(path)
@@ -74,6 +75,20 @@ class ImgMatch:
         # if mark_subimage:
         #     self._mark_subimage(path, results)
         return results
+
+    def search_by_features(self, features: np.ndarray, mark_subimage: bool = False, pagination_from: int = 0, pagination_size: int = 10, partition_tags: list = None) -> dict:
+        results = self._image_queries.find(features, pagination_from, pagination_size, partition_tags=partition_tags)
+        if mark_subimage:
+            pass
+            # self._mark_subimage(path, results)
+        return results
+
+    def get_partitions(self):
+        """
+        Returns dict with partition data (partition_tag and count)
+        :return: dict, e.g. {'ebay': 5213, 'etsy': 1233}
+        """
+        return self._image_queries.get_partitions()
 
     def _mark_subimage(self, path: str, results: dict, stop_on_first_match: bool = True) -> None:
         """

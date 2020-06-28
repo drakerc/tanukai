@@ -1,4 +1,3 @@
-from copy import deepcopy
 from datetime import datetime
 from typing import Callable
 from elasticsearch_dsl import Q
@@ -6,6 +5,7 @@ import numpy as np
 import config
 from img_match.models.image import Image
 from img_match.queries.databases import ElasticDatabase, MilvusDatabase
+from milvus import IndexType, MetricType
 
 
 class ImageQueries:
@@ -22,8 +22,11 @@ class ImageQueries:
             refresh_index: bool = False,
             partition_tag: str = None,
             image_model: Callable = Image,
+            initialize_dbs_if_not_exist: bool = False,
             **image_kwargs
     ) -> str:
+        if initialize_dbs_if_not_exist:
+            self.initialize_dbs_if_not_exist(partition_tag)  # kinda breaks the SRP rule
         status, ids = self._milvus.database.insert(
             collection_name=config.milvus_collection_name,
             records=vectors,
@@ -119,94 +122,72 @@ class ImageQueries:
         count = elastic_search.count()
         return count
 
-    def get_partitions(self):
-        status, partitions = self._milvus.database.list_partitions(collection_name=config.milvus_collection_name)
-        status, stats = self._milvus.database.get_collection_stats(config.milvus_collection_name)
-        partition_data = {i['tag']: i['row_count'] for i in stats['partitions']}
-        return partition_data
+    def initialize_dbs_if_not_exist(self, partition_tag: str):
+        # TODO: pretty slow, maybe try EAFP instead
+        if not self.elastic_index_exists():
+            self.create_elastic_index()
+        if not self.milvus_collection_exists():
+            self.create_milvus_collection()
+        if partition_tag:
+            if not self.milvus_partition_exists(partition_tag):
+                self.create_milvus_partition(partition_tag)
 
-    def remove_duplicates(self):
-        # TODO: drawsearch specific, move
-        elastic_search = Image.search(using=self._elasticsearch.database,
-                                      index=config.elasticsearch_index)
-        for number, result in enumerate(elastic_search.scan()):
-            print(f'Processing {number}')
-            source_id = result.source_id
-            source_search = Image.search(using=self._elasticsearch.database, index=config.elasticsearch_index).query('term', source_id=source_id)
-            response = source_search.execute()
-            if len(response) > 1:
-                img_to_delete = response[1]
-                img_to_delete_id = img_to_delete.meta.id
-                print(f'Deleting {img_to_delete_id}')
-                img_to_delete.delete(using=self._elasticsearch.database)
-                status = self._milvus.database.delete_entity_by_id(config.milvus_collection_name, [int(img_to_delete_id)])
-                if not status.OK():
-                    raise Exception(
-                        f'Could not remove from Milvus because of an error: {status.message}.')
-        print('Done')
-        return
+    def create_elastic_index(self):
+        Image.init(using=self._elasticsearch.database)
 
-    def move_to_partition(self):
-        from milvus import MetricType
-        import time
-        # Image.init(using=self._elasticsearch.database)
-        status = self._milvus.database.drop_collection('images')
-        time.sleep(5)
+    def create_milvus_collection(self):
         param = {
-            'collection_name': 'images',
+            'collection_name': config.milvus_collection_name,
             'dimension': 1024,
             'index_file_size': 256,  # optional
             'metric_type': MetricType.L2  # optional
         }
-        self._milvus.database.create_collection(param)
-        status = self._milvus.database.create_partition(
-            collection_name='images',
-            partition_tag='e621'
-        )
-        elastic_search = Image.search(using=self._elasticsearch.database, index=config.elasticsearch_index)
-        for number, result in enumerate(elastic_search.scan()):
-            print(f'Processing {number}')
-            image_id = result.meta.id
-            status, vectors = self._milvus.database.get_entity_by_id(config.milvus_collection_name, [int(image_id)])
-            status, ids = self._milvus.database.insert(
-                collection_name='images',
-                partition_tag='e621',
-                records=vectors
-            )
-            result_with_new_id = deepcopy(result)
-            result_with_new_id.meta.id = ids[0]
-            result_with_new_id.meta.index = 'images'
-            new_image_result = result_with_new_id.save(
-                using=self._elasticsearch.database,
-                doc_type='_doc',
-                refresh=False
-            )
-            # status = result.delete()
+        status = self._milvus.database.create_collection(param)
+        if status.OK():
+            return True
+        raise Exception(f'Could not create a collection because of an error: {status.message}.')
 
-        print('Done')
-        return
-
-    def rename_source_website(self):
-        elastic_search = Image.search(using=self._elasticsearch.database, index=config.elasticsearch_index).source(False)
-        for number, result in enumerate(elastic_search.scan()):
-            print(f'Processing {number}')
-            result.update(
-                using=self._elasticsearch.database,
-                refresh=False,
-                source_website='e621'
-            )
-
-    def create_index(self):
-        from milvus import IndexType
+    def create_milvus_index(self):
+        """
+        Indexes are not necessary, but speed things up. Shouldn't be called too often.
+        """
         index_param = {
             'nlist': 16384
         }
-        status = self._milvus.database.create_index(config.milvus_collection_name, IndexType.IVF_SQ8, index_param)
+        status = self._milvus.database.create_index(
+            config.milvus_collection_name,
+            IndexType.IVF_SQ8,
+            index_param
+        )
         if status.OK():
             return True
+        raise Exception(f'Could not create an index because of an error: {status.message}.')
 
-    def create_partition(self, partition_tag: str):
+    def create_milvus_partition(self, partition_tag: str) -> bool:
         status = self._milvus.database.create_partition(
-            collection_name='images',
+            collection_name=config.milvus_collection_name,
             partition_tag=partition_tag
         )
+        if status.OK():
+            return True
+        raise Exception(f'Could not create a partition because of an error: {status.message}.')
+
+    def get_partitions(self) -> dict:
+        """
+        Returns dict with Milvus partition data (partition_tag and count)
+        :return: dict, e.g. {'ebay': 5213, 'etsy': 1233}
+        """
+        status, stats = self._milvus.database.get_collection_stats(config.milvus_collection_name)
+        partition_data = {i['tag']: i['row_count'] for i in stats['partitions']}
+        return partition_data
+
+    def elastic_index_exists(self) -> bool:
+        return Image.index.exists()
+
+    def milvus_collection_exists(self) -> bool:
+        status, has_collection = self._milvus.database.has_collection(config.milvus_collection_name)
+        return has_collection
+
+    def milvus_partition_exists(self, partition_tag: str) -> bool:
+        status, has_partition = self._milvus.database.has_partition(partition_tag)
+        return has_partition

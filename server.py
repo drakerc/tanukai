@@ -32,7 +32,7 @@ def search():
         img.save(uploaded_img_path)
     else:
         uploaded_img_path = request.args.get('uploaded_img_path')
-    results = image_match.search_image(uploaded_img_path, True, pagination_from, pagination_size, partition_tags=[partition])
+    results, img_data = image_match.search_image(uploaded_img_path, True, pagination_from, pagination_size, partition_tags=[partition])
 
     return render_template(
         'index.html',
