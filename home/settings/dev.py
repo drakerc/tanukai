@@ -1,6 +1,6 @@
 from .base import *
 
-ALLOWED_HOSTS += ['127.0.0.1']
+ALLOWED_HOSTS += ['127.0.0.1', '209.239.112.21']
 DEBUG = True
 
 WSGI_APPLICATION = 'home.wsgi.dev.application'
@@ -14,4 +14,5 @@ DATABASES = {
 
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000',
+    'http://209.239.112.21:3000'
 )

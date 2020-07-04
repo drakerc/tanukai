@@ -11,6 +11,7 @@ import {
 import {connect} from "react-redux";
 import {NavLink, Redirect} from "react-router-dom";
 import {databaseSearch} from "../store/actions/databaseSearch";
+import {baseUrl} from "./helpers";
 
 const getWidth = () => {
     const isSSR = typeof window === "undefined";
@@ -56,13 +57,13 @@ class DatabaseSearchResults extends React.Component {
         const ImagesList = (imgs) => (
             <Grid container columns="equal">
                 <Grid.Row>
-                    <Image size="medium" src={'http://localhost/' + uploadedImg.image}/>
+                    <Image size="medium" src={baseUrl + uploadedImg.image}/>
                 </Grid.Row>
                 {imgs.imgs.map((i) => (
                         <Grid.Column width={2} key={i['id']}>
                             <Image
                                 size="large"
-                                src={'http://localhost/' + i.thumbnail_path}
+                                src={baseUrl + i.thumbnail_path}
                                 onClick={() => this.clickImage(i['id'])}
                             />
                             {i.distance}

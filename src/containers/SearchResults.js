@@ -13,6 +13,7 @@ import {NavLink, Redirect} from "react-router-dom";
 import {authLogin} from "../store/actions/auth";
 import {useHistory} from "react-router-dom";
 import {uploadedSearch} from "../store/actions/uploadedSearch";
+import {baseUrl} from "./helpers";
 
 
 const getWidth = () => {
@@ -49,14 +50,14 @@ class SearchResults extends React.Component {
         const ImagesList = (imgs) => (
             <Grid container columns="equal">
                 <Grid.Row>
-                    <Image size="medium" src={'http://localhost/' + uploadedImg.image}/>
+                    <Image size="medium" src={baseUrl + uploadedImg.image}/>
                 </Grid.Row>
                 {imgs.imgs.map((i) => (
                         <Grid.Column width={2} key={i['id']}>
                             <Image
                                 size="large"
                                 key={i['id']}
-                                src={'http://localhost/' + i.thumbnail_path}
+                                src={baseUrl + i.thumbnail_path}
                                 onClick={() => this.clickImage(i['id'])}
                             />
                             {i.distance}
