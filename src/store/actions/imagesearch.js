@@ -1,4 +1,5 @@
 import axios from "axios";
+import {baseApiUrl} from "../utility"
 import * as actionTypes from "./actionTypes";
 
 export const searchStart = () => {
@@ -37,7 +38,7 @@ export const imageSearch = (images, partitions, maximumRating) => {
     return dispatch => {
         dispatch(searchStart());
         axios
-            .post("http://127.0.0.1:8000/api/v1/upload-image", data, {headers: {'Content-Type': 'multipart/form-data'}})
+            .post(baseApiUrl + "api/v1/upload-image", data, {headers: {'Content-Type': 'multipart/form-data'}})
             .then(res => {
                 dispatch(searchSuccess(res));
             })

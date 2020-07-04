@@ -1,4 +1,5 @@
 import axios from "axios";
+import {baseApiUrl} from "../utility"
 import * as actionTypes from "./actionTypes";
 
 export const uploadedSearchStart = () => {
@@ -25,7 +26,7 @@ export const uploadedSearch = (imageId, paginationFrom = 0, paginationSize = 10)
     return dispatch => {
         dispatch(uploadedSearchStart());
         axios
-            .get("http://127.0.0.1:8000/api/v1/uploaded-image-search/" + imageId + "?pagination_from=" + paginationFrom + '&pagination_size=' + paginationSize)
+            .get(baseApiUrl + "api/v1/uploaded-image-search/" + imageId + "?pagination_from=" + paginationFrom + '&pagination_size=' + paginationSize)
             .then(res => {
                 dispatch(uploadedSearchSuccess(res));
             })
