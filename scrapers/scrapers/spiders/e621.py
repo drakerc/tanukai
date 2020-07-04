@@ -33,7 +33,7 @@ class E621Scraper(scrapy.Spider):
 
         query = {
             'limit': 120,
-            'page': f'b2022105'
+            'page': f'b1747786'
         }
         encoded_query = urlencode(query)
         url = f'https://e621.net/posts.json?{encoded_query}'

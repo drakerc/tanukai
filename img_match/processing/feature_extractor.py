@@ -1,3 +1,5 @@
+import os
+
 from PIL.Image import Image
 from keras.preprocessing import image
 from keras.applications.densenet import DenseNet121, preprocess_input
@@ -5,8 +7,13 @@ from keras.models import Model
 import numpy as np
 import tensorflow as tf
 
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+# os.environ["CUDA_VISIBLE_DEVICES"] = ""
+
 gpu_devices = tf.config.experimental.list_physical_devices('GPU')
-tf.config.experimental.set_memory_growth(gpu_devices[0], True)  # Limit the GPU memory usage
+if gpu_devices:
+    tf.config.experimental.set_memory_growth(gpu_devices[0], True)  # Limit the GPU memory usage
 
 
 class FeatureExtractor:
