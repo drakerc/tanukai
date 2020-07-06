@@ -1,24 +1,13 @@
 import pickle
 from datetime import datetime
-
-from PIL import Image
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import IsAuthenticated
-
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from rest_framework import status
 from rest_framework.views import APIView
-
 from img_match.img_match import ImgMatch
-from img_match.queries.image_queries import ImageQueries
-from .models import UserTag, UploadedImage, ImageSearchResults
-from .serializers import UserTagSerializer, SimilarImageSerializer, ImageSearchResultsSerializer, \
-    UploadedImageSerializer
+from .models import UserTag, UploadedImage, ImageSearchResults, UserPartition
+from .serializers import UserTagSerializer, ImageSearchResultsSerializer
 from rest_framework.parsers import MultiPartParser
 from .models import SimilarImage
-from django.conf import settings
 
 
 class UserTags(APIView):
@@ -30,6 +19,18 @@ class UserTags(APIView):
         serializer = UserTagSerializer(data, context={'request': request}, many=True)
 
         return Response(serializer.data)
+
+
+class Partitions(APIView):
+    image_match = ImgMatch()
+
+    def get(self, request):
+        partitions = self.image_match.get_partitions()
+
+        if request.user.is_authenticated:
+            user_partitions = UserPartition.objects.get(user=request.user)
+            return user_partitions
+        return partitions
 
 
 class UploadImage(APIView):

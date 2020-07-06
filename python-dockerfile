@@ -16,4 +16,4 @@ RUN apt-get update \
 
 WORKDIR /app
 
-CMD python server.py
+CMD python manage.py runserver --noreload

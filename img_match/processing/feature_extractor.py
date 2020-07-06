@@ -1,9 +1,9 @@
 import os
 
 from PIL.Image import Image
-from keras.preprocessing import image
-from keras.applications.densenet import DenseNet121, preprocess_input
-from keras.models import Model
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.applications.densenet import DenseNet121, preprocess_input
+from tensorflow.keras.models import Model
 import numpy as np
 import tensorflow as tf
 
