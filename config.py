@@ -1,23 +1,21 @@
-# elasticsearch_host = 'http://localhost'
-# milvus_host = '127.0.0.1'
-# milvus_port = '19530'
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
-milvus_host = 'localhost'
-# milvus_host = 'image_search_milvus'
-milvus_port = '19530'
-milvus_pool_size = 10
-milvus_collection_name = 'images'
+elasticsearch_host = [os.getenv('elasticsearch_host')]
+elasticsearch_verify_certs = os.getenv('elasticsearch_verify_certs') == 'True'
 
-# elasticsearch_host = ['image_search_elastic:9200']
-elasticsearch_host = ['http://localhost:9200']
-elasticsearch_verify_certs = False
+elasticsearch_index = os.getenv('elasticsearch_index')
+elasticsearch_shards = int(os.getenv('elasticsearch_shards'))
+elasticsearch_replicas = int(os.getenv('elasticsearch_replicas'))
 
-elasticsearch_index = 'images'
-elasticsearch_shards = 5
-elasticsearch_replicas = 0
+milvus_host = os.getenv('milvus_host')
+milvus_port = os.getenv('milvus_port')
+milvus_pool_size = int(os.getenv('milvus_pool_size'))
+milvus_collection_name = os.getenv('milvus_collection_name')
 
-phash_size = 16
-phash_size_result = 64
+phash_size = int(os.getenv('phash_size'))
+phash_size_result = int(os.getenv('phash_size_result'))
 
-images_path = '/home/kkosinski/sis/static/images'
-short_path = 'static/images'
+images_path = os.getenv('images_path')
+short_path = os.getenv('short_path')

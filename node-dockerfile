@@ -1,0 +1,5 @@
+FROM node:current-alpine
+
+RUN apk update -q && apk add autoconf g++ make automake libtool nasm openssh-client git
+WORKDIR /app
+#COPY . ./

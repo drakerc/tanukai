@@ -9,15 +9,6 @@ class Image(Document):
     timestamp = Date()
     hash = hash_object
 
-    # source_website = Keyword()
-    # source_url = Keyword()
-    # source_id = Keyword()
-    # source_created_at = Date()
-    # source_tags = Object()
-    # source_rating = Keyword()
-    # source_description = Text()
-    # source_image_url = Keyword()
-
     class Index:
         name = config.elasticsearch_index
         settings = {

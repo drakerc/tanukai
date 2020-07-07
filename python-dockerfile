@@ -16,4 +16,4 @@ RUN apt-get update \
 
 WORKDIR /app
 
-CMD python manage.py runserver --noreload
+CMD gunicorn -w 4 -b :8000 home.wsgi.dev
