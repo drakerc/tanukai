@@ -6,6 +6,8 @@ import * as actions from "./store/actions/auth";
 import "semantic-ui-css/semantic.min.css";
 import CustomLayout from "./containers/Layout";
 
+require('dotenv').config()
+
 class App extends Component {
   componentDidMount() {
     this.props.onTryAutoSignup();

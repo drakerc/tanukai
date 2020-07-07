@@ -22,12 +22,13 @@ services:
     volumes:
       - .:/app
       - ./nginx/nginx-ssl-params.conf:/etc/nginx/nginx-ssl-params.conf
-      - /media/kkosinski/linux/images:/app/static/images
+#      - /media/kkosinski/linux/images:/app/static/images
       - ${DOCKER_WEB_DHPARAM}:/etc/nginx/nginx-dhparam.pem
       - ${DOCKER_WEB_CRT}:/etc/nginx/nginx-ssl.crt
       - ${DOCKER_WEB_KEY}:/etc/nginx/nginx-ssl.key
     depends_on:
       - image_search_python
+      - image_search_node
     networks:
       - image_search
   image_search_milvus:
@@ -64,18 +65,18 @@ services:
       - image_search
     depends_on:
       - image_search_python
-  node:
+  image_search_node:
     build:
       context: ./
       dockerfile: node-dockerfile
     working_dir: /app
-    command: /bin/sh -c "npm install ; npm run start"
+    #command: /bin/sh -c "npm install ; npm start"
     ports:
       - "${NODEJS_PORT}"
     volumes:
       - .:/app
     networks:
-      - backend
+      - image_search
 networks:
   image_search:
     driver: "bridge"

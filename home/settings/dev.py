@@ -1,6 +1,6 @@
 from .base import *
 
-ALLOWED_HOSTS += ['127.0.0.1', '209.239.112.21', 'tanukai.com', 'www.tanukai.com']
+ALLOWED_HOSTS += ['127.0.0.1', 'localhost', '209.239.112.21', 'tanukai.com', 'www.tanukai.com']
 DEBUG = True
 
 WSGI_APPLICATION = 'home.wsgi.dev.application'
@@ -13,7 +13,7 @@ DATABASES = {
 }
 
 CORS_ORIGIN_WHITELIST = (
-    'http://localhost:3000',
+    'http://localhost',
     'http://209.239.112.21:3000',
     'http://tanukai.com',
     'http://www.tanukai.com',
