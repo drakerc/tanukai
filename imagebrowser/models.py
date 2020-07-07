@@ -24,8 +24,8 @@ class UserPartition(models.Model):
 
 
 class UserRating(models.Model):
-    user = models.OneToOneField(User)
-    rating = models.CharField('Rating', default="safe")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
+    rating = models.CharField('Rating', default="safe", max_length=50)
 
 
 @dataclass
@@ -41,3 +41,9 @@ class SimilarImage:
 class ImageSearchResults:
     similar_images: List[SimilarImage]
     uploaded_image: Optional[UploadedImage] = None
+
+
+@dataclass
+class Settings:
+    partitions: dict
+    rating: str

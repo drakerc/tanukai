@@ -9,6 +9,7 @@ from img_match.processing.feature_extractor import FeatureExtractor
 import cv2
 import numpy as np
 
+
 class ImgMatch:
 
     def __init__(self):
@@ -54,30 +55,41 @@ class ImgMatch:
         )
         return saved_id
 
-    def search_image(self, path: str, mark_subimage: bool = False, pagination_from: int = 0, pagination_size: int = 10, partition_tags: list = None) -> Tuple[dict, str]:
+    def search_image(self, path: str, mark_subimage: bool = False, pagination_from: int = 0,
+                     pagination_size: int = 10, partition_tags: list = None) -> Tuple[dict, str]:
         img = Image.open(path)
         feature_vectors = self._feature_extractor.get_features(img)
-        results = self._image_queries.find(feature_vectors, pagination_from, pagination_size, partition_tags=partition_tags)
+        results = self._image_queries.find(feature_vectors, pagination_from, pagination_size,
+                                           partition_tags=partition_tags)
         if mark_subimage:
             self._mark_subimage(path, results)
         return results, feature_vectors.dumps()
 
-    def search_by_phash(self, path: str, mark_subimage: bool = False, pagination_from: int = 0, pagination_size: int = 10) -> dict:
+    def search_by_phash(self, path: str, mark_subimage: bool = False, pagination_from: int = 0,
+                        pagination_size: int = 10) -> dict:
         img = Image.open(path)
         perceptual_hash = self._perceptual_hasher.get_hash(img)
-        results = self._image_queries.find_by_phash(perceptual_hash, pagination_from=pagination_from, pagination_size=pagination_size)
+        results = self._image_queries.find_by_phash(perceptual_hash,
+                                                    pagination_from=pagination_from,
+                                                    pagination_size=pagination_size)
         if mark_subimage:
             self._mark_subimage(path, results)
         return results
 
-    def search_by_id(self, image_id, mark_subimage: bool = False, pagination_from: int = 0, pagination_size: int = 10, partition_tags: list = None) -> dict:
-        results = self._image_queries.find_by_id(image_id, pagination_from=pagination_from, pagination_size=pagination_size, partition_tags=partition_tags)
+    def search_by_id(self, image_id, mark_subimage: bool = False, pagination_from: int = 0,
+                     pagination_size: int = 10, partition_tags: list = None) -> dict:
+        results = self._image_queries.find_by_id(image_id, pagination_from=pagination_from,
+                                                 pagination_size=pagination_size,
+                                                 partition_tags=partition_tags)
         # if mark_subimage:
         #     self._mark_subimage(path, results)
         return results
 
-    def search_by_features(self, features: np.ndarray, mark_subimage: bool = False, pagination_from: int = 0, pagination_size: int = 10, partition_tags: list = None) -> dict:
-        results = self._image_queries.find(features, pagination_from, pagination_size, partition_tags=partition_tags)
+    def search_by_features(self, features: np.ndarray, mark_subimage: bool = False,
+                           pagination_from: int = 0, pagination_size: int = 10,
+                           partition_tags: list = None) -> dict:
+        results = self._image_queries.find(features, pagination_from, pagination_size,
+                                           partition_tags=partition_tags)
         if mark_subimage:
             pass
             # self._mark_subimage(path, results)
