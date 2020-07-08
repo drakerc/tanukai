@@ -121,7 +121,7 @@ class UploadImage(APIView):
         for i in results.values():
             rating = i['data']['source_rating']
             if rating not in self.safety_mapping[maximum_rating]:
-                i['thumbnail_path'] = 'static/18plus.png'
+                i['thumbnail_path'] = 'static/images/18plus.png'  # todo: store in cfg
             sim_img_res.append(
                 SimilarImage(data=i['data'], distance=i['distance'], id=i['id'], path=i['path'],
                              thumbnail_path=i['thumbnail_path']))

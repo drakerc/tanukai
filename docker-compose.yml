@@ -10,7 +10,7 @@ services:
       - NVIDIA_VISIBLE_DEVICES=0
     volumes:
       - .:/app
-      - ./home/drake/.keras:/root/.keras
+      - ./var/.keras:/root/.keras
     networks:
       - image_search
   image_search_nginx:
