@@ -27,9 +27,9 @@ class Settings(APIView):
 
     def get(self, request):
         rating = 'safe'
+        active_partitions = {}
 
         partitions = self.image_match.get_partitions()
-        active_partitions = {}
         for index, value in partitions.items():
             active_partitions[index] = {
                 'count': value,
@@ -71,7 +71,10 @@ class Rating(APIView):
     permission_classes = [IsAuthenticated]
 
     def put(self, request):
-        old_rating = UserRating.objects.get(user=request.user)
+        try:
+            old_rating = UserRating.objects.get(user=request.user)
+        except UserRating.DoesNotExist:
+            old_rating = None
         serializer = UserRatingSerializer(old_rating, data=request.data,
                                           context={'request': request})
         serializer.is_valid(raise_exception=True)
@@ -100,9 +103,13 @@ class UploadImage(APIView):
             for chunk in file.chunks():
                 destination.write(chunk)
 
-        results, uploaded_img_features = self.image_match.search_image(uploaded_img_path, False, 0,
-                                                                       20,
-                                                                       partition_tags=partitions_selected)
+        results, uploaded_img_features = self.image_match.search_image(
+            uploaded_img_path,
+            False,
+            0,
+            20,
+            partition_tags=partitions_selected
+        )
 
         uploaded_img_model = UploadedImage(features=uploaded_img_features, image=uploaded_img_path)
         if request.user.is_authenticated:

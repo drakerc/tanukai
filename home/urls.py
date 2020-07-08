@@ -3,10 +3,11 @@ from django.urls import path, include, re_path
 from django.views.generic import TemplateView
 from imagebrowser.views import UserTags, UploadImage, UploadedImageSearch, DatabaseImageSearch, \
     Settings, Rating, Partitions
+from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
-    path('api/api-auth/', include('rest_framework.urls')),
-    path('api/rest-auth/', include('rest_auth.urls')),
+    path('api/api-auth/', csrf_exempt(include('rest_framework.urls'))),
+    re_path(r'^api/rest-auth/', include('rest_auth.urls')),
     path('api/rest-auth/registration/', include('rest_auth.registration.urls')),
     path('api/admin/', admin.site.urls),
     path('api/v1/user-tags', UserTags.as_view()),
