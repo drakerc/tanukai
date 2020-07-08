@@ -96,23 +96,11 @@ const HomepageLayout = () => (
             <Header as="h3" style={{ fontSize: "2em" }}>
               ImgSearch
             </Header>
-            {/*<p style={{ fontSize: "1.33em" }}>*/}
-            {/*  We give you the superpower to search through*/}
-            {/*  lewd anime titties using AI in no time!*/}
-            {/*</p>*/}
             <Header as="h3" style={{ fontSize: "2em" }}>
                 <ImageUpload>
                 </ImageUpload>
             </Header>
           </Grid.Column>
-          {/*<Grid.Column floated="right" width={2}>*/}
-          {/*  <Image*/}
-          {/*    bordered*/}
-          {/*    rounded*/}
-          {/*    size="small"*/}
-          {/*    src="/test.png"*/}
-          {/*  />*/}
-          {/*</Grid.Column>*/}
         </Grid.Row>
       </Grid>
     </Segment>

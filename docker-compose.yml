@@ -21,16 +21,14 @@ services:
       - "${DOCKER_WEB_SSL_PORT}:443"
     volumes:
       - .:/app
-      - ./nginx/nginx-ssl-params.conf:/etc/nginx/nginx-ssl-params.conf
 #      - /media/kkosinski/linux/images:/app/static/images
-      - ${DOCKER_WEB_DHPARAM}:/etc/nginx/nginx-dhparam.pem
-      - ${DOCKER_WEB_CRT}:/etc/nginx/nginx-ssl.crt
-      - ${DOCKER_WEB_KEY}:/etc/nginx/nginx-ssl.key
+      - ./nginx/letsencrypt:/etc/letsencrypt
     depends_on:
       - image_search_python
       - image_search_node
     networks:
       - image_search
+    command: "/bin/sh -c 'while :; do sleep 24h & wait $${!}; certbot renew; nginx -s reload; done & nginx -g \"daemon off;\"'"
   image_search_milvus:
     image: milvusdb/milvus:0.9.0-cpu-d051520-cb92b1
     volumes:

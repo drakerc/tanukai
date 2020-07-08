@@ -5,10 +5,10 @@ from imagebrowser.views import UserTags, UploadImage, UploadedImageSearch, Datab
     Settings, Rating, Partitions
 
 urlpatterns = [
-    path('api-auth/', include('rest_framework.urls')),
-    path('rest-auth/', include('rest_auth.urls')),
-    path('rest-auth/registration/', include('rest_auth.registration.urls')),
-    path('admin/', admin.site.urls),
+    path('api/api-auth/', include('rest_framework.urls')),
+    path('api/rest-auth/', include('rest_auth.urls')),
+    path('api/rest-auth/registration/', include('rest_auth.registration.urls')),
+    path('api/admin/', admin.site.urls),
     path('api/v1/user-tags', UserTags.as_view()),
     path('api/v1/upload-image', UploadImage.as_view()),
     path('api/v1/settings', Settings.as_view()),

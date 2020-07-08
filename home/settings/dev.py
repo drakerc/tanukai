@@ -14,6 +14,7 @@ DATABASES = {
 
 CORS_ORIGIN_WHITELIST = (
     'http://localhost',
+    'http://localhost:3000',
     'http://209.239.112.21:3000',
     'http://tanukai.com',
     'http://www.tanukai.com',

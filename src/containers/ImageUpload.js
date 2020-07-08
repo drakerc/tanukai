@@ -11,15 +11,49 @@ import {connect} from "react-redux";
 import {NavLink, Redirect} from "react-router-dom";
 import {imageSearch, resetProps} from "../store/actions/imagesearch";
 import ImageUploader from 'react-images-upload';
-import {Slider} from "react-semantic-ui-range";
+import {getSettings} from "../store/actions/settings";
+import {putPartitions} from "../store/actions/partitions";
+import {putRating} from "../store/actions/rating";
 
 
 class ImageUpload extends React.Component {
     state = {
         images: null,
-        partitions: ['danbooru', 'e621'],
-        maximumRating: 'explicit'
+        partitions: [],
+        partitionsSelected: [],
+        maximumRating: null
     };
+
+    componentDidMount() {
+        this.props.getSettings();
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.settingsResponse !== this.props.settingsResponse) {
+            console.log(this.state.partitionsSelected)
+            let settingsResponse = this.props.settingsResponse;
+            let apiPartitions = settingsResponse.data.partitions;
+            let partitions = [];
+            let partitionsSelected = [];
+
+            Object.keys(apiPartitions).forEach(function (partitionName) {
+                partitions.push(
+                    {
+                        key: partitionName,
+                        text: partitionName + ' ' + apiPartitions[partitionName].count,
+                        value: partitionName
+                    }
+                );
+                if (apiPartitions[partitionName].active) {
+                    partitionsSelected.push(partitionName);
+                }
+            });
+            let maximumRating = settingsResponse.data.rating;
+            this.setState({partitionsSelected});
+            this.setState({partitions});
+            this.setState({maximumRating});
+        }
+    }
 
     handleSubmit = e => {
         e.preventDefault();
@@ -29,11 +63,10 @@ class ImageUpload extends React.Component {
 
 
     onDrop = (pictures) => {
-        console.log(pictures)
         this.setState({
             images: pictures.length ? pictures[0] : null,
         });
-    }
+    };
 
     componentWillUnmount() {
         this.props.resetProps();
@@ -41,11 +74,20 @@ class ImageUpload extends React.Component {
 
     handleChange = (event, value) => {
         this.setState({[value.name]: value.value});
+        if (value.name === 'partitionsSelected') {
+            let partitions = value.value.map((i) => (
+                {'partition': i}
+            ));
+            this.props.putPartitions(partitions);
+        }
+        if (value.name === 'maximumRating') {
+            this.props.putRating({'rating': value.value});
+        }
     };
 
     render() {
-        let {images, partitions} = this.state;
-        const {error, loading, response} = this.props;
+        let {images, maximumRating} = this.state;
+        const {error, loading, response, settingsLoading, settingsError, settingsResponse} = this.props;
         if (images && response) {
             return <Redirect to={{
                 pathname: '/search-results/' + response.data.uploaded_image.pk,
@@ -53,10 +95,6 @@ class ImageUpload extends React.Component {
             }}
             />
         }
-        const options = [
-            {key: 'e621', text: 'E621', value: 'e621'},
-            {key: 'danbooru', text: 'danbooru', value: 'danbooru'},
-        ];
         return (
             <React.Fragment>
                 <Form size="large" onSubmit={this.handleSubmit}>
@@ -76,17 +114,17 @@ class ImageUpload extends React.Component {
                             onChange={this.handleChange}
                             fluid
                             multiple
-                            value={partitions}
-                            name="partitions"
+                            value={this.state.partitionsSelected}
+                            name="partitionsSelected"
                             selection
-                            options={options}/>
+                            options={this.state.partitions}/>
                         <Form>
                             <Form.Field>
                                 <Form.Radio
                                     label='Safe'
                                     name='maximumRating'
                                     value='safe'
-                                    checked={this.state.maximumRating === 'safe'}
+                                    checked={maximumRating === 'safe'}
                                     onChange={this.handleChange}
                                 />
                             </Form.Field>
@@ -95,7 +133,7 @@ class ImageUpload extends React.Component {
                                     label='Questionable'
                                     name='maximumRating'
                                     value='questionable'
-                                    checked={this.state.maximumRating === 'questionable'}
+                                    checked={maximumRating === 'questionable'}
                                     onChange={this.handleChange}
                                 />
                             </Form.Field>
@@ -104,7 +142,7 @@ class ImageUpload extends React.Component {
                                     label='Explicit'
                                     name='maximumRating'
                                     value='explicit'
-                                    checked={this.state.maximumRating === 'explicit'}
+                                    checked={maximumRating === 'explicit'}
                                     onChange={this.handleChange}
                                 />
                             </Form.Field>
@@ -129,7 +167,10 @@ const mapStateToProps = state => {
     return {
         loading: state.imageSearch.loading,
         error: state.imageSearch.error,
-        response: state.imageSearch.response
+        response: state.imageSearch.response,
+        settingsLoading: state.getSettings.loading,
+        settingsError: state.getSettings.error,
+        settingsResponse: state.getSettings.response,
     };
 };
 
@@ -138,7 +179,13 @@ const mapDispatchToProps = dispatch => {
         imageSearch: (images, partitions, maximumRating) =>
             dispatch(imageSearch(images, partitions, maximumRating)),
         resetProps: () =>
-            dispatch(resetProps())
+            dispatch(resetProps()),
+        getSettings: () =>
+            dispatch(getSettings()),
+        putPartitions: (partitions) =>
+            dispatch(putPartitions(partitions)),
+        putRating: (rating) =>
+            dispatch(putRating(rating)),
     };
 };
 
