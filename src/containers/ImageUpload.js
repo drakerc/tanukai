@@ -57,8 +57,8 @@ class ImageUpload extends React.Component {
 
     handleSubmit = e => {
         e.preventDefault();
-        const {images, partitions, maximumRating} = this.state;
-        this.props.imageSearch(images, partitions, maximumRating);
+        const {images, partitionsSelected, maximumRating} = this.state;
+        this.props.imageSearch(images, partitionsSelected, maximumRating);
     };
 
 
