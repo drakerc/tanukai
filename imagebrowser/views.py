@@ -1,6 +1,9 @@
 import pickle
-from datetime import datetime
+from datetime import datetime, timedelta
+
+from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from img_match.img_match import ImgMatch
@@ -11,16 +14,17 @@ from rest_framework.parsers import MultiPartParser
 from .models import SimilarImage
 
 
-class UserTags(APIView):
-    permission_classes = (IsAuthenticated,)
+def is_image_safe(maximum_rating: str, image_rating: str) -> bool:
+    safety_mapping = {
+        'safe': ['safe'],
+        'questionable': ['safe', 'questionable'],
+        'explicit': ['safe', 'questionable', 'explicit']
+    }
+    return image_rating in safety_mapping[maximum_rating]
 
-    def get(self, request):
-        data = UserTag.objects.all()
 
-        serializer = UserTagSerializer(data, context={'request': request}, many=True)
-
-        return Response(serializer.data)
-
+def convert_distance_to_similarity(distance: float) -> float:
+    return round((1 - distance) * 100, 2)
 
 class Settings(APIView):
     image_match = ImgMatch()
@@ -83,19 +87,20 @@ class Rating(APIView):
 
 
 class UploadImage(APIView):
+    maximum_results = 100
     parser_classes = (MultiPartParser,)
     image_match = ImgMatch()
-    safety_mapping = {
-        'safe': ['safe'],
-        'questionable': ['safe', 'questionable'],
-        'explicit': ['safe', 'questionable', 'explicit']
-    }
 
     def post(self, request):
+        pagination_from = int(request.query_params.get('pagination_from', 0))
+        pagination_size = int(request.query_params.get('pagination_size', 20))
+        if pagination_from < 0 or pagination_from > self.maximum_results:
+            raise ValidationError(
+                f'Pagination must be larger than 0 and smaller than {self.maximum_results}')
         file = request.data.get('file')
-        partitions_selected = request.data.get('partitions', ['e621']).split(',')
+        default_partitions = list(self.image_match.get_partitions().keys())
+        partitions_selected = request.data.get('partitions').split(',') if request.data.get('partitions') else default_partitions
         maximum_rating = request.data.get('maximum_rating', 'safe')
-        # partitions = self.image_match.get_partitions()
 
         uploaded_img_path = "static/uploaded/" + datetime.now().isoformat() + "_" + file.name
 
@@ -106,8 +111,8 @@ class UploadImage(APIView):
         results, uploaded_img_features = self.image_match.search_image(
             uploaded_img_path,
             False,
-            0,
-            20,
+            pagination_from,
+            pagination_size,
             partition_tags=partitions_selected
         )
 
@@ -120,11 +125,16 @@ class UploadImage(APIView):
 
         for i in results.values():
             rating = i['data']['source_rating']
-            if rating not in self.safety_mapping[maximum_rating]:
+            if not is_image_safe(maximum_rating, rating):
                 i['thumbnail_path'] = 'static/images/18plus.png'  # todo: store in cfg
             sim_img_res.append(
-                SimilarImage(data=i['data'], distance=i['distance'], id=i['id'], path=i['path'],
-                             thumbnail_path=i['thumbnail_path']))
+                SimilarImage(
+                    data=i['data'],
+                    distance=convert_distance_to_similarity(i['distance']),
+                    id=i['id'],
+                    path=i['path'],
+                    thumbnail_path=i['thumbnail_path']
+                ))
 
         image_search_results = ImageSearchResults(uploaded_image=uploaded_img_model,
                                                   similar_images=sim_img_res)
@@ -134,13 +144,25 @@ class UploadImage(APIView):
 
 class UploadedImageSearch(APIView):
     image_match = ImgMatch()
+    maximum_results = 50
 
-    def get(self, request, image_id):
+    def get(self, request: Request, image_id: str):
         pagination_from = int(request.query_params.get('pagination_from', 0))
         pagination_size = int(request.query_params.get('pagination_size', 20))
-        partitions_selected = request.data.get('partitions', ['e621', 'danbooru'])
+        if pagination_from < 0 or pagination_from > self.maximum_results:
+            raise ValidationError(
+                f'Pagination must be larger than 0 and smaller than {self.maximum_results}')
+        default_partitions = list(self.image_match.get_partitions().keys())
+        partitions_selected = request.query_params.get('partitions').split(',') if request.query_params.get('partitions') else default_partitions
+        maximum_rating = request.query_params.get('maximum_rating', 'safe')
 
-        image_data = UploadedImage.objects.get(pk=image_id)
+        # TODO: add db trigger or cron to delete old results
+        maximum_created_at = datetime.now() - timedelta(minutes=30)
+
+        try:
+            image_data = UploadedImage.objects.get(pk=image_id, created_at__gt=maximum_created_at)
+        except UploadedImage.DoesNotExist:
+            raise NotFound('Could not find the uploaded image.')
         image_features = pickle.loads(image_data.features)
         results = self.image_match.search_by_features(image_features, False, pagination_from,
                                                       pagination_size,
@@ -149,9 +171,17 @@ class UploadedImageSearch(APIView):
         sim_img_res = []
 
         for i in results.values():
+            rating = i['data']['source_rating']
+            if not is_image_safe(maximum_rating, rating):
+                i['thumbnail_path'] = 'static/images/18plus.png'  # todo: store in cfg
             sim_img_res.append(
-                SimilarImage(data=i['data'], distance=i['distance'], id=i['id'], path=i['path'],
-                             thumbnail_path=i['thumbnail_path']))
+                SimilarImage(
+                    data=i['data'],
+                    distance=convert_distance_to_similarity(i['distance']),
+                    id=i['id'],
+                    path=i['path'],
+                    thumbnail_path=i['thumbnail_path']
+                ))
 
         image_search_results = ImageSearchResults(uploaded_image=image_data,
                                                   similar_images=sim_img_res)
@@ -161,21 +191,36 @@ class UploadedImageSearch(APIView):
 
 class DatabaseImageSearch(APIView):
     image_match = ImgMatch()
+    maximum_results = 100
 
-    def get(self, request, image_id):
+    def get(self, request: Request, image_id: str):
         pagination_from = int(request.query_params.get('pagination_from', 0))
         pagination_size = int(request.query_params.get('pagination_size', 20))
-        partitions_selected = request.data.get('partitions', ['e621', 'danbooru'])
+        if pagination_from < 0 or pagination_from > self.maximum_results:
+            raise ValidationError(
+                f'Pagination must be larger than 0 and smaller than {self.maximum_results}')
+        default_partitions = list(self.image_match.get_partitions().keys())
+        partitions_selected = request.query_params.get('partitions').split(',') if request.query_params.get('partitions') else default_partitions
+        maximum_rating = request.query_params.get('maximum_rating', 'safe')
 
         results, query_image = self.image_match.search_by_id(int(image_id), False, pagination_from,
-                                                pagination_size, partition_tags=partitions_selected)
+                                                             pagination_size,
+                                                             partition_tags=partitions_selected)
 
         sim_img_res = []
 
         for i in results.values():
+            rating = i['data']['source_rating']
+            if not is_image_safe(maximum_rating, rating):
+                i['thumbnail_path'] = 'static/images/18plus.png'  # todo: store in cfg
             sim_img_res.append(
-                SimilarImage(data=i['data'], distance=i['distance'], id=i['id'], path=i['path'],
-                             thumbnail_path=i['thumbnail_path']))
+                SimilarImage(
+                    data=i['data'],
+                    distance=convert_distance_to_similarity(i['distance']),
+                    id=i['id'],
+                    path=i['path'],
+                    thumbnail_path=i['thumbnail_path']
+                ))
 
         uploaded_img_model = UploadedImage(image=query_image.get('thumbnail_path'))
         image_search_results = ImageSearchResults(similar_images=sim_img_res,
@@ -191,3 +236,14 @@ class DatabaseImageSearch(APIView):
 #         serializer = UserTagSerializer(data, context={'request': request}, many=True)
 #
 #         return Response(serializer.data)
+
+
+class UserTags(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        data = UserTag.objects.all()
+
+        serializer = UserTagSerializer(data, context={'request': request}, many=True)
+
+        return Response(serializer.data)

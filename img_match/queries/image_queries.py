@@ -184,13 +184,13 @@ class ImageQueries:
         raise Exception(f'Could not create a partition because of an error: {status.message}.')
 
     def get_partitions(self) -> dict:
+        # TODO: find out if ES or Milvus return this faster
         """
-        Returns dict with Milvus partition data (partition_tag and count)
+        Returns a dict with Milvus partition data (partition_tag and count)
         :return: dict, e.g. {'ebay': 5213, 'etsy': 1233}
         """
         status, stats = self._milvus.database.get_collection_stats(config.milvus_collection_name)
-        partition_data = {i['tag']: i['row_count'] for i in stats['partitions']}
-        return partition_data
+        return {i['tag']: i['row_count'] for i in stats['partitions'] if i['row_count'] > 0}
 
     def elastic_index_exists(self) -> bool:
         return Image.index.exists()

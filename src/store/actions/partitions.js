@@ -23,6 +23,7 @@ export const putPartitionsFailed = error => {
 };
 
 export const putPartitions = (partitions) => {
+    localStorage.setItem("partitions", partitions);
     return dispatch => {
         dispatch(putPartitionsStart());
         const token = localStorage.getItem("token");

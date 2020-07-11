@@ -30,6 +30,9 @@ export const searchReset = () => {
 };
 
 export const imageSearch = (images, partitions, maximumRating) => {
+    localStorage.setItem("partitions", partitions);
+    localStorage.setItem("maximum_rating", maximumRating);
+
     const data = new FormData();
     data.append('file', images);
     data.append('partitions', partitions);

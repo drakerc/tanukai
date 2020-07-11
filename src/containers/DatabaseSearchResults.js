@@ -122,7 +122,7 @@ class DatabaseSearchResults extends React.Component {
                                 </Modal>
                                 <Card.Content>
                                     <Card.Header>
-                                        {i.distance}
+                                        {i.distance}%
                                     </Card.Header>
                                     <Card.Meta>{i.data.source_website}</Card.Meta>
                                     <Card.Description>

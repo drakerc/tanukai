@@ -23,6 +23,7 @@ export const putRatingFailed = error => {
 };
 
 export const putRating = (rating) => {
+    localStorage.setItem("maximum_rating", rating);
     return dispatch => {
         dispatch(putRatingStart());
         const token = localStorage.getItem("token");

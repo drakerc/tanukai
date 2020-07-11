@@ -99,7 +99,7 @@ class ImgMatch:
             # self._mark_subimage(path, results)
         return results
 
-    def get_partitions(self):
+    def get_partitions(self) -> dict:
         """
         Returns dict with partition data (partition_tag and count)
         :return: dict, e.g. {'ebay': 5213, 'etsy': 1233}

@@ -23,10 +23,18 @@ export const uploadedSearchFailed = error => {
 };
 
 export const uploadedSearch = (imageId, paginationFrom = 0, paginationSize = 10) => {
+    const partitions = localStorage.getItem("partitions");
+    const maximumRating = localStorage.getItem("maximum_rating");
+    const params = new URLSearchParams({
+        pagination_from: paginationFrom,
+        pagination_size: paginationSize,
+        partitions: partitions,
+        maximum_rating: maximumRating
+    });
     return dispatch => {
         dispatch(uploadedSearchStart());
         axios
-            .get(baseApiUrl + "api/v1/uploaded-image-search/" + imageId + "?pagination_from=" + paginationFrom + '&pagination_size=' + paginationSize)
+            .get(baseApiUrl + "api/v1/uploaded-image-search/" + imageId + "?" + params.toString())
             .then(res => {
                 dispatch(uploadedSearchSuccess(res));
             })
