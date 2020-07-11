@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.generic import TemplateView
-from imagebrowser.views import UserTags, UploadImage, UploadedImageSearch, DatabaseImageSearch, \
+from tanukai.views import UserTags, UploadImage, UploadedImageSearch, DatabaseImageSearch, \
     Settings, Rating, Partitions
 from django.views.decorators.csrf import csrf_exempt
 

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from imagebrowser.models import UserTag, UploadedImage, UserPartition, UserRating, Settings
+from tanukai.models import UserTag, UploadedImage, UserPartition, UserRating, Settings
 
 
 class UserSerializer(serializers.ModelSerializer):
