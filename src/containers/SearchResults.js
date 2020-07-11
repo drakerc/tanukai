@@ -1,10 +1,7 @@
 import React from "react";
 import {
     Button,
-    Form,
     Grid,
-    Header,
-    Message,
     Segment,
     Image,
     Responsive,
@@ -14,9 +11,6 @@ import {
     Pagination
 } from "semantic-ui-react";
 import {connect} from "react-redux";
-import {NavLink, Redirect} from "react-router-dom";
-import {authLogin} from "../store/actions/auth";
-import {useHistory} from "react-router-dom";
 import {uploadedSearch} from "../store/actions/uploadedSearch";
 import {baseUrl} from "./helpers";
 
@@ -39,7 +33,7 @@ class SearchResults extends React.Component {
     componentDidMount() {
         const query = qs.parse(this.props.location.search, {
             ignoreQueryPrefix: true
-        })
+        });
         if (query.pagination_from) {
             this.setState({activePage: (query.pagination_from / 10) + 1});
         }
@@ -65,8 +59,8 @@ class SearchResults extends React.Component {
     }
 
     handlePaginationChange = (e, {activePage}) => {
-        this.setState({activePage})
-        const paginationFrom = (activePage - 1) * this.state.paginationSize
+        this.setState({activePage});
+        const paginationFrom = (activePage - 1) * this.state.paginationSize;
         this.props.history.push("/search-results/" + this.props.match.params.imageId + '?pagination_from=' + paginationFrom + '&pagination_size=' + this.state.paginationSize)
     }
 
@@ -88,7 +82,7 @@ class SearchResults extends React.Component {
                 <Pagination
                     activePage={this.state.activePage}
                     onPageChange={this.handlePaginationChange}
-                    totalPages={10}
+                    totalPages={5}
                 />
                 <Grid.Row>
                     <Image size="medium" src={baseUrl + uploadedImg.image}/>
@@ -164,7 +158,6 @@ class SearchResults extends React.Component {
             <Responsive getWidth={getWidth} minWidth={Responsive.onlyMobile.minWidth}>
                 <Segment style={{padding: "8em 0em"}} vertical>
                     <ImagesList imgs={imgs}></ImagesList>
-
                 </Segment>
             </Responsive>
         );

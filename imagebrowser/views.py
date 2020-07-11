@@ -167,7 +167,7 @@ class DatabaseImageSearch(APIView):
         pagination_size = int(request.query_params.get('pagination_size', 20))
         partitions_selected = request.data.get('partitions', ['e621', 'danbooru'])
 
-        results = self.image_match.search_by_id(int(image_id), False, pagination_from,
+        results, query_image = self.image_match.search_by_id(int(image_id), False, pagination_from,
                                                 pagination_size, partition_tags=partitions_selected)
 
         sim_img_res = []
@@ -177,8 +177,7 @@ class DatabaseImageSearch(APIView):
                 SimilarImage(data=i['data'], distance=i['distance'], id=i['id'], path=i['path'],
                              thumbnail_path=i['thumbnail_path']))
 
-        uploaded_img_model = UploadedImage(image=sim_img_res[0].thumbnail_path)
-
+        uploaded_img_model = UploadedImage(image=query_image.get('thumbnail_path'))
         image_search_results = ImageSearchResults(similar_images=sim_img_res,
                                                   uploaded_image=uploaded_img_model)
         results_serializer = ImageSearchResultsSerializer(image_search_results)

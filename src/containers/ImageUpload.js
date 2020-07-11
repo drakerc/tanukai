@@ -37,6 +37,9 @@ class ImageUpload extends React.Component {
             let partitionsSelected = [];
 
             Object.keys(apiPartitions).forEach(function (partitionName) {
+                if (apiPartitions[partitionName].count === 0) {
+                    return;
+                }
                 partitions.push(
                     {
                         key: partitionName,

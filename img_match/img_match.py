@@ -8,7 +8,7 @@ from img_match.queries.image_queries import ImageQueries
 from img_match.processing.feature_extractor import FeatureExtractor
 import cv2
 import numpy as np
-
+import time
 
 class ImgMatch:
 
@@ -76,14 +76,18 @@ class ImgMatch:
             self._mark_subimage(path, results)
         return results
 
-    def search_by_id(self, image_id, mark_subimage: bool = False, pagination_from: int = 0,
-                     pagination_size: int = 10, partition_tags: list = None) -> dict:
-        results = self._image_queries.find_by_id(image_id, pagination_from=pagination_from,
-                                                 pagination_size=pagination_size,
-                                                 partition_tags=partition_tags)
+    def search_by_id(self, image_id: str, mark_subimage: bool = False, pagination_from: int = 0,
+                     pagination_size: int = 10, partition_tags: list = None) -> Tuple[dict, dict]:
+        results = self._image_queries.find_by_id(
+            image_id,
+            pagination_from=pagination_from,
+            pagination_size=pagination_size,
+            partition_tags=partition_tags
+        )
+        query_image = self._image_queries.get_elastic_record(image_id)  # TODO: bad idea...
         # if mark_subimage:
         #     self._mark_subimage(path, results)
-        return results
+        return results, query_image
 
     def search_by_features(self, features: np.ndarray, mark_subimage: bool = False,
                            pagination_from: int = 0, pagination_size: int = 10,

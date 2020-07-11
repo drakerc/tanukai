@@ -94,7 +94,7 @@ const HomepageLayout = () => (
         <Grid.Row>
           <Grid.Column width={14}>
             <Header as="h3" style={{ fontSize: "2em" }}>
-              ImgSearch
+              Tanukai
             </Header>
             <Header as="h3" style={{ fontSize: "2em" }}>
                 <ImageUpload>

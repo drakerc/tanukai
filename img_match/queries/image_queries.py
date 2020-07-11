@@ -112,9 +112,20 @@ class ImageQueries:
             }
         return similar_results
 
-    def find_by_id(self, image_id: str, pagination_from: int = 0, pagination_size: int = 10, partition_tags: list = None):
+    def find_by_id(self, image_id: str, pagination_from: int = 0, pagination_size: int = 10, partition_tags: list = None) -> dict:
         status, vector = self._milvus.database.get_entity_by_id(collection_name=config.milvus_collection_name, ids=[image_id])
         return self.find(vector, pagination_from, pagination_size, partition_tags)
+
+    def get_elastic_record(self, image_id: str) -> dict:
+        elastic_search = Image.search(using=self._elasticsearch.database,
+                                      index=config.elasticsearch_index) \
+            .query('ids', values=[image_id])
+        response = elastic_search[0:1].execute()[0]
+        return {
+            'data': response,
+            'path': f'{config.short_path}/full/{response.image_path}',
+            'thumbnail_path': f'{config.short_path}/thumbs/verybig/{response.image_path}'
+        }
 
     def count(self):
         elastic_search = Image.search(using=self._elasticsearch.database,
