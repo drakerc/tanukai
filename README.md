@@ -21,6 +21,18 @@ Libraries used:
 * Backend: Keras, elasticsearch-dsl, Pillow, ImageHash, OpenCV, Django (DRF), Scrapy
 * Frontend: React, Redux, React-Semantic-UI
 
+Directories description:
+* drawsearch - contains classes inheriting from img_match classes to implement some custom Tanukai logic (should be merged with tanukai directory)
+* home - Django start directory
+* img_match - reverse image search "library"
+* nginx - nginx settings
+* node_modules - node packages
+* public - directory used by React to generate some front-end stuff
+* scrapers - Scrapy-based scrapers that fetch and save images
+* src - front-end
+* static - directory containing images and other static files
+* tanukai - Tanukai Django files
+
 ### Starting the project
 * Install docker and docker-compose
 * Copy `.env.dist` to `.env` (and change some variables if necessary, especially `REACT_APP_API_URL` - this should be the address to the Django API)
@@ -31,3 +43,13 @@ Libraries used:
 
 ### Testing
 Coming soon
+
+### TODOs
+- [ ] Create tests (pytest + mock databases; Selenium front-end tests)
+- [ ] Cleanup code, add linters
+- [ ] Add MySQL support instead of sqlite
+- [ ] Use AWS S3 to store images
+- [ ] Add FAQ section, terms, etc
+- [ ] Improve the front-end look
+- [ ] Add UserTags functionality (white/blacklisting of tags)
+- [ ] Add more searching methods (search by tags and sort by the score returned by ES)

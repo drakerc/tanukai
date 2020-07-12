@@ -13,6 +13,11 @@ from .serializers import UserTagSerializer, ImageSearchResultsSerializer, Settin
 from rest_framework.parsers import MultiPartParser
 from .models import SimilarImage
 
+# TODO list:
+# TODO: add typehinting
+# TODO: move some custom image processing logic (uploading, saving etc) to a new service/package
+# TODO: move common code parts (validation, getting fields/imgs) somewhere into just one place
+
 
 def is_image_safe(maximum_rating: str, image_rating: str) -> bool:
     safety_mapping = {
@@ -25,6 +30,7 @@ def is_image_safe(maximum_rating: str, image_rating: str) -> bool:
 
 def convert_distance_to_similarity(distance: float) -> float:
     return round((1 - distance) * 100, 2)
+
 
 class Settings(APIView):
     image_match = ImgMatch()

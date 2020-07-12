@@ -1,4 +1,3 @@
-import pickle
 from typing import Callable, Tuple
 from PIL import Image
 import config
@@ -8,7 +7,7 @@ from img_match.queries.image_queries import ImageQueries
 from img_match.processing.feature_extractor import FeatureExtractor
 import cv2
 import numpy as np
-import time
+
 
 class ImgMatch:
 
