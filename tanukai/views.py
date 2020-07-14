@@ -14,9 +14,10 @@ from rest_framework.parsers import MultiPartParser
 from .models import SimilarImage
 
 # TODO list:
-# TODO: add typehinting
-# TODO: move some custom image processing logic (uploading, saving etc) to a new service/package
-# TODO: move common code parts (validation, getting fields/imgs) somewhere into just one place
+#  add typehinting
+#  move some custom image processing logic (uploading, saving etc) to a new service/package
+#  move common code parts (business logic, validation, getting fields/imgs)
+#  somewhere into just one place
 
 
 def is_image_safe(maximum_rating: str, image_rating: str) -> bool:
@@ -30,6 +31,24 @@ def is_image_safe(maximum_rating: str, image_rating: str) -> bool:
 
 def convert_distance_to_similarity(distance: float) -> float:
     return round((1 - distance) * 100, 2)
+
+
+def prepare_similar_results(results, maximum_rating):
+    return_results = []
+
+    for i in results.values():
+        rating = i['data']['source_rating']
+        if not is_image_safe(maximum_rating, rating):
+            i['thumbnail_path'] = 'static/images/18plus.png'  # todo: store in cfg
+        return_results.append(
+            SimilarImage(
+                data=i['data'],
+                distance=convert_distance_to_similarity(i['distance']),
+                id=i['id'],
+                path=i['path'],
+                thumbnail_path=i['thumbnail_path']
+            ))
+    return return_results
 
 
 class Settings(APIView):
@@ -108,11 +127,7 @@ class UploadImage(APIView):
         partitions_selected = request.data.get('partitions').split(',') if request.data.get('partitions') else default_partitions
         maximum_rating = request.data.get('maximum_rating', 'safe')
 
-        uploaded_img_path = "static/uploaded/" + datetime.now().isoformat() + "_" + file.name
-
-        with open(uploaded_img_path, 'wb+') as destination:
-            for chunk in file.chunks():
-                destination.write(chunk)
+        uploaded_img_path = self.__save_uploaded_image(file)
 
         results, uploaded_img_features = self.image_match.search_image(
             uploaded_img_path,
@@ -127,25 +142,20 @@ class UploadImage(APIView):
             uploaded_img_model.uploader = request.user
         uploaded_img_model.save()
 
-        sim_img_res = []
-
-        for i in results.values():
-            rating = i['data']['source_rating']
-            if not is_image_safe(maximum_rating, rating):
-                i['thumbnail_path'] = 'static/images/18plus.png'  # todo: store in cfg
-            sim_img_res.append(
-                SimilarImage(
-                    data=i['data'],
-                    distance=convert_distance_to_similarity(i['distance']),
-                    id=i['id'],
-                    path=i['path'],
-                    thumbnail_path=i['thumbnail_path']
-                ))
-
+        similar_images = prepare_similar_results(results, maximum_rating)
         image_search_results = ImageSearchResults(uploaded_image=uploaded_img_model,
-                                                  similar_images=sim_img_res)
+                                                  similar_images=similar_images)
         results_serializer = ImageSearchResultsSerializer(image_search_results)
         return Response(results_serializer.data)
+
+    def __save_uploaded_image(self, file):
+        # TODO: store path in cfg + move to services/model
+        uploaded_img_path = "static/uploaded/" + datetime.now().isoformat() + "_" + file.name
+
+        with open(uploaded_img_path, 'wb+') as destination:
+            for chunk in file.chunks():
+                destination.write(chunk)
+        return uploaded_img_path
 
 
 class UploadedImageSearch(APIView):
@@ -174,23 +184,9 @@ class UploadedImageSearch(APIView):
                                                       pagination_size,
                                                       partition_tags=partitions_selected)
 
-        sim_img_res = []
-
-        for i in results.values():
-            rating = i['data']['source_rating']
-            if not is_image_safe(maximum_rating, rating):
-                i['thumbnail_path'] = 'static/images/18plus.png'  # todo: store in cfg
-            sim_img_res.append(
-                SimilarImage(
-                    data=i['data'],
-                    distance=convert_distance_to_similarity(i['distance']),
-                    id=i['id'],
-                    path=i['path'],
-                    thumbnail_path=i['thumbnail_path']
-                ))
-
+        similar_images = prepare_similar_results(results, maximum_rating)
         image_search_results = ImageSearchResults(uploaded_image=image_data,
-                                                  similar_images=sim_img_res)
+                                                  similar_images=similar_images)
         results_serializer = ImageSearchResultsSerializer(image_search_results)
         return Response(results_serializer.data)
 
@@ -213,38 +209,16 @@ class DatabaseImageSearch(APIView):
                                                              pagination_size,
                                                              partition_tags=partitions_selected)
 
-        sim_img_res = []
-
-        for i in results.values():
-            rating = i['data']['source_rating']
-            if not is_image_safe(maximum_rating, rating):
-                i['thumbnail_path'] = 'static/images/18plus.png'  # todo: store in cfg
-            sim_img_res.append(
-                SimilarImage(
-                    data=i['data'],
-                    distance=convert_distance_to_similarity(i['distance']),
-                    id=i['id'],
-                    path=i['path'],
-                    thumbnail_path=i['thumbnail_path']
-                ))
-
+        similar_images = prepare_similar_results(results, maximum_rating)
         uploaded_img_model = UploadedImage(image=query_image.get('thumbnail_path'))
-        image_search_results = ImageSearchResults(similar_images=sim_img_res,
+        image_search_results = ImageSearchResults(similar_images=similar_images,
                                                   uploaded_image=uploaded_img_model)
         results_serializer = ImageSearchResultsSerializer(image_search_results)
         return Response(results_serializer.data)
 
-# @api_view(['GET', 'POST'])
-# def user_tags_list(request):
-#     if request.method == 'GET':
-#         data = UserTag.objects.all()
-#
-#         serializer = UserTagSerializer(data, context={'request': request}, many=True)
-#
-#         return Response(serializer.data)
-
 
 class UserTags(APIView):
+    # TODO: implement
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):

@@ -40,9 +40,7 @@ class ImgMatch:
         if not img:
             img = Image.open(path)
         feature_vectors = self._feature_extractor.get_features(img)
-        perceptual_hash = None
-        if add_perceptual_hash:
-            perceptual_hash = self._perceptual_hasher.get_hash(img)
+        perceptual_hash = self._perceptual_hasher.get_hash(img) if add_perceptual_hash else None
         saved_id = self._image_queries.save(
             feature_vectors,
             path,

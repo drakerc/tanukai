@@ -4,7 +4,7 @@ services:
     restart: always
     build:
       context: ./
-      dockerfile: "python-dockerfile"
+      dockerfile: "python-dockerfile-prod"
     environment:
       - "PYTHONUNBUFFERED=1"
       - NVIDIA_VISIBLE_DEVICES=0
@@ -21,13 +21,13 @@ services:
       - "${DOCKER_WEB_SSL_PORT}:443"
     volumes:
       - .:/app
-#      - /media/kkosinski/linux1/images:/app/static/images
       - ./nginx/letsencrypt:/etc/letsencrypt
     depends_on:
       - image_search_python
       - image_search_node
     networks:
       - image_search
+    command: "/bin/sh -c 'while :; do sleep 24h & wait $${!}; certbot renew; nginx -s reload; done & nginx -g \"daemon off;\"'"
   image_search_milvus:
     image: milvusdb/milvus:0.9.0-cpu-d051520-cb92b1
     volumes:
@@ -52,7 +52,7 @@ services:
       - ./var/elasticsearch:/usr/share/elasticsearch/data
     environment:
       - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
       - bootstrap.memory_lock=true
     ulimits:
       memlock:
@@ -67,13 +67,23 @@ services:
       context: ./
       dockerfile: node-dockerfile
     working_dir: /app
-    #command: /bin/sh -c "npm install ; npm start"
     ports:
       - "${NODEJS_PORT}"
     volumes:
       - .:/app
     networks:
       - image_search
+  image_search_mysql:
+    image: mysql:8.0.17
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    networks:
+      - image_search
+    ports:
+      - "${MYSQL_PORT}"
 networks:
   image_search:
     driver: "bridge"

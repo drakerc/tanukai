@@ -4,7 +4,9 @@ from img_match.models.image import Image
 from img_match.queries.image_queries import ImageQueries
 
 
-class DrawSearchImageQueries(ImageQueries):
+# TODO: these are just some helpful methods to start/delete partitions. Needs to be rewritten
+
+class TanukaiImageQueries(ImageQueries):
 
     def __init__(self):
         super().__init__()
@@ -15,14 +17,17 @@ class DrawSearchImageQueries(ImageQueries):
         for number, result in enumerate(elastic_search.scan()):
             print(f'Processing {number}')
             source_id = result.source_id
-            source_search = Image.search(using=self._elasticsearch.database, index=config.elasticsearch_index).query('term', source_id=source_id)
+            source_search = Image.search(using=self._elasticsearch.database,
+                                         index=config.elasticsearch_index).query('term',
+                                                                                 source_id=source_id)
             response = source_search.execute()
             if len(response) > 1:
                 img_to_delete = response[1]
                 img_to_delete_id = img_to_delete.meta.id
                 print(f'Deleting {img_to_delete_id}')
                 img_to_delete.delete(using=self._elasticsearch.database)
-                status = self._milvus.database.delete_entity_by_id(config.milvus_collection_name, [int(img_to_delete_id)])
+                status = self._milvus.database.delete_entity_by_id(config.milvus_collection_name,
+                                                                   [int(img_to_delete_id)])
                 if not status.OK():
                     raise Exception(
                         f'Could not remove from Milvus because of an error: {status.message}.')
@@ -46,11 +51,13 @@ class DrawSearchImageQueries(ImageQueries):
             collection_name='images',
             partition_tag='e621'
         )
-        elastic_search = Image.search(using=self._elasticsearch.database, index=config.elasticsearch_index)
+        elastic_search = Image.search(using=self._elasticsearch.database,
+                                      index=config.elasticsearch_index)
         for number, result in enumerate(elastic_search.scan()):
             print(f'Processing {number}')
             image_id = result.meta.id
-            status, vectors = self._milvus.database.get_entity_by_id(config.milvus_collection_name, [int(image_id)])
+            status, vectors = self._milvus.database.get_entity_by_id(config.milvus_collection_name,
+                                                                     [int(image_id)])
             status, ids = self._milvus.database.insert(
                 collection_name='images',
                 partition_tag='e621',
@@ -70,7 +77,8 @@ class DrawSearchImageQueries(ImageQueries):
         return
 
     def rename_source_website(self):
-        elastic_search = Image.search(using=self._elasticsearch.database, index=config.elasticsearch_index).source(False)
+        elastic_search = Image.search(using=self._elasticsearch.database,
+                                      index=config.elasticsearch_index).source(False)
         for number, result in enumerate(elastic_search.scan()):
             print(f'Processing {number}')
             result.update(

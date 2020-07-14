@@ -22,7 +22,6 @@ Libraries used:
 * Frontend: React, Redux, React-Semantic-UI
 
 Directories description:
-* drawsearch - contains classes inheriting from img_match classes to implement some custom Tanukai logic (should be merged with tanukai directory)
 * home - Django start directory
 * img_match - reverse image search "library"
 * nginx - nginx settings
@@ -37,7 +36,8 @@ Directories description:
 * Install docker and docker-compose
 * Copy `.env.dist` to `.env` (and change some variables if necessary, especially `REACT_APP_API_URL` - this should be the address to the Django API)
 * Execute `docker-compose build`
-* Execute `docker-compose up -d`
+* Execute `docker-compose up -d` (or `docker-compose -f docker-compose.prod.yml up -d` in deployment environment)
+* Create and apply migrations by using `docker-compose exec image_search_python python manage.py makemigrations && docker-compose exec image_search_python python manage.py migrate` (on production, use `docker-compose -f docker-compose.prod.yml exec image_search_python python manage.py makemigrations --settings=home.settings.prod && docker-compose -f docker-compose.prod.yml exec image_search_python python manage.py migrate --settings=home.settings.prod`)
 * The front-end should be available on the port specified in `DOCKER_WEB_PORT` .env variable. More details can be found in the `nginx/nginx.confg` file.
 
 

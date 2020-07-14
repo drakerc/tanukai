@@ -8,12 +8,12 @@ import hashlib
 
 from PIL import Image
 
-from drawsearch.drawsearch_image import DrawsearchImage
 from img_match.img_match import ImgMatch
 from scrapy.pipelines.images import ImagesPipeline
 from scrapy.utils.python import to_bytes
 from io import BytesIO
 import config
+from tanukai.services.img_match.models.tanukai_image import TanukaiImage
 
 
 class ProcessingPipeline:
@@ -31,7 +31,7 @@ class ProcessingPipeline:
             path=image_path,
             img=pil_image,
             partition_tag=item.get('website'),
-            image_model=DrawsearchImage,
+            image_model=TanukaiImage,
             source_website=item.get('website'),
             source_url=item.get('url'),
             source_id=item.get('id'),

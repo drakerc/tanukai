@@ -19,3 +19,10 @@ phash_size_result = int(os.getenv('phash_size_result'))
 
 images_path = os.getenv('images_path')
 short_path = os.getenv('short_path')
+
+MYSQL_HOST = os.getenv('MYSQL_HOST')
+MYSQL_PORT = os.getenv('MYSQL_PORT')
+MYSQL_DATABASE = os.getenv('MYSQL_DATABASE')
+MYSQL_USER = os.getenv('MYSQL_USER')
+MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD')
+MYSQL_ROOT_PASSWORD = os.getenv('MYSQL_ROOT_PASSWORD')
