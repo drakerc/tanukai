@@ -84,9 +84,13 @@ class DatabaseSearchResults extends React.Component {
                     onPageChange={this.handlePaginationChange}
                     totalPages={5}
                 />
-                <Grid.Row>
-                    <Image size="medium" src={baseUrl + uploadedImg.image}/>
-                </Grid.Row>
+                {
+                    uploadedImg && uploadedImg.image ?
+                        <Grid.Row>
+                            <Image size="medium" src={baseUrl + uploadedImg.image.slice(7)}/>
+                        </Grid.Row> :
+                        ""
+                }
                 <Card.Group>
                     {imgs.imgs.map((i) => (
                             <Card>
