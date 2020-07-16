@@ -12,7 +12,7 @@ RUN apt-get update \
     && apt-get install -y -q g++ python3.7 python3.7-dev python3-pip libsm6 libxext6 libxrender-dev libmysqlclient-dev \
     && rm /usr/bin/python3 && ln -s python3.7 /usr/bin/python3 \
     && python3 -m pip install --upgrade pip \
-    && pip install -r requirements.txt
+    && pip install -r requirements.txt \
     && echo "export PYTHONPATH=\"${PYTHONPATH}:/app\"" >> ~/.bashrc
 
 WORKDIR /app

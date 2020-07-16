@@ -40,6 +40,8 @@ class DanbooruScraper(scrapy.Spider):
             self.state['highest_id'] = first_post_id
         for data in posts:
             source_id = data.get('id')
+            if not source_id:
+                continue
 
             first_id = self.state.get('first_id')
             if first_id and source_id == first_id:
@@ -49,7 +51,7 @@ class DanbooruScraper(scrapy.Spider):
             was_already_scraped = self._was_already_scraped(source_id)
             if was_already_scraped:
                 print('was already scraped!')
-                return
+                continue
             created_at = data.get('created_at')
             tags = data.get('tag_string').split()
             authors = data.get('tag_string_artist').split()
@@ -80,14 +82,17 @@ class DanbooruScraper(scrapy.Spider):
         headers = {
             'User-Agent': 'ImgSearch (drakeapp@gmail.com)'
         }
-        last_item_url = posts[-1].get('id')
-        query = {
-            'limit': 120,
-            'page': f'b{last_item_url}'
-        }
-        encoded_query = urlencode(query)
-        url = f'https://danbooru.donmai.us/posts.json?{encoded_query}'
-        yield scrapy.Request(url=url, callback=self.parse, headers=headers, dont_filter=False)
+        for i in reversed(posts):
+            item_id = i.get('id')
+            if item_id:
+                query = {
+                    'limit': 120,
+                    'page': f'b{item_id}'
+                }
+                encoded_query = urlencode(query)
+                url = f'https://danbooru.donmai.us/posts.json?{encoded_query}'
+                yield scrapy.Request(url=url, callback=self.parse, headers=headers)
+                break
 
     def _was_already_scraped(self, source_id):
         # TODO: duplicate code, remove
