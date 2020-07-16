@@ -84,9 +84,14 @@ class SearchResults extends React.Component {
                     onPageChange={this.handlePaginationChange}
                     totalPages={5}
                 />
-                <Grid.Row>
-                    <Image size="medium" src={baseUrl + uploadedImg.image.slice(1)}/>  // TODO: change in the backend?
-                </Grid.Row>
+                {
+                    uploadedImg && uploadedImg.image ?
+                        <Grid.Row>
+                            <Image size="medium" src={baseUrl + uploadedImg.image.slice(1)}/>
+                        </Grid.Row> :
+                        ""
+                }
+
                 <Card.Group>
                     {imgs.imgs.map((i) => (
                             <Card>
@@ -150,7 +155,7 @@ class SearchResults extends React.Component {
                 <Pagination
                     activePage={this.state.activePage}
                     onPageChange={this.handlePaginationChange}
-                    totalPages={10}
+                    totalPages={5}
                 />
             </Grid>
         );
