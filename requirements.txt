@@ -26,3 +26,4 @@ gunicorn==20.0.4
 python-dotenv==0.14.0
 Scrapy==2.1.0
 mysqlclient==2.0.1
+cffi==1.14.0

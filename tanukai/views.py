@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from img_match.img_match import ImgMatch
 from .models import UserTag, UploadedImage, ImageSearchResults, UserPartition, UserRating
 from .serializers import UserTagSerializer, ImageSearchResultsSerializer, SettingsSerializer, \
-    UserPartitionSerializer, UserRatingSerializer
+    UserPartitionSerializer, UserRatingSerializer, UploadedImageSerializer
 from rest_framework.parsers import MultiPartParser
 from .models import SimilarImage
 
@@ -122,12 +122,14 @@ class UploadImage(APIView):
         if pagination_from < 0 or pagination_from > self.maximum_results:
             raise ValidationError(
                 f'Pagination must be larger than 0 and smaller than {self.maximum_results}')
-        file = request.data.get('file')
         default_partitions = list(self.image_match.get_partitions().keys())
         partitions_selected = request.data.get('partitions').split(',') if request.data.get('partitions') else default_partitions
         maximum_rating = request.data.get('maximum_rating', 'safe')
 
-        uploaded_img_path = self.__save_uploaded_image(file)
+        uploaded_img_serializer = UploadedImageSerializer(data=request.data)
+        uploaded_img_serializer.is_valid(raise_exception=True)
+        uploaded_img = uploaded_img_serializer.save()  # TODO: dont commmit here somehow
+        uploaded_img_path = uploaded_img.image.path
 
         results, uploaded_img_features = self.image_match.search_image(
             uploaded_img_path,
@@ -137,10 +139,10 @@ class UploadImage(APIView):
             partition_tags=partitions_selected
         )
 
-        uploaded_img_model = UploadedImage(features=uploaded_img_features, image=uploaded_img_path)
         if request.user.is_authenticated:
-            uploaded_img_model.uploader = request.user
-        uploaded_img_model.save()
+            uploaded_img_model = uploaded_img_serializer.save(features=uploaded_img_features, uploader=request.user)
+        else:
+            uploaded_img_model = uploaded_img_serializer.save(features=uploaded_img_features)
 
         similar_images = prepare_similar_results(results, maximum_rating)
         image_search_results = ImageSearchResults(uploaded_image=uploaded_img_model,

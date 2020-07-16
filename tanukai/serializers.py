@@ -72,14 +72,12 @@ class SettingsSerializer(serializers.Serializer):
 
 
 class SimilarImageDataSerializer(serializers.Serializer):
-    # hash = serializers.DictField()
     image_path = serializers.CharField()
     source_created_at = serializers.DateTimeField()
     source_description = serializers.CharField(required=False)
     source_id = serializers.CharField()
     source_image_url = serializers.CharField()
     source_rating = serializers.CharField()
-    # source_tags = serializers.DictField()
     source_url = serializers.CharField()
     source_website = serializers.CharField()
     timestamp = serializers.DateTimeField()

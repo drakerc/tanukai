@@ -98,6 +98,7 @@ class E621Scraper(scrapy.Spider):
     def _was_already_scraped(self, source_id):
         elastic_search = ImgMatchImage.search(using=self._elasticsearch.database,
                                               index=config.elasticsearch_index) \
+            .query('term', source_website='e621') \
             .query('term', source_id=source_id)
         count = elastic_search.count()
         return count >= 1

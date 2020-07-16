@@ -85,7 +85,7 @@ class SearchResults extends React.Component {
                     totalPages={5}
                 />
                 <Grid.Row>
-                    <Image size="medium" src={baseUrl + uploadedImg.image}/>
+                    <Image size="medium" src={baseUrl + uploadedImg.image.slice(1)}/>  // TODO: change in the backend?
                 </Grid.Row>
                 <Card.Group>
                     {imgs.imgs.map((i) => (

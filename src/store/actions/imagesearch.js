@@ -34,7 +34,7 @@ export const imageSearch = (images, partitions, maximumRating) => {
     localStorage.setItem("maximum_rating", maximumRating);
 
     const data = new FormData();
-    data.append('file', images);
+    data.append('image', images);
     data.append('partitions', partitions);
     data.append('maximum_rating', maximumRating);
 

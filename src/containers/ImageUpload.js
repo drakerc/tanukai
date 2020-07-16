@@ -108,7 +108,7 @@ class ImageUpload extends React.Component {
                             buttonText='Upload an image'
                             onChange={this.onDrop}
                             name="images"
-                            imgExtension={['.jpg', '.gif', '.png']}
+                            imgExtension={['.jpg', '.gif', '.png', '.jpeg', '.webp']}
                             maxFileSize={5242880}
                             singleImage={true}
                         />

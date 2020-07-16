@@ -35,18 +35,12 @@ services:
       - ./var/milvus/conf:/var/lib/milvus/conf
       - ./var/milvus/logs:/var/lib/milvus/logs
       - ./var/milvus/wal:/var/lib/milvus/wal
-    ports:
-      - 19530
-      - 19121
-      - 9091
     networks:
       - image_search
     depends_on:
       - image_search_python
   image_search_elastic:
     restart: always
-    ports:
-      - 9200
     image: docker.elastic.co/elasticsearch/elasticsearch:${DOCKER_ELASTICSEARCH_VERSION}
     volumes:
       - ./var/elasticsearch:/usr/share/elasticsearch/data
@@ -82,8 +76,6 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     networks:
       - image_search
-    ports:
-      - "${MYSQL_PORT}"
 networks:
   image_search:
     driver: "bridge"

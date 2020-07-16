@@ -3,6 +3,7 @@ from typing import List, Optional
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
+from tanukai.validators import validate_max_image_size
 
 
 class UserTag(models.Model):
@@ -14,7 +15,11 @@ class UserTag(models.Model):
 class UploadedImage(models.Model):
     uploader = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
     features = models.BinaryField()
-    image = models.FilePathField(path='static/uploaded/')
+    image = models.ImageField(
+        upload_to='uploaded/',
+        max_length=500,
+        validators=[validate_max_image_size]
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
 
