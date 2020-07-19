@@ -1,24 +1,20 @@
 import React from "react";
-import {Route} from "react-router-dom";
+import { Route } from "react-router-dom";
 import Hoc from "./hoc/hoc";
 
 import Login from "./containers/Login";
 import Signup from "./containers/Signup";
-import HomepageLayout from "./containers/Home";
+import Home from "./components/Home";
 import SearchResults from "./containers/SearchResults"
-// import UploadedSearchResults from "./containers/UploadedSearchResults"
-import DatabaseSearchResults from "./containers/DatabaseSearchResults"
 
-
-const BaseRouter = () => (
-    <Hoc>
-        <Route path="/login" component={Login}/>
-        <Route path="/signup" component={Signup}/>
-        <Route path="/search-results/:imageId" component={SearchResults}/>
-        {/*<Route path="/uploaded-image-search/:imageId" component={UploadedSearchResults}/>*/}
-        <Route path="/database-image-search/:imageId" component={DatabaseSearchResults}/>
-        <Route exact path="/" component={HomepageLayout}/>
-    </Hoc>
+const BaseRouter = (isAuthenticated) => (
+  <Hoc>
+    <Route path="/login" component={Login} isAuthenticated={isAuthenticated} />
+    <Route path="/signup" component={Signup} isAuthenticated={isAuthenticated} />
+    <Route path="/search-results/:imageId" component={SearchResults} />
+    <Route path="/database-image-search/:dbImageId" component={SearchResults} />
+    <Route exact path="/" component={Home} />
+  </Hoc>
 );
 
 export default BaseRouter;

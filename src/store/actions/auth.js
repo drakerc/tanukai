@@ -1,5 +1,5 @@
 import axios from "axios";
-import {baseApiUrl} from "../utility"
+import { baseApiUrl } from "../utility"
 import * as actionTypes from "./actionTypes";
 
 export const authStart = () => {

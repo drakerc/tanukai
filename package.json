@@ -5,6 +5,7 @@
   "dependencies": {
     "axios": "^0.19.0",
     "dotenv": "^8.2.0",
+    "node-sass": "^4.14.1",
     "prop-types": "^15.7.2",
     "qs": "^6.9.4",
     "react": "^16.8.6",

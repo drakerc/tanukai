@@ -1,0 +1,153 @@
+@import './reset.css';
+@import './variables.scss';
+@import './main.scss';
+
+
+#root {
+  overflow: hidden;
+}
+.logo {
+  color: $content;
+  font-weight: bold;
+  font-family: 'Poppins', sans-serif;
+  font-size: 30px;
+  padding-top: 14px!important;
+  padding-bottom: 14px!important;
+  transition: .2s opacity ease-in-out!important;
+  &--accent {
+    color: $primary;
+  }
+  &--light {
+    color: $white;
+  }
+  &:hover {
+    opacity: .7;
+  }
+}
+
+.subtitle {
+  text-align: center;
+  font-weight: bold;
+}
+
+.form {
+  padding-top: 16px;
+  &--column {
+    padding: 80px 8% !important;
+    @media (max-width: 800px) {
+      width: 100% !important;
+      padding: 120px 32px !important;
+    }
+  }
+  &__text {
+    font-size: 18px;
+    font-weight: bold;
+    padding-bottom: 18px;
+  }
+}
+
+.homeContainer {
+  padding: 100px 0 !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  @media (max-width: 1200px) {
+    padding: 100px 32px 50px 32px !important;
+  }
+}
+
+.fullHeight {
+  min-height: calc(100vh - 206px);
+}
+
+.fileContainer {
+  box-shadow: none;
+  padding: 20px 0 40px 0;
+  & p {
+    font-size: 16px;
+    text-align: center;
+  }
+}
+
+.buttonContainer {
+  &--search {
+    margin: 40px 0 64px 0;
+  }
+}
+
+.colorPrimary {
+  color: $primary;
+}
+
+.footer {
+  padding: 60px 0 80px 0!important;
+}
+
+.mainImageColumn {
+  @media (max-width: 600px) {
+    width: 60% !important;
+  }
+  @media (max-width: 480px) {
+    width: 70% !important;
+  }
+  @media (max-width: 400px) {
+    width: 100% !important;
+  }
+}
+.mainImage {
+  border-radius: 6px;
+  box-shadow: 0px 10px 20px #22284F33;
+  margin: 12px auto 40px auto;
+  @media (max-width: 600px) {
+    width: 100% !important;
+    margin: 12px auto 20px auto;
+  }
+}
+.mainImageText {
+  font-weight: bold;
+  text-align: center;
+}
+
+.ui.card>.image, .ui.cards>.card>.image {
+  height: 356px;
+  object-fit: cover;
+  cursor: pointer;
+  transition: .2s opacity $bezier;
+  &:hover {
+    opacity: .75;
+  }
+  @media (max-width: 700px) {
+    height: 300px;
+  }
+  @media (max-width: 600px) {
+    height: 250px;
+  }
+  @media (max-width: 530px) {
+    height: 450px;
+  }
+  @media (max-width: 480px) {
+    height: 380px;
+  }
+  @media (max-width: 430px) {
+    height: 330px;
+  }
+  @media (max-width: 380px) {
+    height: 270px;
+  }
+}
+
+.imagesListContainer {
+  padding-top: 100px;
+  .ui.card, .ui.cards > .card {
+    @media (max-width: 1000px) {
+      width: calc((100% / 2) - 16px);
+    }
+    @media (max-width: 530px) {
+      width: 100%;
+    }
+  }
+}
+
+.loadingContainer {
+  min-height: calc(100vh - 206px);
+}

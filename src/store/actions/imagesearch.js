@@ -1,58 +1,58 @@
 import axios from "axios";
-import {baseApiUrl} from "../utility"
+import { baseApiUrl } from "../utility"
 import * as actionTypes from "./actionTypes";
 
 export const searchStart = () => {
-    return {
-        type: actionTypes.SEARCH_START
-    };
+  return {
+    type: actionTypes.SEARCH_START
+  };
 };
 
 export const searchSuccess = response => {
-    return {
-        type: actionTypes.SEARCH_SUCCESS,
-        response: response
-    };
+  return {
+    type: actionTypes.SEARCH_SUCCESS,
+    response: response
+  };
 };
 
 export const searchFailed = error => {
-    return {
-        type: actionTypes.SEARCH_FAILED,
-        error: error
-    };
+  return {
+    type: actionTypes.SEARCH_FAILED,
+    error: error
+  };
 };
 
 export const searchReset = () => {
-    return {
-        type: actionTypes.SEARCH_RESET,
-        response: null
-    };
+  return {
+    type: actionTypes.SEARCH_RESET,
+    response: null
+  };
 };
 
 export const imageSearch = (images, partitions, maximumRating) => {
-    localStorage.setItem("partitions", partitions);
-    localStorage.setItem("maximum_rating", maximumRating);
+  localStorage.setItem("partitions", partitions);
+  localStorage.setItem("maximum_rating", maximumRating);
 
-    const data = new FormData();
-    data.append('image', images);
-    data.append('partitions', partitions);
-    data.append('maximum_rating', maximumRating);
+  const data = new FormData();
+  data.append('image', images);
+  data.append('partitions', partitions);
+  data.append('maximum_rating', maximumRating);
 
-    return dispatch => {
-        dispatch(searchStart());
-        axios
-            .post(baseApiUrl + "api/v1/upload-image", data, {headers: {'Content-Type': 'multipart/form-data'}})
-            .then(res => {
-                dispatch(searchSuccess(res));
-            })
-            .catch(err => {
-                dispatch(searchFailed(err));
-            });
-    };
+  return dispatch => {
+    dispatch(searchStart());
+    axios
+      .post(baseApiUrl + "api/v1/upload-image", data, { headers: { 'Content-Type': 'multipart/form-data' } })
+      .then(res => {
+        dispatch(searchSuccess(res));
+      })
+      .catch(err => {
+        dispatch(searchFailed(err));
+      });
+  };
 };
 
 export const resetProps = () => {
-    return dispatch => {
-        dispatch(searchReset());
-    };
+  return dispatch => {
+    dispatch(searchReset());
+  };
 };

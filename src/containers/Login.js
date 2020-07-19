@@ -1,15 +1,18 @@
 import React from "react";
+import { NavLink, Redirect } from "react-router-dom";
+import { connect } from "react-redux";
+
+import { authLogin } from "../store/actions/auth";
+
 import {
   Button,
   Form,
   Grid,
   Header,
   Message,
-  Segment
+  Container,
+  Divider,
 } from "semantic-ui-react";
-import { connect } from "react-redux";
-import { NavLink, Redirect } from "react-router-dom";
-import { authLogin } from "../store/actions/auth";
 
 class LoginForm extends React.Component {
   state = {
@@ -28,26 +31,28 @@ class LoginForm extends React.Component {
   };
 
   render() {
-    const { error, loading, token } = this.props;
+    const { error, loading, isAuthenticated } = this.props;
     const { username, password } = this.state;
-    if (token) {
+    if (isAuthenticated) {
       return <Redirect to="/" />;
     }
     return (
-      <Grid
-        textAlign="center"
-        style={{ height: "100vh" }}
-        verticalAlign="middle"
-      >
-        <Grid.Column style={{ maxWidth: 450 }}>
-          <Header as="h2" color="teal" textAlign="center">
-            Log-in to your account
-          </Header>
-          {error && <p>{this.props.error.message}</p>}
-
-          <React.Fragment>
-            <Form size="large" onSubmit={this.handleSubmit}>
-              <Segment stacked>
+      <Container>
+        <Grid
+          textAlign="center"
+          verticalAlign="middle"
+          relaxed
+          columns={2}
+          className="fullHeight"
+        >
+          <Grid.Column className="form--column">
+            <Header as="h2" textAlign="center">
+              Login to your account
+              </Header>
+            <Divider />
+            {error && <p>{this.props.error.message}</p>}
+            <React.Fragment>
+              <Form size="large" onSubmit={this.handleSubmit} className="form">
                 <Form.Input
                   onChange={this.handleChange}
                   value={username}
@@ -67,9 +72,7 @@ class LoginForm extends React.Component {
                   placeholder="Password"
                   type="password"
                 />
-
                 <Button
-                  color="teal"
                   fluid
                   size="large"
                   loading={loading}
@@ -77,14 +80,14 @@ class LoginForm extends React.Component {
                 >
                   Login
                 </Button>
-              </Segment>
-            </Form>
-            <Message>
-              New to us? <NavLink to="/signup">Sign Up</NavLink>
-            </Message>
-          </React.Fragment>
-        </Grid.Column>
-      </Grid>
+              </Form>
+              <Message>
+                New to Tanukai? <NavLink to="/signup">Sign Up</NavLink>
+              </Message>
+            </React.Fragment>
+          </Grid.Column>
+        </Grid>
+      </Container>
     );
   }
 }
@@ -92,8 +95,7 @@ class LoginForm extends React.Component {
 const mapStateToProps = state => {
   return {
     loading: state.auth.loading,
-    error: state.auth.error,
-    token: state.auth.token
+    error: state.auth.error
   };
 };
 
