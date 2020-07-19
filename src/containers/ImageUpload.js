@@ -27,7 +27,6 @@ class ImageUpload extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps.settingsResponse !== this.props.settingsResponse) {
-      console.log(this.state.partitionsSelected)
       let settingsResponse = this.props.settingsResponse;
       let apiPartitions = settingsResponse.data.partitions;
       let partitions = [];

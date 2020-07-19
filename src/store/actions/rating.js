@@ -1,5 +1,4 @@
-import axios from "axios";
-import { baseApiUrl } from "../utility"
+import {axiosWithHeaders, baseApiUrl} from "../utility"
 import * as actionTypes from "./actionTypes";
 
 export const putRatingStart = () => {
@@ -27,13 +26,12 @@ export const putRating = (rating) => {
   return dispatch => {
     dispatch(putRatingStart());
     const token = localStorage.getItem("token");
-    const headers = token ? { 'Authorization': 'Token ' + token } : null;
-    if (!headers) {
+    if (!token) {
       dispatch(putRatingFailed());
       return;
     }
-    axios
-      .put(baseApiUrl + "api/v1/rating", rating, { 'headers': headers })
+    axiosWithHeaders
+      .put(baseApiUrl + "api/v1/rating", rating)
       .then(res => {
         dispatch(putRatingSuccess(res));
       })

@@ -1,5 +1,4 @@
-import axios from "axios";
-import { baseApiUrl } from "../utility"
+import { baseApiUrl, axiosWithHeaders } from "../utility"
 import * as actionTypes from "./actionTypes";
 
 export const putPartitionsStart = () => {
@@ -27,13 +26,12 @@ export const putPartitions = (partitions) => {
   return dispatch => {
     dispatch(putPartitionsStart());
     const token = localStorage.getItem("token");
-    const headers = token ? { 'Authorization': 'Token ' + token } : null;
-    if (!headers) {
+    if (!token) {
       dispatch(putPartitionsFailed());
       return;
     }
-    axios
-      .put(baseApiUrl + "api/v1/partitions", partitions, { 'headers': headers })
+    axiosWithHeaders
+      .put(baseApiUrl + "api/v1/partitions", partitions)
       .then(res => {
         dispatch(putPartitionsSuccess(res));
       })

@@ -1,5 +1,4 @@
-import axios from "axios";
-import { baseApiUrl } from "../utility"
+import { baseApiUrl, axiosWithHeaders } from "../utility"
 import * as actionTypes from "./actionTypes";
 
 export const databaseSearchStart = () => {
@@ -23,8 +22,8 @@ export const databaseSearchFailed = error => {
 };
 
 export const databaseSearch = (imageId, paginationFrom = 0, paginationSize = 10) => {
-  const partitions = localStorage.getItem("partitions");
-  const maximumRating = localStorage.getItem("maximum_rating");
+  const partitions = localStorage.getItem("partitions") ? localStorage.getItem("partitions") : ['e621', 'danbooru'];
+  const maximumRating = localStorage.getItem("maximum_rating") ? localStorage.getItem("maximum_rating") : 'safe';
   const params = new URLSearchParams({
     pagination_from: paginationFrom,
     pagination_size: paginationSize,
@@ -33,7 +32,7 @@ export const databaseSearch = (imageId, paginationFrom = 0, paginationSize = 10)
   });
   return dispatch => {
     dispatch(databaseSearchStart());
-    axios
+    axiosWithHeaders
       .get(baseApiUrl + "api/v1/database-image-search/" + imageId + "?" + params.toString())
       .then(res => {
         dispatch(databaseSearchSuccess(res));

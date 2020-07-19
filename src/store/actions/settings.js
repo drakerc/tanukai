@@ -1,5 +1,4 @@
-import axios from "axios";
-import { baseApiUrl } from "../utility"
+import {axiosWithHeaders, baseApiUrl} from "../utility"
 import * as actionTypes from "./actionTypes";
 
 export const getSettingsStart = () => {
@@ -25,10 +24,8 @@ export const getSettingsFailed = error => {
 export const getSettings = () => {
   return dispatch => {
     dispatch(getSettingsStart());
-    const token = localStorage.getItem("token");
-    const headers = token ? { 'Authorization': 'Token ' + token } : null;
-    axios
-      .get(baseApiUrl + "api/v1/settings", { 'headers': headers })
+    axiosWithHeaders
+      .get(baseApiUrl + "api/v1/settings")
       .then(res => {
         dispatch(getSettingsSuccess(res));
       })

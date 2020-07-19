@@ -33,6 +33,7 @@ class SearchResults extends React.Component {
     activePage: 1,
     paginationFrom: 0,
     paginationSize: 10,
+    maxPaginationPages: 5,
     imgs: [],
     uploadedImg: []
   };
@@ -146,13 +147,13 @@ class SearchResults extends React.Component {
                 <Pagination
                   activePage={this.state.activePage}
                   onPageChange={this.handlePaginationChange}
-                  totalPages={this.state.paginationSize}
+                  totalPages={this.state.maxPaginationPages}
                   secondary
                 />
               </Grid.Row>
               <Card.Group>
                 {imgs.imgs.map((i) => (
-                  <Card size="medium">
+                  <Card key={i['id']} size="medium">
                     <Modal size='large' trigger={
                       i['id'] && baseUrl + i.thumbnail_path ? (
                         <Image
@@ -232,7 +233,7 @@ class SearchResults extends React.Component {
               <Pagination
                 activePage={this.state.activePage}
                 onPageChange={this.handlePaginationChange}
-                totalPages={this.state.paginationSize}
+                totalPages={this.state.maxPaginationPages}
                 secondary
               />
             </Grid>

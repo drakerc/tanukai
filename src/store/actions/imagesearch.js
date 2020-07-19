@@ -1,5 +1,4 @@
-import axios from "axios";
-import { baseApiUrl } from "../utility"
+import { baseApiUrl, axiosWithHeaders } from "../utility"
 import * as actionTypes from "./actionTypes";
 
 export const searchStart = () => {
@@ -40,7 +39,7 @@ export const imageSearch = (images, partitions, maximumRating) => {
 
   return dispatch => {
     dispatch(searchStart());
-    axios
+    axiosWithHeaders
       .post(baseApiUrl + "api/v1/upload-image", data, { headers: { 'Content-Type': 'multipart/form-data' } })
       .then(res => {
         dispatch(searchSuccess(res));

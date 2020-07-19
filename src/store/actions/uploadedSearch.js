@@ -1,5 +1,4 @@
-import axios from "axios";
-import { baseApiUrl } from "../utility"
+import { baseApiUrl, axiosWithHeaders } from "../utility"
 import * as actionTypes from "./actionTypes";
 
 export const uploadedSearchStart = () => {
@@ -23,8 +22,9 @@ export const uploadedSearchFailed = error => {
 };
 
 export const uploadedSearch = (imageId, paginationFrom = 0, paginationSize = 10) => {
-  const partitions = localStorage.getItem("partitions");
-  const maximumRating = localStorage.getItem("maximum_rating");
+  const partitions = localStorage.getItem("partitions") ? localStorage.getItem("partitions") : ['e621', 'danbooru'];
+  // TODO: move default partitions somewhere else, leads to code duplication
+  const maximumRating = localStorage.getItem("maximum_rating") ? localStorage.getItem("maximum_rating") : 'safe';
   const params = new URLSearchParams({
     pagination_from: paginationFrom,
     pagination_size: paginationSize,
@@ -33,7 +33,7 @@ export const uploadedSearch = (imageId, paginationFrom = 0, paginationSize = 10)
   });
   return dispatch => {
     dispatch(uploadedSearchStart());
-    axios
+    axiosWithHeaders
       .get(baseApiUrl + "api/v1/uploaded-image-search/" + imageId + "?" + params.toString())
       .then(res => {
         dispatch(uploadedSearchSuccess(res));

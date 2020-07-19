@@ -40,6 +40,8 @@ def prepare_similar_results(results, maximum_rating):
         rating = i['data']['source_rating']
         if not is_image_safe(maximum_rating, rating):
             i['thumbnail_path'] = 'static/images/18plus.png'  # todo: store in cfg
+            if 'source_description' in i['data']:
+                del(i['data']['source_description'])
         return_results.append(
             SimilarImage(
                 data=i['data'],
