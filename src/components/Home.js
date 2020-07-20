@@ -90,7 +90,7 @@ const HomepageLayout = () => (
       <Grid container stackable verticalAlign="middle">
         <Grid.Row>
           <Grid.Column width={12}>
-            <Header as="h1" textAlign="center">Manga, Anime & Furry Image Search</Header>
+            <Header as="h1" textAlign="center">Manga & Anime Image Search</Header>
             <p className="subtitle">Find images similar to those you already <span className="colorPrimary">love</span></p>
             <ImageUpload />
           </Grid.Column>

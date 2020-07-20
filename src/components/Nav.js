@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 
 class Nav extends React.Component {
   render() {
-    const { isAuthenticated } = this.props;
+    const { isAuthenticated, logout } = this.props;
     return (
       <Menu fixed="top" size='huge' secondary>
         <Container>
@@ -16,7 +16,7 @@ class Nav extends React.Component {
           </Link>
           <Menu.Menu position='right'>
             {isAuthenticated ? (
-              <Menu.Item header onClick={() => this.props.logout()}>
+              <Menu.Item header onClick={logout}>
                 Logout
               </Menu.Item>
             ) : (

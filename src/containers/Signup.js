@@ -1,7 +1,7 @@
 import React from "react";
-import { connect } from "react-redux";
-import { NavLink, Redirect } from "react-router-dom";
-import { authSignup } from "../store/actions/auth";
+import {connect} from "react-redux";
+import {NavLink, Redirect} from "react-router-dom";
+import {authSignup} from "../store/actions/auth";
 
 import {
   Button,
@@ -23,19 +23,19 @@ class RegistrationForm extends React.Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { username, email, password1, password2 } = this.state;
+    const {username, email, password1, password2} = this.state;
     this.props.signup(username, email, password1, password2);
   };
 
   handleChange = e => {
-    this.setState({ [e.target.name]: e.target.value });
+    this.setState({[e.target.name]: e.target.value});
   };
 
   render() {
-    const { username, email, password1, password2 } = this.state;
-    const { error, loading, isAuthenticated } = this.props;
+    const {username, email, password1, password2} = this.state;
+    const {error, loading, isAuthenticated} = this.props;
     if (isAuthenticated) {
-      return <Redirect to="/" />;
+      return <Redirect to="/"/>;
     }
     return (
       <Container>
@@ -49,16 +49,17 @@ class RegistrationForm extends React.Component {
           <Grid.Column className="form--column">
             <Header as="h2" textAlign="center">
               Welcome to Tanukai
-              </Header>
+            </Header>
             <p textAlign="center">
               Create an account and start searching
-              </p>
-            <Divider />
+            </p>
+            <Divider/>
             <p textAlign="center">
-              Registered users can save search settings (safety, websites) and in the future, black/whitelisted tags, favorite images, etc.
-              </p>
-            <Divider />
-            {error && <p>{this.props.error.message}</p>}
+              Registered users can save search settings (safety, websites) and in the future, black/whitelisted tags,
+              favorite images, etc.
+            </p>
+            <Divider/>
+            {error && <p>Error: Could not create a new account</p>}
             <Form size="large" onSubmit={this.handleSubmit} className="form">
               <Form.Input
                 onChange={this.handleChange}
@@ -68,6 +69,12 @@ class RegistrationForm extends React.Component {
                 icon="user"
                 iconPosition="left"
                 placeholder="Username"
+                error={(error && error.response.data.username) ?
+                  {
+                    content: error.response.data.username,
+                    pointing: 'below',
+                  } : false
+                }
               />
               <Form.Input
                 onChange={this.handleChange}
@@ -77,6 +84,12 @@ class RegistrationForm extends React.Component {
                 icon="mail"
                 iconPosition="left"
                 placeholder="E-mail address"
+                error={(error && error.response.data.email) ?
+                  {
+                    content: error.response.data.email,
+                    pointing: 'below',
+                  } : false
+                }
               />
               <Form.Input
                 onChange={this.handleChange}
@@ -87,6 +100,12 @@ class RegistrationForm extends React.Component {
                 iconPosition="left"
                 placeholder="Password"
                 type="password"
+                error={(error && error.response.data.password1) ?
+                  {
+                    content: error.response.data.password1,
+                    pointing: 'below',
+                  } : false
+                }
               />
               <Form.Input
                 onChange={this.handleChange}
@@ -97,6 +116,12 @@ class RegistrationForm extends React.Component {
                 iconPosition="left"
                 placeholder="Confirm password"
                 type="password"
+                error={(error && error.response.data.password12) ?
+                  {
+                    content: error.response.data.password2,
+                    pointing: 'below',
+                  } : false
+                }
               />
               <Button
                 fluid
@@ -120,7 +145,8 @@ class RegistrationForm extends React.Component {
 const mapStateToProps = state => {
   return {
     loading: state.auth.loading,
-    error: state.auth.error
+    error: state.auth.error,
+    isAuthenticated: state.auth.token
   };
 };
 

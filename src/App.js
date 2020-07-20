@@ -28,7 +28,7 @@ class App extends Component {
     return (
       <Router>
         <ScrollToTop>
-          <Nav isAuthenticated={isAuthenticated} />
+          <Nav isAuthenticated={isAuthenticated} logout={logout} />
           <Routes isAuthenticated={isAuthenticated} />
           <Footer />
         </ScrollToTop>
