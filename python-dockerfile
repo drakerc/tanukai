@@ -1,5 +1,4 @@
 FROM tensorflow/tensorflow:latest-gpu-py3
-ENV ACCEPT_INTEL_PYTHON_EULA=yes
 
 ADD . /app/
 ADD requirements.txt /app/
