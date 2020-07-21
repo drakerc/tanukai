@@ -11,6 +11,8 @@ import {
   Sidebar,
   Visibility
 } from "semantic-ui-react";
+import {authLogin} from "../store/actions/auth";
+import {connect} from "react-redux";
 
 const getWidth = () => {
   const isSSR = typeof window === "undefined";
@@ -84,20 +86,39 @@ ResponsiveContainer.propTypes = {
   children: PropTypes.node
 };
 
-const HomepageLayout = () => (
-  <ResponsiveContainer>
-    <Segment className="fullHeight homeContainer">
-      <Grid container stackable verticalAlign="middle">
-        <Grid.Row>
-          <Grid.Column width={12}>
-            <Header as="h1" textAlign="center">Manga & Anime Image Search</Header>
-            <p className="subtitle">Find images similar to those you already <span className="colorPrimary">love</span></p>
-            <ImageUpload />
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
-    </Segment>
-  </ResponsiveContainer>
-);
+class HomepageLayout extends Component {
+  render() {
+    const {isAuthenticated} = this.props;
+    return (
+        <ResponsiveContainer>
+          <Segment className="fullHeight homeContainer">
+            <Grid container stackable verticalAlign="middle">
+              <Grid.Row>
+                <Grid.Column width={12}>
+                  <Header as="h1" textAlign="center">Manga & Anime Image Search</Header>
+                  <p className="subtitle">Find images similar to those you already <span
+                      className="colorPrimary">love</span></p>
+                  <ImageUpload isAuthenticated={isAuthenticated}/>
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
+          </Segment>
+        </ResponsiveContainer>
+    );
+  }
+}
 
-export default HomepageLayout;
+const mapStateToProps = state => {
+  return {
+    isAuthenticated: state.auth.token
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {};
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(HomepageLayout);

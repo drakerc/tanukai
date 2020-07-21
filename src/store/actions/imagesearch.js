@@ -28,7 +28,7 @@ export const searchReset = () => {
   };
 };
 
-export const imageSearch = (images, partitions, maximumRating) => {
+export const imageSearch = (images, partitions, maximumRating, privateImage) => {
   localStorage.setItem("partitions", partitions);
   localStorage.setItem("maximum_rating", maximumRating);
 
@@ -36,6 +36,7 @@ export const imageSearch = (images, partitions, maximumRating) => {
   data.append('image', images);
   data.append('partitions', partitions);
   data.append('maximum_rating', maximumRating);
+  data.append('private_image', privateImage);
 
   return dispatch => {
     dispatch(searchStart());

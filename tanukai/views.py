@@ -1,7 +1,7 @@
 import pickle
 from datetime import datetime, timedelta
 
-from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.exceptions import NotFound, ValidationError, NotAuthenticated, PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -124,6 +124,9 @@ class UploadImage(APIView):
         if pagination_from < 0 or pagination_from > self.maximum_results:
             raise ValidationError(
                 f'Pagination must be larger than 0 and smaller than {self.maximum_results}')
+        private_image = request.data.get('private_image', '') == 'true'
+        if not request.user.is_authenticated and private_image:
+            raise ValidationError(f'Only registered users can upload private images.')
         default_partitions = list(self.image_match.get_partitions().keys())
         partitions_selected = request.data.get('partitions').split(',') if request.data.get('partitions') else default_partitions
         maximum_rating = request.data.get('maximum_rating', 'safe')
@@ -183,6 +186,7 @@ class UploadedImageSearch(APIView):
             image_data = UploadedImage.objects.get(pk=image_id, created_at__gt=maximum_created_at)
         except UploadedImage.DoesNotExist:
             raise NotFound('Could not find the uploaded image.')
+        self.__check_image_privacy(request, image_data)
         image_features = pickle.loads(image_data.features)
         results = self.image_match.search_by_features(image_features, False, pagination_from,
                                                       pagination_size,
@@ -193,6 +197,13 @@ class UploadedImageSearch(APIView):
                                                   similar_images=similar_images)
         results_serializer = ImageSearchResultsSerializer(image_search_results)
         return Response(results_serializer.data)
+
+    def __check_image_privacy(self, request, image_data):
+        if image_data.private_image:
+            if not request.user.is_authenticated:
+                raise NotAuthenticated('You must be logged in to view a private image.')
+            if request.user != image_data.uploader:
+                raise PermissionDenied('This image is private and does not belong to you.')
 
 
 class DatabaseImageSearch(APIView):

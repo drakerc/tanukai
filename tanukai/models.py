@@ -21,6 +21,7 @@ class UploadedImage(models.Model):
         validators=[validate_max_image_size]
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    private_image = models.BooleanField(default=False)
 
 
 class UserPartition(models.Model):

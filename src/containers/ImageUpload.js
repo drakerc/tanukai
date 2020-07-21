@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Button,
+  Button, Card,
   Form,
   Grid
 } from "semantic-ui-react";
@@ -11,6 +11,7 @@ import ImageUploader from 'react-images-upload';
 import { getSettings } from "../store/actions/settings";
 import { putPartitions } from "../store/actions/partitions";
 import { putRating } from "../store/actions/rating";
+import Checkbox from "semantic-ui-react/dist/commonjs/modules/Checkbox";
 
 
 class ImageUpload extends React.Component {
@@ -18,7 +19,8 @@ class ImageUpload extends React.Component {
     images: null,
     partitions: [],
     partitionsSelected: [],
-    maximumRating: null
+    maximumRating: null,
+    privateImage: false
   };
 
   componentDidMount() {
@@ -57,8 +59,8 @@ class ImageUpload extends React.Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { images, partitionsSelected, maximumRating } = this.state;
-    this.props.imageSearch(images, partitionsSelected, maximumRating);
+    const { images, partitionsSelected, maximumRating, privateImage } = this.state;
+    this.props.imageSearch(images, partitionsSelected, maximumRating, privateImage);
   };
 
 
@@ -85,9 +87,13 @@ class ImageUpload extends React.Component {
     }
   };
 
+  toggleCheckBox = (event, value) => {
+    this.setState({ [value.name]: value.checked });
+  };
+
   render() {
     let { images, maximumRating } = this.state;
-    const { error, loading, response, settingsLoading, settingsError, settingsResponse } = this.props;
+    const { isAuthenticated, error, loading, response, settingsLoading, settingsError, settingsResponse } = this.props;
     if (images && response) {
       return <Redirect to={{
         pathname: '/search-results/' + response.data.uploaded_image.pk,
@@ -108,7 +114,7 @@ class ImageUpload extends React.Component {
           singleImage={true}
         />
         <Form>
-          <Grid columns={2} doubling>
+          <Grid columns={isAuthenticated ? 3 : 2} doubling>
             <Grid.Column>
               <p className="form__text">Select websites to search*:</p>
               <Form.Dropdown
@@ -151,6 +157,16 @@ class ImageUpload extends React.Component {
                 />
               </Form.Field>
             </Grid.Column>
+            {isAuthenticated && (
+                <Grid.Column>
+                  <p className="form__text">Private image*:</p>
+                  <Checkbox
+                      name="privateImage"
+                      onChange={this.toggleCheckBox}
+                      toggle
+                  />
+                </Grid.Column>
+            )}
           </Grid>
         </Form>
         <div className="buttonContainer--search">
@@ -180,8 +196,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    imageSearch: (images, partitions, maximumRating) =>
-      dispatch(imageSearch(images, partitions, maximumRating)),
+    imageSearch: (images, partitions, maximumRating, privateImage) =>
+      dispatch(imageSearch(images, partitions, maximumRating, privateImage)),
     resetProps: () =>
       dispatch(resetProps()),
     getSettings: () =>

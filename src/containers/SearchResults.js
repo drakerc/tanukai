@@ -17,7 +17,7 @@ import {
   Container,
   Label,
   Dimmer,
-  Loader
+  Loader, Header
 } from "semantic-ui-react";
 
 var qs = require('qs');
@@ -139,8 +139,7 @@ class SearchResults extends React.Component {
         ) : (
             <Grid columns="3" centered>
               <Grid.Column className="mainImageColumn">
-                {/* // TODO: change in the backend? */}
-                <p className="mainImageText">Uploaded image: </p>
+                <p className="mainImageText">Selected image: </p>
                 <Image size="small" src={baseUrl + uploadedImg.image} className="mainImage" />
               </Grid.Column>
               <Grid.Row>
@@ -244,7 +243,9 @@ class SearchResults extends React.Component {
       <Responsive getWidth={getWidth} minWidth={Responsive.onlyMobile.minWidth}>
         <Segment>
           <div className="imagesListContainer">
-            <ImagesList imgs={imgs}></ImagesList>
+            {error && <Header as="h2" textAlign="center">Error</Header>}
+            {(error && error.response.data.detail) && <Header as="h4" textAlign="center">{error.response.data.detail}</Header>}
+            {!error && <ImagesList imgs={imgs}></ImagesList>}
           </div>
         </Segment>
       </Responsive>

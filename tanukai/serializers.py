@@ -20,7 +20,7 @@ class UserTagSerializer(serializers.ModelSerializer):
 class UploadedImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = UploadedImage
-        fields = ('pk', 'uploader', 'image', 'created_at')
+        fields = ('pk', 'uploader', 'image', 'created_at', 'private_image')
 
 
 class UserPartitionsSerializer(serializers.ListSerializer):
