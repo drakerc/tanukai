@@ -46,7 +46,12 @@ class MilvusDatabase(Database):
 class RedisDatabase(Database):
 
     def __init__(self):
-        self._database = redis.Redis(host=config.REDIS_HOST, port=config.REDIS_PORT)
+        self._database = redis.Redis(
+            host=config.REDIS_HOST,
+            port=config.REDIS_PORT,
+            charset="utf-8",
+            decode_responses=True
+        )
 
     @property
     def database(self):
