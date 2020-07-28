@@ -76,6 +76,13 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     networks:
       - image_search
+  image_search_redis:
+    restart: always
+    image: redis:latest
+    networks:
+      - image_search
+    volumes:
+      - ./var/redis:/data
 networks:
   image_search:
     driver: "bridge"

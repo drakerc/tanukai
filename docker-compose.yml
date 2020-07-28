@@ -74,6 +74,15 @@ services:
       - .:/app
     networks:
       - image_search
+  image_search_redis:
+    restart: always
+    ports:
+      - 6379
+    image: redis:latest
+    networks:
+      - image_search
+    volumes:
+      - ./var/redis:/data
 networks:
   image_search:
     driver: "bridge"

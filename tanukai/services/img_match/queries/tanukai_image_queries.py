@@ -1,6 +1,7 @@
 from copy import deepcopy
 import config
 from img_match.models.image import Image
+from img_match.queries.databases import RedisDatabase
 from img_match.queries.image_queries import ImageQueries
 
 
@@ -8,8 +9,12 @@ from img_match.queries.image_queries import ImageQueries
 
 class TanukaiImageQueries(ImageQueries):
 
+    REDIS_PARTITIONS_KEY = 'partition_counts'
+    REDIS_PARTITIONS_EXPIRATION_TIME = 3600  # seconds, 1 hour
+
     def __init__(self):
         super().__init__()
+        self._redis = RedisDatabase()
 
     def remove_duplicates(self):
         elastic_search = Image.search(using=self._elasticsearch.database,
@@ -86,3 +91,24 @@ class TanukaiImageQueries(ImageQueries):
                 refresh=False,
                 source_website='e621'
             )
+
+    def get_partitions(self) -> dict:
+        """
+        Returns a dict with cached partition data (or sets it) using Redis (partition_tag and count)
+        :return: dict, e.g. {'ebay': 5213, 'etsy': 1233}
+        """
+        cached_partitions = self._redis.database.hgetall(self.REDIS_PARTITIONS_KEY)
+        if cached_partitions:
+            return cached_partitions
+        status, stats = self._milvus.database.get_collection_stats(config.milvus_collection_name)
+        partitions = {i['tag']: i['row_count'] for i in stats['partitions'] if i['row_count'] > 0}
+        self._add_partitions_to_cache(partitions)
+        return partitions
+
+    def _add_partitions_to_cache(self, partitions: dict) -> dict:
+        self._redis.database.hmset(self.REDIS_PARTITIONS_KEY, partitions)
+        self._redis.database.expire(
+            self.REDIS_PARTITIONS_KEY,
+            self.REDIS_PARTITIONS_EXPIRATION_TIME
+        )
+        return partitions

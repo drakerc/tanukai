@@ -1,1 +1,1 @@
-*/30 * * * * /usr/bin/python3 /app/manage.py delete_old_images >> /var/log/cron.log 2>&1
+*/30 * * * * /usr/bin/python3 /app/manage.py delete_old_images --settings=home.settings.prod >> /var/log/cron.log 2>&1

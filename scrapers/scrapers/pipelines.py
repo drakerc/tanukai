@@ -8,7 +8,7 @@ import hashlib
 
 from PIL import Image
 
-from img_match.img_match import ImgMatch
+from tanukai.services.img_match.tanukai_img_match import TanukaiImgMatch
 from scrapy.pipelines.images import ImagesPipeline
 from scrapy.utils.python import to_bytes
 from io import BytesIO
@@ -20,7 +20,7 @@ class ProcessingPipeline:
     image_match = None
 
     def open_spider(self, spider):
-        self.image_match = ImgMatch()
+        self.image_match = TanukaiImgMatch()
 
     def process_item(self, item, spider):
         image = item.get('images')[0]

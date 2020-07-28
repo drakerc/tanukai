@@ -1,8 +1,8 @@
 import abc
 from elasticsearch import Elasticsearch
 from milvus import Milvus, IndexType
+import redis
 import config
-
 
 class Database(abc.ABC):
 
@@ -41,3 +41,13 @@ class MilvusDatabase(Database):
         status = self.database.create_index(config.milvus_collection_name, IndexType.IVF_SQ8, index_param)
         if status.OK():
             return True
+
+
+class RedisDatabase(Database):
+
+    def __init__(self):
+        self._database = redis.Redis(host=config.REDIS_HOST, port=config.REDIS_PORT)
+
+    @property
+    def database(self):
+        return self._database

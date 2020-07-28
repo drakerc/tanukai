@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from img_match.img_match import ImgMatch
+from tanukai.services.img_match.tanukai_img_match import TanukaiImgMatch
 from .models import UserTag, UploadedImage, ImageSearchResults, UserPartition, UserRating
 from .serializers import UserTagSerializer, ImageSearchResultsSerializer, SettingsSerializer, \
     UserPartitionSerializer, UserRatingSerializer, UploadedImageSerializer
@@ -54,7 +54,7 @@ def prepare_similar_results(results, maximum_rating):
 
 
 class Settings(APIView):
-    image_match = ImgMatch()
+    image_match = TanukaiImgMatch()
 
     def get(self, request):
         rating = 'safe'
@@ -116,7 +116,7 @@ class Rating(APIView):
 class UploadImage(APIView):
     maximum_results = 100
     parser_classes = (MultiPartParser,)
-    image_match = ImgMatch()
+    image_match = TanukaiImgMatch()
 
     def post(self, request):
         pagination_from = int(request.query_params.get('pagination_from', 0))
@@ -166,7 +166,7 @@ class UploadImage(APIView):
 
 
 class UploadedImageSearch(APIView):
-    image_match = ImgMatch()
+    image_match = TanukaiImgMatch()
     maximum_results = 50
 
     def get(self, request: Request, image_id: str):
@@ -207,7 +207,7 @@ class UploadedImageSearch(APIView):
 
 
 class DatabaseImageSearch(APIView):
-    image_match = ImgMatch()
+    image_match = TanukaiImgMatch()
     maximum_results = 100
 
     def get(self, request: Request, image_id: str):
