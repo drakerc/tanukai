@@ -1,6 +1,7 @@
 import pickle
 from datetime import datetime, timedelta
 
+from PIL import Image
 from rest_framework.exceptions import NotFound, ValidationError, NotAuthenticated, PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
@@ -133,19 +134,24 @@ class UploadImage(APIView):
 
         uploaded_img_serializer = UploadedImageSerializer(data=request.data)
         uploaded_img_serializer.is_valid(raise_exception=True)
-        uploaded_img = uploaded_img_serializer.save()  # TODO: dont commmit here somehow
-        uploaded_img_path = uploaded_img.image.path
+        validated_image = uploaded_img_serializer.validated_data.get('image')
+        uploaded_image = validated_image
+        image = Image.open(uploaded_image)
 
         results, uploaded_img_features = self.image_match.search_image(
-            uploaded_img_path,
-            False,
-            pagination_from,
-            pagination_size,
+            path=validated_image.name,  # todo: marking subimage wont work here as its a fake path
+            img=image,
+            mark_subimage=False,
+            pagination_from=pagination_from,
+            pagination_size=pagination_size,
             partition_tags=partitions_selected
         )
 
         if request.user.is_authenticated:
-            uploaded_img_model = uploaded_img_serializer.save(features=uploaded_img_features, uploader=request.user)
+            uploaded_img_model = uploaded_img_serializer.save(
+                features=uploaded_img_features,
+                uploader=request.user
+            )
         else:
             uploaded_img_model = uploaded_img_serializer.save(features=uploaded_img_features)
 

@@ -52,9 +52,17 @@ class ImgMatch:
         )
         return saved_id
 
-    def search_image(self, path: str, mark_subimage: bool = False, pagination_from: int = 0,
-                     pagination_size: int = 10, partition_tags: list = None) -> Tuple[dict, str]:
-        img = Image.open(path)
+    def search_image(
+            self,
+            path: str,
+            img: Image = None,
+            mark_subimage: bool = False,
+            pagination_from: int = 0,
+            pagination_size: int = 10,
+            partition_tags: list = None
+    ) -> Tuple[dict, str]:
+        if not img:
+            img = Image.open(path)
         feature_vectors = self._feature_extractor.get_features(img)
         results = self._image_queries.find(feature_vectors, pagination_from, pagination_size,
                                            partition_tags=partition_tags)
