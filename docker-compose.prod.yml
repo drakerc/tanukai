@@ -32,7 +32,7 @@ services:
     image: milvusdb/milvus:0.9.0-cpu-d051520-cb92b1
     volumes:
       - ./var/milvus/db:/var/lib/milvus/db
-      - ./var/milvus/conf:/var/lib/milvus/conf
+      - ./milvus_config:/var/lib/milvus/conf
       - ./var/milvus/logs:/var/lib/milvus/logs
       - ./var/milvus/wal:/var/lib/milvus/wal
     networks:

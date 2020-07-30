@@ -1,4 +1,6 @@
 # Tanukai
+![Tanukai Demo](demo/demo.gif)
+
 This project creates an index of art images (mainly Japanese manga/anime-style drawings) so that you can find similar images to these stored images by uploading your own image. Basically: reverse image search for manga/anime.
 Available on https://tanukai.com
 
@@ -47,9 +49,9 @@ Coming soon
 ### TODOs
 - [ ] Create tests (pytest + mock databases; Selenium front-end tests)
 - [ ] Cleanup code, add linters
-- [ ] Add MySQL support instead of sqlite
+- [X] Add MySQL support instead of sqlite
 - [ ] Use AWS S3 to store images
 - [ ] Add FAQ section, terms, etc
-- [ ] Improve the front-end look
+- [X] Improve the front-end look
 - [ ] Add UserTags functionality (white/blacklisting of tags)
 - [ ] Add more searching methods (search by tags and sort by the score returned by ES)
