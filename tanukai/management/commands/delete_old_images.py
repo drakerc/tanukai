@@ -11,6 +11,7 @@ class Command(BaseCommand):
         maximum_created_at = datetime.now() - timedelta(minutes=30)
         old_images = UploadedImage.objects.filter(created_at__lt=maximum_created_at)
         for image in old_images:
-            image.image.delete()
+            if image.image:
+                image.image.delete()
             image.delete()
         self.stdout.write(self.style.SUCCESS(f'Successfully deleted {len(old_images)} images'))

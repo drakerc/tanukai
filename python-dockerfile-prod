@@ -21,4 +21,4 @@ RUN chmod 0644 /etc/cron.d/tanukai-cronjobs
 RUN crontab /etc/cron.d/tanukai-cronjobs
 RUN touch /var/log/cron.log
 
-CMD cron && gunicorn -w 1 -t 80 -b :8000 home.wsgi.prod
+CMD cron && gunicorn -w 5 -t 60 -b :8000 home.wsgi.prod

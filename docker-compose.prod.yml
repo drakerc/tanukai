@@ -83,6 +83,15 @@ services:
       - image_search
     volumes:
       - ./var/redis:/data
+  image_search_tensorflow_serving:
+    restart: always
+    image: tensorflow/serving
+    networks:
+      - image_search
+    volumes:
+      - ./tanukai_model:/models/tanukai_model/1
+    environment:
+      - "MODEL_NAME=tanukai_model"
 networks:
   image_search:
     driver: "bridge"

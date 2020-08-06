@@ -1,11 +1,12 @@
 import os
 
+import requests
 from PIL.Image import Image
 from tensorflow.keras.preprocessing import image
-from tensorflow.keras.applications.densenet import DenseNet121, preprocess_input
-from tensorflow.keras.models import Model
+from tensorflow.keras.applications.densenet import preprocess_input
 import numpy as np
 import tensorflow as tf
+import config
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -21,17 +22,8 @@ class FeatureExtractor:
     Extracts image features using a CNN
     """
 
-    IMG_WIDTH = None
-    IMG_HEIGHT = None
-
-    def __init__(self):
-        base_model = DenseNet121(weights='imagenet')
-        self.IMG_WIDTH = base_model.input_shape[1]
-        self.IMG_HEIGHT = base_model.input_shape[2]
-        self.model = Model(
-            inputs=base_model.input,
-            outputs=[base_model.get_layer('avg_pool').output]
-        )
+    IMG_WIDTH = 224
+    IMG_HEIGHT = 224
 
     def get_features(self, img: Image) -> np.ndarray:
         """
@@ -44,10 +36,15 @@ class FeatureExtractor:
         normalized_features = predictions / np.linalg.norm(predictions)
         return normalized_features
 
-    def _extract_predictions(self, img: Image) -> np.ndarray:
+    def _extract_predictions(self, img: Image) -> list:
         img = img.resize((self.IMG_HEIGHT, self.IMG_HEIGHT))
         img = img.convert('RGB')
         x = image.img_to_array(img)
         x = np.expand_dims(x, axis=0)
-        x = preprocess_input(x)
-        return self.model.predict(x)
+        x = preprocess_input(x).tolist()
+        response = requests.post(
+            f'{config.TENSORFLOW_SERVING_MODEL_ADDRESS}:predict',
+            json={'instances': x}
+        )
+        json_response = response.json()
+        return json_response.get('predictions')
