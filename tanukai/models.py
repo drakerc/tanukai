@@ -35,6 +35,8 @@ class UploadedImage(models.Model):
     private_image = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
+        if not self.image:
+            return super(UploadedImage, self).save(*args, **kwargs)
         max_width = 500
         max_height = 500
         if self.image.width > max_width or self.image.width > max_height:
