@@ -43,6 +43,7 @@ class UploadedImage(models.Model):
             image = Image.open(self.image)
             output = BytesIO()
             image.thumbnail((max_width, max_height), Image.ANTIALIAS)
+            image = image.convert('RGB')
             image.save(output, format='JPEG', quality=90)
             self.image = InMemoryUploadedFile(
                 output,
