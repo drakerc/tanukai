@@ -94,3 +94,9 @@ class SimilarImageSerializer(serializers.Serializer):
 class ImageSearchResultsSerializer(serializers.Serializer):
     uploaded_image = UploadedImageSerializer(required=False)
     similar_images = SimilarImageSerializer(many=True)
+
+
+class SearchImageByUrlSerializer(serializers.Serializer):
+    image_url = serializers.URLField()  # todo: add checks for proper url
+    partitions = serializers.ListField(required=False)
+    maximum_rating = serializers.CharField(required=False)
