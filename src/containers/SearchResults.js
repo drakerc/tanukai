@@ -3,6 +3,8 @@ import { connect } from "react-redux";
 import { uploadedSearch } from "../store/actions/uploadedSearch";
 import { databaseSearch } from "../store/actions/databaseSearch";
 import { baseUrl } from "./helpers";
+import {imageUrlSearch} from "../store/actions/imageUrlSearch";
+
 
 import {
   Button,
@@ -48,11 +50,15 @@ class SearchResults extends React.Component {
 
     const imageId = this.props.match.params.imageId;
     const dbImageId = this.props.match.params.dbImageId;
+    const imageUrl = this.props.match.params.imageUrl;
     if (imageId) {
       this.props.uploadedSearch(imageId, query.pagination_from, query.pagination_size);
     }
     if (dbImageId) {
       this.props.databaseSearch(dbImageId, query.pagination_from, query.pagination_to);
+    }
+    if (imageUrl) {
+      this.props.imageUrlSearch(imageUrl, query.pagination_from, query.pagination_to);
     }
   }
 
@@ -65,6 +71,7 @@ class SearchResults extends React.Component {
     });
     const imageId = this.props.match.params.imageId;
     const dbImageId = this.props.match.params.dbImageId;
+    const imageUrl = this.props.match.params.imageUrl;
 
     if (previousQuery.pagination_from !== currentQuery.pagination_from) {
       if (imageId) {
@@ -72,6 +79,9 @@ class SearchResults extends React.Component {
       }
       if (dbImageId) {
         this.props.databaseSearch(dbImageId, currentQuery.pagination_from, currentQuery.pagination_size);
+      }
+      if (imageUrl) {
+        this.props.imageUrlSearch(imageUrl, currentQuery.pagination_from, currentQuery.pagination_size);
       }
     }
 
@@ -92,12 +102,16 @@ class SearchResults extends React.Component {
 
     const imageId = this.props.match.params.imageId;
     const dbImageId = this.props.match.params.dbImageId;
+    const imageUrl= this.props.match.params.imageUrl;
 
     if (imageId) {
       this.props.history.push("/search-results/" + this.props.match.params.imageId + '?pagination_from=' + paginationFrom + '&pagination_size=' + this.state.paginationSize);
     }
     if (dbImageId) {
       this.props.history.push("/database-image-search/" + this.props.match.params.dbImageId + '?pagination_from=' + paginationFrom + '&pagination_size=' + this.state.paginationSize);
+    }
+    if (imageUrl) {
+      this.props.history.push("/image-search-results/" + imageUrl + '?pagination_from=' + paginationFrom + '&pagination_size=' + this.state.paginationSize);
     }
   };
 
@@ -106,13 +120,14 @@ class SearchResults extends React.Component {
   };
 
   render() {
-    const { error, loading, response, errorDb, loadingDb, responseDb } = this.props;
+    const { error, loading, response, errorDb, loadingDb, responseDb, errorImageUrl, loadingImageUrl, responseImageUrl} = this.props;
 
     let imgs = this.props.location.state ? this.props.location.state.searchResults : null;
     let uploadedImg = this.props.location.state ? this.props.location.state.uploadedImage : null;
 
     const imageId = this.props.match.params.imageId;
     const dbImageId = this.props.match.params.dbImageId;
+    const imageUrl = this.props.match.params.imageUrl;
 
     if (!imgs) {
       if (imageId) {
@@ -125,6 +140,10 @@ class SearchResults extends React.Component {
         if (uploadedImg && uploadedImg.image) {
           uploadedImg.image = uploadedImg.image.substr(7); // dirty hack till I have a separate model
         }
+      }
+      if (imageUrl) {
+        imgs = responseImageUrl ? responseImageUrl.data.similar_images : [];
+        uploadedImg = response ? responseImageUrl.data.uploaded_image : [];
       }
     }
 
@@ -260,14 +279,18 @@ const mapStateToProps = state => {
     response: state.uploadedSearch.response,
     loadingDb: state.databaseSearch.loading,
     errorDb: state.databaseSearch.error,
-    responseDb: state.databaseSearch.response
+    responseDb: state.databaseSearch.response,
+    loadingImageUrl: state.imageUrlSearch.loading,
+    errorImageUrl: state.imageUrlSearch.error,
+    responseImageUrl: state.imageUrlSearch.response
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
     uploadedSearch: (imageId, paginationFrom, paginationSize) => dispatch(uploadedSearch(imageId, paginationFrom, paginationSize)),
-    databaseSearch: (dbImageId, paginationFrom, paginationSize) => dispatch(databaseSearch(dbImageId, paginationFrom, paginationSize))
+    databaseSearch: (dbImageId, paginationFrom, paginationSize) => dispatch(databaseSearch(dbImageId, paginationFrom, paginationSize)),
+    imageUrlSearch: (imageUrl, paginationFrom, paginationSize) => dispatch(imageUrlSearch(imageUrl, paginationFrom, paginationSize))
   };
 };
 

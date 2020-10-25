@@ -13,6 +13,7 @@ import uploadedSearchReducer from "./store/reducers/uploadedSearch"
 import getSettingsReducer from "./store/reducers/settings"
 import putPartitionsReducer from "./store/reducers/partitions"
 import putRatingReducer from "./store/reducers/rating"
+import imageUrlSearchReducer from "./store/reducers/imageUrlSearch"
 
 
 const composeEnhances = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
   getSettings: getSettingsReducer,
   putPartitions: putPartitionsReducer,
   putRating: putRatingReducer,
+  imageUrlSearch: imageUrlSearchReducer,
 });
 
 const store = createStore(rootReducer, composeEnhances(applyMiddleware(thunk)));

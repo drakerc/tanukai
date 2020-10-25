@@ -28,9 +28,28 @@ export const searchReset = () => {
   };
 };
 
-export const imageSearch = (images, partitions, maximumRating, privateImage) => {
+export const imageSearch = (images, imageUrl, partitions, maximumRating, privateImage) => {
   localStorage.setItem("partitions", partitions);
   localStorage.setItem("maximum_rating", maximumRating);
+
+    if (imageUrl) {
+    return dispatch => {
+      dispatch(searchStart());
+      const data = {
+        'image_url': imageUrl,
+        'partitions': partitions,
+        'maximum_rating': maximumRating
+      };
+      axiosWithHeaders
+        .post(baseApiUrl + "api/v1/upload-by-url", data)
+        .then(res => {
+          dispatch(searchSuccess(res));
+        })
+        .catch(err => {
+          dispatch(searchFailed(err));
+        });
+    };
+  }
 
   const data = new FormData();
   data.append('image', images);
