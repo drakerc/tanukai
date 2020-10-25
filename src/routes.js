@@ -13,6 +13,7 @@ const BaseRouter = (isAuthenticated) => (
     <Route path="/signup" component={Signup} isAuthenticated={isAuthenticated} />
     <Route path="/search-results/:imageId" component={SearchResults} />
     <Route path="/database-image-search/:dbImageId" component={SearchResults} />
+    <Route path="/url-search-results/:imageUrl" component={SearchResults} />
     <Route exact path="/" component={Home} isAuthenticated={isAuthenticated}/>
   </Hoc>
 );

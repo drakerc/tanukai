@@ -181,7 +181,14 @@ class SearchImageByUrl(APIView):
         search_image_by_url_serializer = SearchImageByUrlSerializer(data=request.data)
         search_image_by_url_serializer.is_valid(raise_exception=True)
         image_url = search_image_by_url_serializer.validated_data.get('image_url')
-        response = requests.get(image_url, timeout=15, stream=True)  # TODO: make sure it's an image file before requesting it
+        response = requests.get(
+            image_url,
+            timeout=15,
+            stream=True,
+            headers={
+                'User-Agent': 'ImgSearch (e621 user: drakerc)'
+            }
+        )  # TODO: make sure it's an image file before requesting it
         if response.status_code != 200:
             raise ValidationError(f'Timeout reached... Could not download the image from {image_url}.')
         image_path = os.path.basename(image_url)

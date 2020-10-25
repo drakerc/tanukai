@@ -2,7 +2,7 @@ import React from "react";
 import {
   Button, Card,
   Form,
-  Grid
+  Grid, Header, Segment
 } from "semantic-ui-react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
@@ -12,7 +12,7 @@ import { getSettings } from "../store/actions/settings";
 import { putPartitions } from "../store/actions/partitions";
 import { putRating } from "../store/actions/rating";
 import Checkbox from "semantic-ui-react/dist/commonjs/modules/Checkbox";
-
+import { Input } from 'semantic-ui-react'
 
 class ImageUpload extends React.Component {
   state = {
@@ -20,7 +20,8 @@ class ImageUpload extends React.Component {
     partitions: [],
     partitionsSelected: [],
     maximumRating: null,
-    privateImage: false
+    privateImage: false,
+    imageUrl: null,
   };
 
   componentDidMount() {
@@ -59,8 +60,8 @@ class ImageUpload extends React.Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { images, partitionsSelected, maximumRating, privateImage } = this.state;
-    this.props.imageSearch(images, partitionsSelected, maximumRating, privateImage);
+    const { images, imageUrl, partitionsSelected, maximumRating, privateImage } = this.state;
+    this.props.imageSearch(images, imageUrl, partitionsSelected, maximumRating, privateImage);
   };
 
 
@@ -92,11 +93,18 @@ class ImageUpload extends React.Component {
   };
 
   render() {
-    let { images, maximumRating } = this.state;
+    let { images, maximumRating, imageUrl } = this.state;
     const { isAuthenticated, error, loading, response, settingsLoading, settingsError, settingsResponse } = this.props;
     if (images && response) {
       return <Redirect to={{
         pathname: '/search-results/' + response.data.uploaded_image.pk,
+        state: { searchResults: response.data.similar_images, uploadedImage: response.data.uploaded_image }
+      }}
+      />
+    }
+    if (imageUrl && response) {
+      return <Redirect to={{
+        pathname: '/url-search-results/' + encodeURIComponent(imageUrl),
         state: { searchResults: response.data.similar_images, uploadedImage: response.data.uploaded_image }
       }}
       />
@@ -113,6 +121,15 @@ class ImageUpload extends React.Component {
           maxFileSize={5242880}
           singleImage={true}
         />
+        <Grid container stackable verticalAlign="middle">
+          <Grid.Row>
+              <Input
+                name="imageUrl"
+                onChange={this.handleChange}
+                placeholder="...or enter an image URL"
+              />
+          </Grid.Row>
+        </Grid>
         <Form>
           <Grid columns={isAuthenticated ? 3 : 2} doubling>
             <Grid.Column>
@@ -174,7 +191,7 @@ class ImageUpload extends React.Component {
             fluid
             size="large"
             loading={loading}
-            disabled={images === null}>
+            disabled={images === null && imageUrl === null}>
             Start searching
           </Button>
         </div>
@@ -196,8 +213,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    imageSearch: (images, partitions, maximumRating, privateImage) =>
-      dispatch(imageSearch(images, partitions, maximumRating, privateImage)),
+    imageSearch: (images, imageUrl, partitions, maximumRating, privateImage) =>
+      dispatch(imageSearch(images, imageUrl, partitions, maximumRating, privateImage)),
     resetProps: () =>
       dispatch(resetProps()),
     getSettings: () =>
