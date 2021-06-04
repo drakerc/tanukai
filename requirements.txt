@@ -17,7 +17,7 @@ tornado==6.0.3
 Werkzeug==0.15.4
 ImageHash==4.1.0
 opencv-python==4.2.0.34
-Django==2.2.10
+Django==2.2.21
 django-allauth==0.39.1
 django-cors-headers==3.0.2
 django-rest-auth==0.9.5
