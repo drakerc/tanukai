@@ -68,6 +68,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 SITE_ID = 1
 
+UPLOADS_URL = 'uploaded/'
+UPLOADS_ROOT = os.path.join(BASE_DIR, 'media', 'uploaded')
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
