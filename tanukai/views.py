@@ -10,8 +10,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.conf import settings
 from tanukai.services.img_match.tanukai_img_match import TanukaiImgMatch
-from .models import UserTag, UploadedImage, ImageSearchResults, UserPartition, UserRating
+from .models import UserTag, UploadedImage, ImageSearchResults, UserPartition, UserRating, URLUploadedFile
 from .serializers import UserTagSerializer, ImageSearchResultsSerializer, SettingsSerializer, \
     UserPartitionSerializer, UserRatingSerializer, UploadedImageSerializer, SearchImageByUrlSerializer
 from rest_framework.parsers import MultiPartParser
@@ -181,33 +182,20 @@ class SearchImageByUrl(APIView):
         search_image_by_url_serializer = SearchImageByUrlSerializer(data=request.data)
         search_image_by_url_serializer.is_valid(raise_exception=True)
         image_url = search_image_by_url_serializer.validated_data.get('image_url')
-        response = requests.get(
-            image_url,
-            timeout=15,
-            stream=True,
-            headers={
-                'User-Agent': 'ImgSearch (e621 user: drakerc)'
-            }
-        )  # TODO: make sure it's an image file before requesting it
-        if response.status_code != 200:
-            raise ValidationError(f'Timeout reached... Could not download the image from {image_url}.')
-        image_path = os.path.basename(image_url)
-        uploaded_img_path = "static/uploaded/" + datetime.now().isoformat() + "_" + image_path
-        with open(uploaded_img_path, 'wb') as temporary_image:
-            shutil.copyfileobj(response.raw, temporary_image)  # temp solution
+        uploaded_img_model = URLUploadedFile(image_url=image_url)
+        uploaded_img_model.fetch_and_save()
         default_partitions = list(self.image_match.get_partitions().keys())
         partitions_selected = search_image_by_url_serializer.validated_data.get('partitions', default_partitions)
         maximum_rating = search_image_by_url_serializer.validated_data.get('maximum_rating', 'safe')
 
         results, _ = self.image_match.search_image(
-            path=uploaded_img_path,
+            path=uploaded_img_model.image.path,
             pagination_from=0,
             pagination_size=20,
             partition_tags=partitions_selected
         )
 
         similar_images = prepare_similar_results(results, maximum_rating)
-        uploaded_img_model = UploadedImage(image=uploaded_img_path)
         image_search_results = ImageSearchResults(uploaded_image=uploaded_img_model,
                                                   similar_images=similar_images)
         results_serializer = ImageSearchResultsSerializer(image_search_results)

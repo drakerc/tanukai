@@ -4,11 +4,16 @@ from datetime import datetime
 from io import BytesIO
 from typing import List, Optional
 
+import os
+import requests
 from PIL import Image
-from django.conf import settings
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.core.files import File
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
+
 from tanukai.validators import validate_max_image_size
 
 
@@ -27,7 +32,7 @@ class UploadedImage(models.Model):
     )
     features = models.BinaryField()
     image = models.ImageField(
-        upload_to='uploaded/',
+        upload_to=settings.UPLOADS_URL,
         max_length=500,
         validators=[validate_max_image_size],
     )
@@ -40,6 +45,8 @@ class UploadedImage(models.Model):
         max_width = 500
         max_height = 500
         if self.image.width > max_width or self.image.width > max_height:
+            if self.image.closed:
+                self.image.open()
             image = Image.open(self.image)
             output = BytesIO()
             image.thumbnail((max_width, max_height), Image.ANTIALIAS)
@@ -54,6 +61,27 @@ class UploadedImage(models.Model):
                 None
             )
         super(UploadedImage, self).save(*args, **kwargs)
+
+
+class URLUploadedFile(UploadedImage):
+    image_url = models.CharField(max_length=1000)
+
+    def fetch_and_save(self, *args, **kwargs):
+        if self.image_url:
+            response = requests.get(
+                self.image_url,
+                timeout=15,
+                stream=True,
+                headers={
+                    'User-Agent': 'ImgSearch (e621 user: drakerc)'
+                }
+            )  # TODO: make sure it's an image file before requesting it
+            if response.status_code != 200:
+                raise ValidationError(f'Could not download the image from {self.image_url}.')
+            self.image.save(
+                os.path.basename(self.image_url),
+                File(response.raw)
+            )
 
 
 class UserPartition(models.Model):

@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { uploadedSearch } from "../store/actions/uploadedSearch";
 import { databaseSearch } from "../store/actions/databaseSearch";
-import { baseUrl } from "./helpers";
+import { baseImageUrl } from "./helpers";
 import {imageUrlSearch} from "../store/actions/imageUrlSearch";
 
 
@@ -159,7 +159,7 @@ class SearchResults extends React.Component {
             <Grid columns="3" centered>
               <Grid.Column className="mainImageColumn">
                 <p className="mainImageText">Selected image: </p>
-                <Image size="small" src={baseUrl + uploadedImg.image} className="mainImage" />
+                <Image size="small" src={baseImageUrl + uploadedImg.image} className="mainImage" />
               </Grid.Column>
               <Grid.Row>
                 <Pagination
@@ -173,10 +173,10 @@ class SearchResults extends React.Component {
                 {imgs.imgs.map((i) => (
                   <Card key={i['id']} size="medium">
                     <Modal size='large' trigger={
-                      i['id'] && baseUrl + i.thumbnail_path ? (
+                      i['id'] && baseImageUrl + i.thumbnail_path ? (
                         <Image
                           key={i['id']}
-                          src={baseUrl + i.thumbnail_path}
+                          src={baseImageUrl + i.thumbnail_path}
                         />
                       ) : (
                           <Image size='small'>
@@ -206,7 +206,7 @@ class SearchResults extends React.Component {
                       </Modal.Header>
                       <Modal.Content image>
                         <Image
-                          src={baseUrl + i.path}
+                          src={baseImageUrl + i.path}
                           wrapped
                         />
                       </Modal.Content>
