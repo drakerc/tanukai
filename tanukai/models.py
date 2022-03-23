@@ -73,7 +73,7 @@ class URLUploadedFile(UploadedImage):
                 timeout=15,
                 stream=True,
                 headers={
-                    'User-Agent': 'ImgSearch (e621 user: drakerc)'
+                    'User-Agent': 'Tanukai.com'
                 }
             )  # TODO: make sure it's an image file before requesting it
             if response.status_code != 200:

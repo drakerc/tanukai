@@ -42,6 +42,8 @@ Directories description:
 * Create and apply migrations by using `docker-compose exec image_search_python python manage.py makemigrations && docker-compose exec image_search_python python manage.py migrate` (on production, use `docker-compose -f docker-compose.prod.yml exec image_search_python python manage.py makemigrations --settings=home.settings.prod && docker-compose -f docker-compose.prod.yml exec image_search_python python manage.py migrate --settings=home.settings.prod`)
 * The front-end should be available on the port specified in `DOCKER_WEB_PORT` .env variable. More details can be found in the `nginx/nginx.confg` file.
 
+* In order to start scraping, execute docker-compose -f docker-compose.prod.yml exec image_search_python bash && cd scrapers && scrapy crawl SCRAPER_NAME -s JOBDIR=crawls/SCRAPER_NAME
+e.g. scrapy crawl e621 -s JOBDIR=crawls/e621. You can use param -a param_ignore_scraped=true to ignore the "previously scraped" check (especially helpful if you are filling up the database)
 
 ### Testing
 Coming soon

@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Callable
-from elasticsearch_dsl import Q
+from elasticsearch_dsl import Q, Index
 import numpy as np
 import config
 from img_match.models.image import Image
@@ -22,10 +22,9 @@ class ImageQueries:
             refresh_index: bool = False,
             partition_tag: str = None,
             image_model: Callable = Image,
-            initialize_dbs_if_not_exist: bool = False,
             **image_kwargs
     ) -> str:
-        if initialize_dbs_if_not_exist:
+        if config.INITIALIZE_DBS_IF_NOT_EXIST:
             self.initialize_dbs_if_not_exist(partition_tag)  # kinda breaks the SRP rule
         status, ids = self._milvus.database.insert(
             collection_name=config.milvus_collection_name,
@@ -193,12 +192,13 @@ class ImageQueries:
         return {i['tag']: i['row_count'] for i in stats['partitions'] if i['row_count'] > 0}
 
     def elastic_index_exists(self) -> bool:
-        return Image.index.exists()
+        es_index = Index(config.elasticsearch_index)
+        return es_index.exists(using=self._elasticsearch.database)
 
     def milvus_collection_exists(self) -> bool:
         status, has_collection = self._milvus.database.has_collection(config.milvus_collection_name)
         return has_collection
 
     def milvus_partition_exists(self, partition_tag: str) -> bool:
-        status, has_partition = self._milvus.database.has_partition(partition_tag)
+        status, has_partition = self._milvus.database.has_partition(config.milvus_collection_name, partition_tag)
         return has_partition

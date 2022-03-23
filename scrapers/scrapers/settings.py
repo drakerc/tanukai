@@ -17,7 +17,7 @@ NEWSPIDER_MODULE = 'scrapers.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = 'ImgSearch (e621 user: drakerc)'
+USER_AGENT = 'Tanukai.com Furry Scraper v0.1 (drakepp at gmail dot com)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False

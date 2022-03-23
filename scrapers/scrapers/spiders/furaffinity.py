@@ -1,10 +1,10 @@
-import json
+from datetime import datetime
+
 import scrapy
-from urllib.parse import urlencode
 from scrapers.items import Image
 import config
 from img_match.queries.databases import ElasticDatabase
-from img_match.models.image import Image as ImgMatchImage
+from scrapers.common import was_already_scraped
 
 
 class FurAffinityScraper(scrapy.Spider):
@@ -12,93 +12,60 @@ class FurAffinityScraper(scrapy.Spider):
     allowed_domains = ["furaffinity.net"]
     handle_httpstatus_list = [200, 201, 403]
     rating_mapping = {
-        's': 'safe',
-        'q': 'questionable',
-        'e': 'explicit'
+        'General': 'safe',
+        'Mature': 'questionable',
+        'Adult': 'explicit'
+    }
+    cookies = {
+        "a": config.FURAFFINITY_COOKIE_A,
+        "b": config.FURAFFINITY_COOKIE_B
     }
 
-    def __init__(self):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self._elasticsearch = ElasticDatabase()
 
     def start_requests(self):
-        headers = {
-            'User-Agent': 'ImgSearch (e621 user: drakerc)'
-        }
-        query = {
-            'limit': 120,
-        }
-        encoded_query = urlencode(query)
-        url = f'https://e621.net/posts.json?{encoded_query}'
-        yield scrapy.Request(url=url, callback=self.parse, headers=headers, dont_filter=True)
+        url = "https://www.furaffinity.net"
+        yield scrapy.Request(url=url, callback=self.parse_homepage, dont_filter=True, cookies=self.cookies)
 
-        query = {
-            'limit': 120,
-            'page': f'b1747786'
-        }
-        encoded_query = urlencode(query)
-        url = f'https://e621.net/posts.json?{encoded_query}'
-        yield scrapy.Request(url=url, callback=self.parse, headers=headers, dont_filter=False)
+    def parse_homepage(self, response):
+        latest_image_id = response.xpath('//section[@id="gallery-frontpage-submissions"]/figure[1]/@id').get() # e.g. sid-46458850
+        latest_image_id = latest_image_id.split("-")[1]
 
-    def parse(self, response):
-        data_json = json.loads(response.body_as_unicode())
-        posts = data_json.get('posts')
-        first_post_id = posts[0].get('id')
+        yield scrapy.Request(url=f"https://www.furaffinity.net/view/{latest_image_id}", callback=self.parse_image,
+                             cookies=self.cookies)
 
-        if 'page' not in response.url:
-            self.state['highest_id'] = first_post_id
-        for data in data_json.get('posts'):
-            source_id = data.get('id')
+    def parse_image(self, response):
+        url = response.url
+        source_id = url.split("/")[-1]
 
-            first_id = self.state.get('first_id')
-            if first_id and source_id == first_id:
-                self.state['first_id'] = self.state['highest_id']
-                print('Reached the last previously scraped item!')
-                return
-
-            was_already_scraped = self._was_already_scraped(source_id)
-            if was_already_scraped:
+        if not self.param_ignore_scraped == "true":
+            if was_already_scraped(self._elasticsearch, source_id, self.name):
                 print('was already scraped!')
                 return
-            created_at = data.get('created_at')
-            tags = data.get('tags')
-            rating = self.rating_mapping.get(data.get('rating'))
-            description = data.get('description')
-            image_url = data.get('file').get('url')
-            if not image_url or '.webm' in image_url or '.swf' in image_url:
-                continue
-            image_urls = [image_url]
 
-            image = Image(
-                website='e621',
-                url=f'https://e621.net/posts/{source_id}',
-                id=source_id,
-                created_at=created_at,
-                tags=tags,
-                rating=rating,
-                description=description,
-                image_urls=image_urls
-            )
-            yield image
+        created_at = response.xpath('//div[@class="submission-id-sub-container"]/strong/span[@class="popup_date"]/@title').get()
+        parsed_created_at = datetime.strptime(created_at, "%b %d, %Y %I:%M %p")  # Mar 22, 2022 04:53 PM
+        tag_list = response.xpath('//div[@class="section-body"]/span[@class="tags"]/a/text()').getall()
+        tags = {"general": tag_list}
+        rating = self.rating_mapping.get(response.xpath('//div[@class="rating"]/span/text()').get().strip())
+        description = response.xpath('//meta[@property="og:description"]/@content').get()
+        image_url = "https:" + response.xpath('//img[@id="submissionImg"]/@src').get()
 
-        if not self.state.get('first_id') and 'page' not in response.url:
-            self.state['first_id'] = first_post_id  # set the highest ID on the first scrape ever
+        image = Image(
+            website=self.name,
+            url=url,
+            id=source_id,
+            created_at=parsed_created_at.isoformat(),
+            tags=tags,
+            rating=rating,
+            description=description,
+            image_urls=[image_url]
+        )
+        yield image
 
-        headers = {
-            'User-Agent': 'ImgSearch (e621 user: drakerc)'
-        }
-        last_item_url = posts[-1].get('id')
-        query = {
-            'limit': 120,
-            'page': f'b{last_item_url}'
-        }
-        encoded_query = urlencode(query)
-        url = f'https://e621.net/posts.json?{encoded_query}'
-        yield scrapy.Request(url=url, callback=self.parse, headers=headers, dont_filter=False)
+        next_image_id = int(source_id) - 1
 
-    def _was_already_scraped(self, source_id):
-        elastic_search = ImgMatchImage.search(using=self._elasticsearch.database,
-                                              index=config.elasticsearch_index) \
-            .query('term', source_website='e621') \
-            .query('term', source_id=source_id)
-        count = elastic_search.count()
-        return count >= 1
+        yield scrapy.Request(url=f"https://www.furaffinity.net/view/{next_image_id}", callback=self.parse_image,
+                             cookies=self.cookies)

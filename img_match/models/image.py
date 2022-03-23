@@ -1,4 +1,4 @@
-from elasticsearch_dsl import Document, Keyword, Text, Date, Object
+from elasticsearch_dsl import Document, Keyword, Date, Object
 import config
 
 hash_object = Object(properties={f'hash_{i}': Keyword() for i in range(config.phash_size_result)})
