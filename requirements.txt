@@ -8,7 +8,7 @@ Keras-Preprocessing==1.1.2
 numpy==1.16.4
 numpydoc==0.9.1
 pandas==0.24.2
-Pillow==6.1.0
+Pillow==9.0.1
 pymilvus==0.2.11
 scikit-image==0.15.0
 scikit-learn==0.21.2
@@ -24,7 +24,7 @@ django-rest-auth==0.9.5
 djangorestframework==3.9.4
 gunicorn==20.0.4
 python-dotenv==0.14.0
-Scrapy==2.1.0
+Scrapy==2.6.0
 mysqlclient==2.0.1
 cffi==1.14.0
 redis==3.5.3
