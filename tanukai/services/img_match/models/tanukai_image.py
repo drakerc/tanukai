@@ -2,7 +2,9 @@ from elasticsearch_dsl import Keyword, Text, Date, Object
 import config
 from img_match.models.image import Image
 
-hash_object = Object(properties={f'hash_{i}': Keyword() for i in range(config.phash_size_result)})
+hash_object = Object(
+    properties={f"hash_{i}": Keyword() for i in range(config.phash_size_result)}
+)
 
 
 class TanukaiImage(Image):

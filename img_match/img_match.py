@@ -10,7 +10,6 @@ import numpy as np
 
 
 class ImgMatch:
-
     def __init__(self):
         self._image_queries = ImageQueries()
         self._feature_extractor = FeatureExtractor()
@@ -18,14 +17,14 @@ class ImgMatch:
         self._image_finder = ImageFinder(similarity_threshold=60)
 
     def add_image(
-            self,
-            path: str,
-            img: Image = None,
-            add_perceptual_hash: bool = True,
-            refresh_index: bool = False,
-            image_model: Callable = Image,
-            partition_tag: str = None,
-            **image_kwargs
+        self,
+        path: str,
+        img: Image = None,
+        add_perceptual_hash: bool = True,
+        refresh_index: bool = False,
+        image_model: Callable = Image,
+        partition_tag: str = None,
+        **image_kwargs
     ) -> str:
         """
         :param path: path to the image (on disk/URL)
@@ -40,7 +39,9 @@ class ImgMatch:
         if not img:
             img = Image.open(path)
         feature_vectors = self._feature_extractor.get_features(img)
-        perceptual_hash = self._perceptual_hasher.get_hash(img) if add_perceptual_hash else None
+        perceptual_hash = (
+            self._perceptual_hasher.get_hash(img) if add_perceptual_hash else None
+        )
         saved_id = self._image_queries.save(
             feature_vectors,
             path,
@@ -53,52 +54,77 @@ class ImgMatch:
         return saved_id
 
     def search_image(
-            self,
-            path: str,
-            img: Image = None,
-            mark_subimage: bool = False,
-            pagination_from: int = 0,
-            pagination_size: int = 10,
-            partition_tags: list = None
+        self,
+        path: str,
+        img: Image = None,
+        mark_subimage: bool = False,
+        pagination_from: int = 0,
+        pagination_size: int = 10,
+        partition_tags: list = None,
     ) -> Tuple[dict, str]:
         if not img:
             img = Image.open(path)
         feature_vectors = self._feature_extractor.get_features(img)
-        results = self._image_queries.find(feature_vectors, pagination_from, pagination_size,
-                                           partition_tags=partition_tags)
+        results = self._image_queries.find(
+            feature_vectors,
+            pagination_from,
+            pagination_size,
+            partition_tags=partition_tags,
+        )
         if mark_subimage:
             self._mark_subimage(path, results)
         return results, feature_vectors.dumps()
 
-    def search_by_phash(self, path: str, mark_subimage: bool = False, pagination_from: int = 0,
-                        pagination_size: int = 10) -> dict:
+    def search_by_phash(
+        self,
+        path: str,
+        mark_subimage: bool = False,
+        pagination_from: int = 0,
+        pagination_size: int = 10,
+    ) -> dict:
         img = Image.open(path)
         perceptual_hash = self._perceptual_hasher.get_hash(img)
-        results = self._image_queries.find_by_phash(perceptual_hash,
-                                                    pagination_from=pagination_from,
-                                                    pagination_size=pagination_size)
+        results = self._image_queries.find_by_phash(
+            perceptual_hash,
+            pagination_from=pagination_from,
+            pagination_size=pagination_size,
+        )
         if mark_subimage:
             self._mark_subimage(path, results)
         return results
 
-    def search_by_id(self, image_id: str, mark_subimage: bool = False, pagination_from: int = 0,
-                     pagination_size: int = 10, partition_tags: list = None) -> Tuple[dict, dict]:
+    def search_by_id(
+        self,
+        image_id: str,
+        mark_subimage: bool = False,
+        pagination_from: int = 0,
+        pagination_size: int = 10,
+        partition_tags: list = None,
+    ) -> Tuple[dict, dict]:
         results = self._image_queries.find_by_id(
             image_id,
             pagination_from=pagination_from,
             pagination_size=pagination_size,
-            partition_tags=partition_tags
+            partition_tags=partition_tags,
         )
-        query_image = self._image_queries.get_elastic_record(image_id)  # TODO: bad idea...
+        query_image = self._image_queries.get_elastic_record(
+            image_id
+        )  # TODO: bad idea...
         # if mark_subimage:
         #     self._mark_subimage(path, results)
         return results, query_image
 
-    def search_by_features(self, features: np.ndarray, mark_subimage: bool = False,
-                           pagination_from: int = 0, pagination_size: int = 10,
-                           partition_tags: list = None) -> dict:
-        results = self._image_queries.find(features, pagination_from, pagination_size,
-                                           partition_tags=partition_tags)
+    def search_by_features(
+        self,
+        features: np.ndarray,
+        mark_subimage: bool = False,
+        pagination_from: int = 0,
+        pagination_size: int = 10,
+        partition_tags: list = None,
+    ) -> dict:
+        results = self._image_queries.find(
+            features, pagination_from, pagination_size, partition_tags=partition_tags
+        )
         if mark_subimage:
             pass
             # self._mark_subimage(path, results)
@@ -111,7 +137,9 @@ class ImgMatch:
         """
         return self._image_queries.get_partitions()
 
-    def _mark_subimage(self, path: str, results: dict, stop_on_first_match: bool = True) -> None:
+    def _mark_subimage(
+        self, path: str, results: dict, stop_on_first_match: bool = True
+    ) -> None:
         """
         Finds the searched image in the images returned from the database and marks them if the
         image is a subimage of a larger image.
@@ -127,9 +155,11 @@ class ImgMatch:
         dsize = (width, height)
         small_img = cv2.resize(small_img, dsize)
         for res in results.values():
-            large_img = cv2.imread(res['thumbnail_path'])
-            marked_image = self._image_finder.get_marked_found_image(small_img, large_img)
+            large_img = cv2.imread(res["thumbnail_path"])
+            marked_image = self._image_finder.get_marked_found_image(
+                small_img, large_img
+            )
             if marked_image:
-                res['thumbnail_path'] = marked_image
+                res["thumbnail_path"] = marked_image
                 if stop_on_first_match:
                     break

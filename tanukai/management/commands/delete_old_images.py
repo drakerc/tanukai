@@ -4,7 +4,7 @@ from tanukai.models import UploadedImage
 
 
 class Command(BaseCommand):
-    help = 'Deletes images older than 30 minutes old'
+    help = "Deletes images older than 30 minutes old"
 
     def handle(self, *args, **options):
         # TODO: move the 30-minutes constant to a config file
@@ -14,4 +14,6 @@ class Command(BaseCommand):
             if image.image:
                 image.image.delete()
             image.delete()
-        self.stdout.write(self.style.SUCCESS(f'Successfully deleted {len(old_images)} images'))
+        self.stdout.write(
+            self.style.SUCCESS(f"Successfully deleted {len(old_images)} images")
+        )

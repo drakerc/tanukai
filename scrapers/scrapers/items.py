@@ -28,6 +28,8 @@ class Image(scrapy.Item):
     created_at = scrapy.Field()
     tags = scrapy.Field()
     rating = scrapy.Field()
-    description = scrapy.Field(input_processor=MapCompose(strip, remove_html_tags, is_empty))
+    description = scrapy.Field(
+        input_processor=MapCompose(strip, remove_html_tags, is_empty)
+    )
     image_urls = scrapy.Field()
     images = scrapy.Field()

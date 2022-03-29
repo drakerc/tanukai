@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tanukai', '0005_auto_20200716_1617'),
+        ("tanukai", "0005_auto_20200716_1617"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='uploadedimage',
-            name='private',
+            model_name="uploadedimage",
+            name="private",
             field=models.BooleanField(default=False),
         ),
     ]

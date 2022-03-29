@@ -20,15 +20,12 @@ from tanukai.validators import validate_max_image_size
 class UserTag(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     tag = models.CharField("Tag", max_length=200)
-    tag_type = models.CharField('Tag type', max_length=20)
+    tag_type = models.CharField("Tag type", max_length=20)
 
 
 class UploadedImage(models.Model):
     uploader = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True
     )
     features = models.BinaryField()
     image = models.ImageField(
@@ -50,15 +47,15 @@ class UploadedImage(models.Model):
             image = Image.open(self.image)
             output = BytesIO()
             image.thumbnail((max_width, max_height), Image.ANTIALIAS)
-            image = image.convert('RGB')
-            image.save(output, format='JPEG', quality=90)
+            image = image.convert("RGB")
+            image.save(output, format="JPEG", quality=90)
             self.image = InMemoryUploadedFile(
                 output,
-                'ImageField',
+                "ImageField",
                 f'{datetime.now()}_{self.image.name.split(".")[0]}.jpg',
-                'image/jpeg',
+                "image/jpeg",
                 sys.getsizeof(output),
-                None
+                None,
             )
         super(UploadedImage, self).save(*args, **kwargs)
 
@@ -72,26 +69,25 @@ class URLUploadedFile(UploadedImage):
                 self.image_url,
                 timeout=15,
                 stream=True,
-                headers={
-                    'User-Agent': 'Tanukai.com'
-                }
+                headers={"User-Agent": "Tanukai.com"},
             )  # TODO: make sure it's an image file before requesting it
             if response.status_code != 200:
-                raise ValidationError(f'Could not download the image from {self.image_url}.')
-            self.image.save(
-                os.path.basename(self.image_url),
-                File(response.raw)
-            )
+                raise ValidationError(
+                    f"Could not download the image from {self.image_url}."
+                )
+            self.image.save(os.path.basename(self.image_url), File(response.raw))
 
 
 class UserPartition(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
-    partition = models.CharField('Partition', max_length=50)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True
+    )
+    partition = models.CharField("Partition", max_length=50)
 
 
 class UserRating(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
-    rating = models.CharField('Rating', default="safe", max_length=50)
+    rating = models.CharField("Rating", default="safe", max_length=50)
 
 
 @dataclass

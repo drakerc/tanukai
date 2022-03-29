@@ -7,16 +7,26 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tanukai', '0007_auto_20200721_1823'),
+        ("tanukai", "0007_auto_20200721_1823"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='URLUploadedFile',
+            name="URLUploadedFile",
             fields=[
-                ('uploadedimage_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tanukai.UploadedImage')),
-                ('image_url', models.CharField(max_length=1000)),
+                (
+                    "uploadedimage_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="tanukai.UploadedImage",
+                    ),
+                ),
+                ("image_url", models.CharField(max_length=1000)),
             ],
-            bases=('tanukai.uploadedimage',),
+            bases=("tanukai.uploadedimage",),
         ),
     ]

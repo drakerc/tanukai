@@ -6,7 +6,7 @@ from tanukai.models import UserTag, UploadedImage, UserPartition, UserRating, Se
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['pk', 'username', 'email']
+        fields = ["pk", "username", "email"]
 
 
 class UserTagSerializer(serializers.ModelSerializer):
@@ -14,19 +14,21 @@ class UserTagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserTag
-        fields = ('user', 'tag', 'tag_type')
+        fields = ("user", "tag", "tag_type")
 
 
 class UploadedImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = UploadedImage
-        fields = ('pk', 'uploader', 'image', 'created_at', 'private_image')
+        fields = ("pk", "uploader", "image", "created_at", "private_image")
 
 
 class UserPartitionsSerializer(serializers.ListSerializer):
     def update(self, instance, validated_data):
         old_partitions = {key: value.partition for key, value in enumerate(instance)}
-        new_partitions = {key: value.get('partition') for key, value in enumerate(validated_data)}
+        new_partitions = {
+            key: value.get("partition") for key, value in enumerate(validated_data)
+        }
 
         return_data = []
 
@@ -45,7 +47,7 @@ class UserPartitionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserPartition
-        fields = ('user', 'partition')
+        fields = ("user", "partition")
         list_serializer_class = UserPartitionsSerializer
 
 
@@ -54,7 +56,7 @@ class UserRatingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserRating
-        fields = ('user', 'rating')
+        fields = ("user", "rating")
 
 
 class SettingsSerializer(serializers.Serializer):
@@ -63,11 +65,13 @@ class SettingsSerializer(serializers.Serializer):
     user = UserSerializer(required=False)
 
     def create(self, validated_data):
-        partitions = validated_data.get('partitions')
-        rating = validated_data.get('rating')
+        partitions = validated_data.get("partitions")
+        rating = validated_data.get("rating")
         for partition in partitions:
-            UserPartition.objects.create(partition=partition, user=validated_data.get('user'))
-        UserRating.objects.create(rating=rating, user=validated_data.get('user'))
+            UserPartition.objects.create(
+                partition=partition, user=validated_data.get("user")
+            )
+        UserRating.objects.create(rating=rating, user=validated_data.get("user"))
         return Settings(partitions=partitions, rating=rating)
 
 

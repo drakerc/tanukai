@@ -11,15 +11,8 @@ class FurAffinityScraper(scrapy.Spider):
     name = "furaffinity"
     allowed_domains = ["furaffinity.net"]
     handle_httpstatus_list = [200, 201, 403]
-    rating_mapping = {
-        'General': 'safe',
-        'Mature': 'questionable',
-        'Adult': 'explicit'
-    }
-    cookies = {
-        "a": config.FURAFFINITY_COOKIE_A,
-        "b": config.FURAFFINITY_COOKIE_B
-    }
+    rating_mapping = {"General": "safe", "Mature": "questionable", "Adult": "explicit"}
+    cookies = {"a": config.FURAFFINITY_COOKIE_A, "b": config.FURAFFINITY_COOKIE_B}
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -27,14 +20,24 @@ class FurAffinityScraper(scrapy.Spider):
 
     def start_requests(self):
         url = "https://www.furaffinity.net"
-        yield scrapy.Request(url=url, callback=self.parse_homepage, dont_filter=True, cookies=self.cookies)
+        yield scrapy.Request(
+            url=url,
+            callback=self.parse_homepage,
+            dont_filter=True,
+            cookies=self.cookies,
+        )
 
     def parse_homepage(self, response):
-        latest_image_id = response.xpath('//section[@id="gallery-frontpage-submissions"]/figure[1]/@id').get() # e.g. sid-46458850
+        latest_image_id = response.xpath(
+            '//section[@id="gallery-frontpage-submissions"]/figure[1]/@id'
+        ).get()  # e.g. sid-46458850
         latest_image_id = latest_image_id.split("-")[1]
 
-        yield scrapy.Request(url=f"https://www.furaffinity.net/view/{latest_image_id}", callback=self.parse_image,
-                             cookies=self.cookies)
+        yield scrapy.Request(
+            url=f"https://www.furaffinity.net/view/{latest_image_id}",
+            callback=self.parse_image,
+            cookies=self.cookies,
+        )
 
     def parse_image(self, response):
         url = response.url
@@ -42,15 +45,25 @@ class FurAffinityScraper(scrapy.Spider):
 
         if not self.param_ignore_scraped == "true":
             if was_already_scraped(self._elasticsearch, source_id, self.name):
-                print('was already scraped!')
+                print("was already scraped!")
                 return
 
-        created_at = response.xpath('//div[@class="submission-id-sub-container"]/strong/span[@class="popup_date"]/@title').get()
-        parsed_created_at = datetime.strptime(created_at, "%b %d, %Y %I:%M %p")  # Mar 22, 2022 04:53 PM
-        tag_list = response.xpath('//div[@class="section-body"]/span[@class="tags"]/a/text()').getall()
+        created_at = response.xpath(
+            '//div[@class="submission-id-sub-container"]/strong/span[@class="popup_date"]/@title'
+        ).get()
+        parsed_created_at = datetime.strptime(
+            created_at, "%b %d, %Y %I:%M %p"
+        )  # Mar 22, 2022 04:53 PM
+        tag_list = response.xpath(
+            '//div[@class="section-body"]/span[@class="tags"]/a/text()'
+        ).getall()
         tags = {"general": tag_list}
-        rating = self.rating_mapping.get(response.xpath('//div[@class="rating"]/span/text()').get().strip())
-        description = response.xpath('//meta[@property="og:description"]/@content').get()
+        rating = self.rating_mapping.get(
+            response.xpath('//div[@class="rating"]/span/text()').get().strip()
+        )
+        description = response.xpath(
+            '//meta[@property="og:description"]/@content'
+        ).get()
         image_url = "https:" + response.xpath('//img[@id="submissionImg"]/@src').get()
 
         image = Image(
@@ -61,11 +74,14 @@ class FurAffinityScraper(scrapy.Spider):
             tags=tags,
             rating=rating,
             description=description,
-            image_urls=[image_url]
+            image_urls=[image_url],
         )
         yield image
 
         next_image_id = int(source_id) - 1
 
-        yield scrapy.Request(url=f"https://www.furaffinity.net/view/{next_image_id}", callback=self.parse_image,
-                             cookies=self.cookies)
+        yield scrapy.Request(
+            url=f"https://www.furaffinity.net/view/{next_image_id}",
+            callback=self.parse_image,
+            cookies=self.cookies,
+        )

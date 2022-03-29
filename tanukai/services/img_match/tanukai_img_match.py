@@ -3,7 +3,6 @@ from tanukai.services.img_match.queries.tanukai_image_queries import TanukaiImag
 
 
 class TanukaiImgMatch(ImgMatch):
-
     def __init__(self):
         super().__init__()
         self._image_queries = TanukaiImageQueries()

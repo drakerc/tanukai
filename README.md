@@ -50,6 +50,7 @@ Coming soon
 
 ### TODOs
 - [ ] Create tests (pytest + mock databases; Selenium front-end tests)
+- [ ] Create deployment process
 - [ ] Cleanup code, add linters
 - [X] Add MySQL support instead of sqlite
 - [ ] Use AWS S3 to store images

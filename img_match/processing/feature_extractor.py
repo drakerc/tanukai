@@ -12,9 +12,11 @@ os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 # os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
-gpu_devices = tf.config.experimental.list_physical_devices('GPU')
+gpu_devices = tf.config.experimental.list_physical_devices("GPU")
 if gpu_devices:
-    tf.config.experimental.set_memory_growth(gpu_devices[0], True)  # Limit the GPU memory usage
+    tf.config.experimental.set_memory_growth(
+        gpu_devices[0], True
+    )  # Limit the GPU memory usage
 
 
 class FeatureExtractor:
@@ -38,13 +40,12 @@ class FeatureExtractor:
 
     def _extract_predictions(self, img: Image) -> list:
         img = img.resize((self.IMG_HEIGHT, self.IMG_HEIGHT))
-        img = img.convert('RGB')
+        img = img.convert("RGB")
         x = image.img_to_array(img)
         x = np.expand_dims(x, axis=0)
         x = preprocess_input(x).tolist()
         response = requests.post(
-            f'{config.TENSORFLOW_SERVING_MODEL_ADDRESS}:predict',
-            json={'instances': x}
+            f"{config.TENSORFLOW_SERVING_MODEL_ADDRESS}:predict", json={"instances": x}
         )
         json_response = response.json()
-        return json_response.get('predictions')
+        return json_response.get("predictions")

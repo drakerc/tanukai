@@ -7,13 +7,17 @@ import tanukai.validators
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tanukai', '0004_auto_20200714_1814'),
+        ("tanukai", "0004_auto_20200714_1814"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='uploadedimage',
-            name='image',
-            field=models.ImageField(max_length=500, upload_to='uploaded/', validators=[tanukai.validators.validate_max_image_size]),
+            model_name="uploadedimage",
+            name="image",
+            field=models.ImageField(
+                max_length=500,
+                upload_to="uploaded/",
+                validators=[tanukai.validators.validate_max_image_size],
+            ),
         ),
     ]
