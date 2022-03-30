@@ -15,6 +15,7 @@ class FurAffinityScraper(scrapy.Spider):
     cookies = {"a": config.FURAFFINITY_COOKIE_A, "b": config.FURAFFINITY_COOKIE_B}
 
     def __init__(self, **kwargs):
+        self.param_ignore_scraped = False
         super().__init__(**kwargs)
         self._elasticsearch = ElasticDatabase()
 

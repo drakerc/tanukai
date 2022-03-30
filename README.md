@@ -1,5 +1,5 @@
 # Tanukai
-![Tanukai Demo](demo/demo.gif)
+![Tanukai Demo](github_demo/demo.gif)
 
 This project creates an index of art images (mainly Japanese manga/anime-style drawings) so that you can find similar images to these stored images by uploading your own image. Basically: reverse image search for manga/anime.
 Available on https://tanukai.com

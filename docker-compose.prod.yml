@@ -4,7 +4,7 @@ services:
     restart: always
     build:
       context: ./
-      dockerfile: "python-dockerfile-prod"
+      dockerfile: "dockerfile/python-dockerfile-prod"
     environment:
       - "PYTHONUNBUFFERED=1"
       - NVIDIA_VISIBLE_DEVICES=0
@@ -59,7 +59,7 @@ services:
   image_search_node:
     build:
       context: ./
-      dockerfile: node-dockerfile
+      dockerfile: dockerfile/node-dockerfile
     working_dir: /app
     ports:
       - "${NODEJS_PORT}"
