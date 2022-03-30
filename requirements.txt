@@ -21,7 +21,7 @@ Django==2.2.27
 django-allauth==0.39.1
 django-cors-headers==3.0.2
 django-rest-auth==0.9.5
-djangorestframework==3.9.4
+djangorestframework==3.11.2
 gunicorn==20.0.4
 python-dotenv==0.14.0
 Scrapy==2.6.0
