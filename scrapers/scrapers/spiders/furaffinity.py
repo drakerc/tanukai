@@ -43,15 +43,31 @@ class FurAffinityScraper(scrapy.Spider):
     def parse_image(self, response):
         url = response.url
         source_id = url.split("/")[-1]
+        next_image_id = int(source_id) - 1
 
-        if not self.param_ignore_scraped == "true":
-            if was_already_scraped(self._elasticsearch, source_id, self.name):
-                print("was already scraped!")
+        if was_already_scraped(self._elasticsearch, source_id, self.name):
+            if not self.param_ignore_scraped == "true":
+                # end the scraping the first time we see an already scraped image
                 return
+            yield scrapy.Request(
+                url=f"https://www.furaffinity.net/view/{next_image_id}",
+                callback=self.parse_image,
+                cookies=self.cookies,
+            )
+            return
 
         created_at = response.xpath(
             '//div[@class="submission-id-sub-container"]/strong/span[@class="popup_date"]/@title'
         ).get()
+        if not created_at:
+            # Image does not exist (e.g. system error)
+            # TODO: add logging
+            yield scrapy.Request(
+                url=f"https://www.furaffinity.net/view/{next_image_id}",
+                callback=self.parse_image,
+                cookies=self.cookies,
+            )
+            return
         parsed_created_at = datetime.strptime(
             created_at, "%b %d, %Y %I:%M %p"
         )  # Mar 22, 2022 04:53 PM
@@ -78,8 +94,6 @@ class FurAffinityScraper(scrapy.Spider):
             image_urls=[image_url],
         )
         yield image
-
-        next_image_id = int(source_id) - 1
 
         yield scrapy.Request(
             url=f"https://www.furaffinity.net/view/{next_image_id}",
