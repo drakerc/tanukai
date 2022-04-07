@@ -1,0 +1,142 @@
+2022-04-07 19:19:38 [scrapy.extensions.telnet] INFO: Telnet Password: 70ab6d536d6a4c62
+2022-04-07 19:19:38 [scrapy.middleware] INFO: Enabled extensions:
+['scrapy.extensions.corestats.CoreStats',
+ 'scrapy.extensions.telnet.TelnetConsole',
+ 'scrapy.extensions.memusage.MemoryUsage',
+ 'scrapy.extensions.logstats.LogStats']
+2022-04-07 19:19:38 [scrapy.middleware] INFO: Enabled downloader middlewares:
+['scrapy.downloadermiddlewares.retry.RetryMiddleware',
+ 'scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware',
+ 'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware',
+ 'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware',
+ 'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware',
+ 'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.RedirectMiddleware',
+ 'scrapy.downloadermiddlewares.cookies.CookiesMiddleware',
+ 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware',
+ 'scrapy.downloadermiddlewares.stats.DownloaderStats']
+2022-04-07 19:19:38 [scrapy.middleware] INFO: Enabled spider middlewares:
+['scrapy.spidermiddlewares.httperror.HttpErrorMiddleware',
+ 'scrapy.spidermiddlewares.offsite.OffsiteMiddleware',
+ 'scrapy.spidermiddlewares.referer.RefererMiddleware',
+ 'scrapy.spidermiddlewares.urllength.UrlLengthMiddleware',
+ 'scrapy.spidermiddlewares.depth.DepthMiddleware']
+2022-04-07 19:19:40 [py.warnings] WARNING: /usr/local/lib/python3.7/dist-packages/scrapy/pipelines/media.py:135: ScrapyDeprecationWarning: file_path(self, request, response=None, info=None) is deprecated, please use file_path(self, request, response=None, info=None, *, item=None)
+  self._check_signature(func)
+
+2022-04-07 19:19:40 [scrapy.middleware] INFO: Enabled item pipelines:
+['scrapers.pipelines.CustomImagesPipeline',
+ 'scrapers.pipelines.ProcessingPipeline']
+2022-04-07 19:19:40 [scrapy.core.engine] INFO: Spider opened
+2022-04-07 19:19:40 [scrapy.extensions.logstats] INFO: Crawled 0 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
+2022-04-07 19:19:40 [scrapy.extensions.telnet] INFO: Telnet console listening on 127.0.0.1:6023
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.020s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.008s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.008s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.008s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.007s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.012s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.007s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.007s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.007s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.007s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.007s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.007s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.013s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.007s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.012s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.009s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.007s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.010s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.008s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.017s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.009s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.008s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.009s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.007s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.007s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.007s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.008s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.007s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.009s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.007s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:42 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.009s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.015s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.007s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.008s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.007s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.011s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.007s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.004s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.012s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.012s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.009s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.007s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.004s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.007s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.014s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.009s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.006s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.014s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.011s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.005s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.011s]
+2022-04-07 19:19:43 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.011s]
+2022-04-07 19:19:45 [elasticsearch] INFO: HEAD http://image_search_elastic:9200/images [status:200 request:0.006s]
+2022-04-07 19:19:45 [elasticsearch] INFO: PUT http://image_search_elastic:9200/images/_doc/1649359185299516000?refresh=false [status:201 request:0.015s]
+2022-04-07 19:19:45 [elasticsearch] INFO: POST http://image_search_elastic:9200/images/_count [status:200 request:0.007s]
+2022-04-07 19:19:45 [scrapy.crawler] INFO: Received SIGTERM, shutting down gracefully. Send again to force 

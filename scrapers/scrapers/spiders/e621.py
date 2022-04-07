@@ -1,12 +1,10 @@
 import json
-import logging
 
 import scrapy
 from urllib.parse import urlencode
 from scrapers.items import Image
 from scrapy import Request
 from scrapy.http import TextResponse
-from scrapy.utils.log import configure_logging
 
 from img_match.queries.databases import ElasticDatabase
 from scrapers.common import was_already_scraped
@@ -21,16 +19,12 @@ class E621Scraper(scrapy.Spider):
         "User-Agent": "Tanukai.com Furry Scraper v0.1 (drakepp at gmail dot com) (user: drakerc)",
         "Content-Type": "application/json"
     }
-    configure_logging(install_root_handler=False)
-    logging.basicConfig(
-        filename='e621_logs.txt',
-        format='%(levelname)s: %(message)s',
-        level=logging.INFO
-    )
+    custom_settings = {
+        'LOG_FILE': 'e621_logs.txt',
+    }
 
     def __init__(self, **kwargs):
         self.param_ignore_scraped = False
-        self.state = {}
         super().__init__(**kwargs)
         self._elasticsearch = ElasticDatabase()
 
@@ -50,11 +44,8 @@ class E621Scraper(scrapy.Spider):
         if not posts:
             return
 
-        first_post_id = posts[0].get("id")
         last_post_id = posts[-1].get("id")
 
-        if "page" not in response.url:
-            self.state["highest_id"] = first_post_id
         for data in data_json.get("posts"):
             source_id = data.get("id")
 

@@ -1,10 +1,8 @@
-import logging
 from datetime import datetime
 
 import scrapy
 from scrapers.items import Image
 from scrapy import Request
-from scrapy.utils.log import configure_logging
 
 import config
 from img_match.queries.databases import ElasticDatabase
@@ -17,12 +15,10 @@ class FurAffinityScraper(scrapy.Spider):
     handle_httpstatus_list = [200, 201, 403]
     rating_mapping = {"General": "safe", "Mature": "questionable", "Adult": "explicit"}
     cookies = {"a": config.FURAFFINITY_COOKIE_A, "b": config.FURAFFINITY_COOKIE_B}
-    configure_logging(install_root_handler=False)
-    logging.basicConfig(
-        filename='furaffinity_logs.txt',
-        format='%(levelname)s: %(message)s',
-        level=logging.INFO
-    )
+
+    custom_settings = {
+        'LOG_FILE': 'furaffinity_logs.txt',
+    }
 
     def __init__(self, **kwargs):
         self.param_ignore_scraped = False

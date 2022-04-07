@@ -82,8 +82,9 @@ IMAGES_THUMBS = {
     "verybig": (700, 700)
 }
 
-# LOG_LEVEL = 'INFO'
 
+LOG_LEVEL = 'INFO'
+LOG_FILE = "scraper_logs.txt"
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
