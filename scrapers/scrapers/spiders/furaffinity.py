@@ -1,7 +1,11 @@
+import logging
 from datetime import datetime
 
 import scrapy
 from scrapers.items import Image
+from scrapy import Request
+from scrapy.utils.log import configure_logging
+
 import config
 from img_match.queries.databases import ElasticDatabase
 from scrapers.common import was_already_scraped
@@ -13,6 +17,12 @@ class FurAffinityScraper(scrapy.Spider):
     handle_httpstatus_list = [200, 201, 403]
     rating_mapping = {"General": "safe", "Mature": "questionable", "Adult": "explicit"}
     cookies = {"a": config.FURAFFINITY_COOKIE_A, "b": config.FURAFFINITY_COOKIE_B}
+    configure_logging(install_root_handler=False)
+    logging.basicConfig(
+        filename='furaffinity_logs.txt',
+        format='%(levelname)s: %(message)s',
+        level=logging.INFO
+    )
 
     def __init__(self, **kwargs):
         self.param_ignore_scraped = False
@@ -24,8 +34,7 @@ class FurAffinityScraper(scrapy.Spider):
         yield scrapy.Request(
             url=url,
             callback=self.parse_homepage,
-            dont_filter=True,
-            cookies=self.cookies,
+            cookies=self.cookies
         )
 
     def parse_homepage(self, response):
@@ -49,11 +58,7 @@ class FurAffinityScraper(scrapy.Spider):
             if not self.param_ignore_scraped == "true":
                 # end the scraping the first time we see an already scraped image
                 return
-            yield scrapy.Request(
-                url=f"https://www.furaffinity.net/view/{next_image_id}",
-                callback=self.parse_image,
-                cookies=self.cookies,
-            )
+            yield self._request_fa_image_site(next_image_id)
             return
 
         created_at = response.xpath(
@@ -62,11 +67,7 @@ class FurAffinityScraper(scrapy.Spider):
         if not created_at:
             # Image does not exist (e.g. system error)
             # TODO: add logging
-            yield scrapy.Request(
-                url=f"https://www.furaffinity.net/view/{next_image_id}",
-                callback=self.parse_image,
-                cookies=self.cookies,
-            )
+            yield self._request_fa_image_site(next_image_id)
             return
         parsed_created_at = datetime.strptime(
             created_at, "%b %d, %Y %I:%M %p"
@@ -95,8 +96,11 @@ class FurAffinityScraper(scrapy.Spider):
         )
         yield image
 
-        yield scrapy.Request(
-            url=f"https://www.furaffinity.net/view/{next_image_id}",
+        yield self._request_fa_image_site(next_image_id)
+
+    def _request_fa_image_site(self, image_id: int) -> Request:
+        return scrapy.Request(
+            url=f"https://www.furaffinity.net/view/{image_id}",
             callback=self.parse_image,
             cookies=self.cookies,
         )
