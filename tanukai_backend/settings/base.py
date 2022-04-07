@@ -21,7 +21,7 @@ INSTALLED_APPS = [
     "rest_auth.registration",
     "rest_framework",
     "rest_framework.authtoken",
-    "tanukai",
+    "tanukai_api",
 ]
 
 MIDDLEWARE = [
@@ -35,7 +35,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "home.urls"
+ROOT_URLCONF = "tanukai_backend.urls"
 
 TEMPLATES = [
     {

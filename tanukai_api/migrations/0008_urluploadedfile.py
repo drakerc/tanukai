@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("tanukai", "0007_auto_20200721_1823"),
+        ("tanukai_api", "0007_auto_20200721_1823"),
     ]
 
     operations = [
@@ -22,11 +22,11 @@ class Migration(migrations.Migration):
                         parent_link=True,
                         primary_key=True,
                         serialize=False,
-                        to="tanukai.UploadedImage",
+                        to="tanukai_api.UploadedImage",
                     ),
                 ),
                 ("image_url", models.CharField(max_length=1000)),
             ],
-            bases=("tanukai.uploadedimage",),
+            bases=("tanukai_api.uploadedimage",),
         ),
     ]

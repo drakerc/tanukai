@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ("tanukai", "0002_uploadedimage"),
+        ("tanukai_api", "0002_uploadedimage"),
     ]
 
     operations = [

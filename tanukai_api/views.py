@@ -16,7 +16,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.conf import settings
-from tanukai.services.img_match.tanukai_img_match import TanukaiImgMatch
+from tanukai_api.services.img_match.tanukai_img_match import TanukaiImgMatch
 from .models import (
     UserTag,
     UploadedImage,

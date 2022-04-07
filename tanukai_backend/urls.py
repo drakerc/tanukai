@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.generic import TemplateView
-from tanukai.views import (
+from tanukai_api.views import (
     UserTags,
     UploadImage,
     UploadedImageSearch,

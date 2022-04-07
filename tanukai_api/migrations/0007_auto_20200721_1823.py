@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("tanukai", "0006_uploadedimage_private"),
+        ("tanukai_api", "0006_uploadedimage_private"),
     ]
 
     operations = [

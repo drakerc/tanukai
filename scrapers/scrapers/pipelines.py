@@ -8,12 +8,12 @@ import hashlib
 
 from PIL import Image
 
-from tanukai.services.img_match.tanukai_img_match import TanukaiImgMatch
+from tanukai_api.services.img_match.tanukai_img_match import TanukaiImgMatch
 from scrapy.pipelines.images import ImagesPipeline
 from scrapy.utils.python import to_bytes
 from io import BytesIO
 import config
-from tanukai.services.img_match.models.tanukai_image import TanukaiImage
+from tanukai_api.services.img_match.models.tanukai_image import TanukaiImage
 
 
 class ProcessingPipeline:

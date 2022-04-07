@@ -1,6 +1,6 @@
 from datetime import timedelta, datetime
 from django.core.management.base import BaseCommand
-from tanukai.models import UploadedImage
+from tanukai_api.models import UploadedImage
 
 
 class Command(BaseCommand):

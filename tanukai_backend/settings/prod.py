@@ -6,10 +6,10 @@ ALLOWED_HOSTS += [
     "127.0.0.1",
     "localhost",
     "209.239.112.21",
-    "tanukai.com",
-    "www.tanukai.com",
+    "tanukai_api.com",
+    "www.tanukai_api.com",
 ]
-WSGI_APPLICATION = "home.wsgi.prod.application"
+WSGI_APPLICATION = "tanukai_backend.wsgi.prod.application"
 
 DATABASES = {
     "default": {

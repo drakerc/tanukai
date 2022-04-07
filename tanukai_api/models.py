@@ -14,7 +14,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
 from django.conf import settings
 
-from tanukai.validators import validate_max_image_size
+from tanukai_api.validators import validate_max_image_size
 
 
 class UserTag(models.Model):
