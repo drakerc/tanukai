@@ -12,7 +12,7 @@ from scrapers.common import was_already_scraped
 class FurAffinityScraper(scrapy.Spider):
     name = "furaffinity"
     allowed_domains = ["furaffinity.net"]
-    handle_httpstatus_list = [200, 201, 403]
+    handle_httpstatus_list = [200, 201, 400, 403]
     rating_mapping = {"General": "safe", "Mature": "questionable", "Adult": "explicit"}
     cookies = {"a": config.FURAFFINITY_COOKIE_A, "b": config.FURAFFINITY_COOKIE_B}
 
@@ -42,13 +42,17 @@ class FurAffinityScraper(scrapy.Spider):
         yield scrapy.Request(
             url=f"https://www.furaffinity.net/view/{latest_image_id}",
             callback=self.parse_image,
-            cookies=self.cookies,
+            cookies=self.cookies
         )
 
     def parse_image(self, response):
         url = response.url
         source_id = url.split("/")[-1]
         next_image_id = int(source_id) - 1
+        if response.status != 200:
+            # FA sometimes returns 404 / 400 on missing images. Then we will continue to the next one
+            yield self._request_fa_image_site(next_image_id)
+            return
 
         if was_already_scraped(self._elasticsearch, source_id, self.name):
             if not self.param_ignore_scraped == "true":

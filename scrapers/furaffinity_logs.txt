@@ -138,3 +138,71 @@ Traceback (most recent call last):
   File "/usr/local/lib/python3.7/dist-packages/scrapy/core/engine.py", line 187, in <lambda>
     d.addBoth(lambda _: self.slot.nextcall.schedule())
 AttributeError: 'NoneType' object has no attribute 'nextcall'
+2022-04-08 19:54:02 [scrapy.extensions.telnet] INFO: Telnet Password: 442b916656bfa652
+2022-04-08 19:54:02 [scrapy.middleware] INFO: Enabled extensions:
+['scrapy.extensions.corestats.CoreStats',
+ 'scrapy.extensions.telnet.TelnetConsole',
+ 'scrapy.extensions.memusage.MemoryUsage',
+ 'scrapy.extensions.logstats.LogStats']
+2022-04-08 19:54:03 [scrapy.middleware] INFO: Enabled downloader middlewares:
+['scrapy.downloadermiddlewares.retry.RetryMiddleware',
+ 'scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware',
+ 'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware',
+ 'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware',
+ 'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware',
+ 'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.RedirectMiddleware',
+ 'scrapy.downloadermiddlewares.cookies.CookiesMiddleware',
+ 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware',
+ 'scrapy.downloadermiddlewares.stats.DownloaderStats']
+2022-04-08 19:54:03 [scrapy.middleware] INFO: Enabled spider middlewares:
+['scrapy.spidermiddlewares.httperror.HttpErrorMiddleware',
+ 'scrapy.spidermiddlewares.offsite.OffsiteMiddleware',
+ 'scrapy.spidermiddlewares.referer.RefererMiddleware',
+ 'scrapy.spidermiddlewares.urllength.UrlLengthMiddleware',
+ 'scrapy.spidermiddlewares.depth.DepthMiddleware']
+2022-04-08 19:54:09 [py.warnings] WARNING: /usr/local/lib/python3.7/dist-packages/scrapy/pipelines/media.py:135: ScrapyDeprecationWarning: file_path(self, request, response=None, info=None) is deprecated, please use file_path(self, request, response=None, info=None, *, item=None)
+  self._check_signature(func)
+
+2022-04-08 19:54:09 [scrapy.middleware] INFO: Enabled item pipelines:
+['scrapers.pipelines.CustomImagesPipeline',
+ 'scrapers.pipelines.ProcessingPipeline']
+2022-04-08 19:54:09 [scrapy.core.engine] INFO: Spider opened
+2022-04-08 19:54:11 [scrapy.extensions.logstats] INFO: Crawled 0 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
+2022-04-08 19:54:11 [scrapy.extensions.telnet] INFO: Telnet console listening on 127.0.0.1:6023
+2022-04-08 19:54:23 [scrapy.crawler] INFO: Received SIGTERM, shutting down gracefully. Send again to force 
+2022-04-08 19:55:35 [scrapy.extensions.telnet] INFO: Telnet Password: 53e29674f4b035c9
+2022-04-08 19:55:35 [scrapy.middleware] INFO: Enabled extensions:
+['scrapy.extensions.corestats.CoreStats',
+ 'scrapy.extensions.telnet.TelnetConsole',
+ 'scrapy.extensions.memusage.MemoryUsage',
+ 'scrapy.extensions.logstats.LogStats']
+2022-04-08 19:55:35 [scrapy.middleware] INFO: Enabled downloader middlewares:
+['scrapy.downloadermiddlewares.retry.RetryMiddleware',
+ 'scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware',
+ 'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware',
+ 'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware',
+ 'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware',
+ 'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.RedirectMiddleware',
+ 'scrapy.downloadermiddlewares.cookies.CookiesMiddleware',
+ 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware',
+ 'scrapy.downloadermiddlewares.stats.DownloaderStats']
+2022-04-08 19:55:35 [scrapy.middleware] INFO: Enabled spider middlewares:
+['scrapy.spidermiddlewares.httperror.HttpErrorMiddleware',
+ 'scrapy.spidermiddlewares.offsite.OffsiteMiddleware',
+ 'scrapy.spidermiddlewares.referer.RefererMiddleware',
+ 'scrapy.spidermiddlewares.urllength.UrlLengthMiddleware',
+ 'scrapy.spidermiddlewares.depth.DepthMiddleware']
+2022-04-08 19:55:40 [py.warnings] WARNING: /usr/local/lib/python3.7/dist-packages/scrapy/pipelines/media.py:135: ScrapyDeprecationWarning: file_path(self, request, response=None, info=None) is deprecated, please use file_path(self, request, response=None, info=None, *, item=None)
+  self._check_signature(func)
+
+2022-04-08 19:55:40 [scrapy.middleware] INFO: Enabled item pipelines:
+['scrapers.pipelines.CustomImagesPipeline',
+ 'scrapers.pipelines.ProcessingPipeline']
+2022-04-08 19:55:40 [scrapy.core.engine] INFO: Spider opened
+2022-04-08 19:55:43 [scrapy.extensions.logstats] INFO: Crawled 0 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
+2022-04-08 19:55:43 [scrapy.extensions.telnet] INFO: Telnet console listening on 127.0.0.1:6023
+2022-04-08 19:56:38 [scrapy.crawler] INFO: Received SIGTERM, shutting down gracefully. Send again to force 

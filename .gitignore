@@ -5,6 +5,7 @@ static/*
 !.gitkeep
 
 scrapers/crawls/*
+scrapers/*_logs.txt
 
 db.sqlite3
 

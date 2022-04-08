@@ -22,3 +22,39 @@
  'RETRY_TIMES': 5,
  'SPIDER_MODULES': ['scrapers.spiders'],
  'USER_AGENT': 'Tanukai.com Furry Scraper v0.1 (drakepp at gmail dot com)'}
+2022-04-08 19:54:02 [scrapy.utils.log] INFO: Scrapy 2.6.0 started (bot: scrapers)
+2022-04-08 19:54:02 [scrapy.utils.log] INFO: Versions: lxml 4.8.0.0, libxml2 2.9.12, cssselect 1.1.0, parsel 1.6.0, w3lib 1.22.0, Twisted 22.2.0, Python 3.7.5 (default, Dec  9 2021, 17:04:37) - [GCC 8.4.0], pyOpenSSL 22.0.0 (OpenSSL 1.1.1n  15 Mar 2022), cryptography 36.0.2, Platform Linux-5.4.0-90-generic-x86_64-with-Ubuntu-18.04-bionic
+2022-04-08 19:54:02 [scrapy.crawler] INFO: Overridden settings:
+{'BOT_NAME': 'scrapers',
+ 'DOWNLOAD_DELAY': 0.5,
+ 'LOG_FILE': 'furaffinity_logs.txt',
+ 'LOG_LEVEL': 'INFO',
+ 'NEWSPIDER_MODULE': 'scrapers.spiders',
+ 'RETRY_HTTP_CODES': [500, 502, 503, 504, 522, 524, 408, 429, 520],
+ 'RETRY_TIMES': 5,
+ 'SPIDER_MODULES': ['scrapers.spiders'],
+ 'USER_AGENT': 'Tanukai.com Furry Scraper v0.1 (drakepp at gmail dot com)'}
+2022-04-08 19:55:35 [scrapy.utils.log] INFO: Scrapy 2.6.0 started (bot: scrapers)
+2022-04-08 19:55:35 [scrapy.utils.log] INFO: Versions: lxml 4.8.0.0, libxml2 2.9.12, cssselect 1.1.0, parsel 1.6.0, w3lib 1.22.0, Twisted 22.2.0, Python 3.7.5 (default, Dec  9 2021, 17:04:37) - [GCC 8.4.0], pyOpenSSL 22.0.0 (OpenSSL 1.1.1n  15 Mar 2022), cryptography 36.0.2, Platform Linux-5.4.0-90-generic-x86_64-with-Ubuntu-18.04-bionic
+2022-04-08 19:55:35 [scrapy.crawler] INFO: Overridden settings:
+{'BOT_NAME': 'scrapers',
+ 'DOWNLOAD_DELAY': 0.5,
+ 'LOG_FILE': 'furaffinity_logs.txt',
+ 'LOG_LEVEL': 'INFO',
+ 'NEWSPIDER_MODULE': 'scrapers.spiders',
+ 'RETRY_HTTP_CODES': [500, 502, 503, 504, 522, 524, 408, 429, 520],
+ 'RETRY_TIMES': 5,
+ 'SPIDER_MODULES': ['scrapers.spiders'],
+ 'USER_AGENT': 'Tanukai.com Furry Scraper v0.1 (drakepp at gmail dot com)'}
+2022-04-08 19:57:35 [scrapy.utils.log] INFO: Scrapy 2.6.0 started (bot: scrapers)
+2022-04-08 19:57:35 [scrapy.utils.log] INFO: Versions: lxml 4.8.0.0, libxml2 2.9.12, cssselect 1.1.0, parsel 1.6.0, w3lib 1.22.0, Twisted 22.2.0, Python 3.7.5 (default, Dec  9 2021, 17:04:37) - [GCC 8.4.0], pyOpenSSL 22.0.0 (OpenSSL 1.1.1n  15 Mar 2022), cryptography 36.0.2, Platform Linux-5.4.0-90-generic-x86_64-with-Ubuntu-18.04-bionic
+2022-04-08 19:57:35 [scrapy.crawler] INFO: Overridden settings:
+{'BOT_NAME': 'scrapers',
+ 'DOWNLOAD_DELAY': 0.5,
+ 'LOG_FILE': 'logs/furaffinity_logs.txt',
+ 'LOG_LEVEL': 'INFO',
+ 'NEWSPIDER_MODULE': 'scrapers.spiders',
+ 'RETRY_HTTP_CODES': [500, 502, 503, 504, 522, 524, 408, 429, 520],
+ 'RETRY_TIMES': 5,
+ 'SPIDER_MODULES': ['scrapers.spiders'],
+ 'USER_AGENT': 'Tanukai.com Furry Scraper v0.1 (drakepp at gmail dot com)'}
