@@ -4,6 +4,7 @@ static/*
 !static/uploaded
 !.gitkeep
 
+scrapers/crawls
 scrapers/crawls/*
 scrapers/*_logs.txt
 
