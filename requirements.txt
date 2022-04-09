@@ -1,18 +1,15 @@
 Cython==0.29.12
 elasticsearch==7.7.0
 elasticsearch-dsl==7.2.0
-h5py==2.10.0
 Keras==2.3.1
 Keras-Applications==1.0.8
 Keras-Preprocessing==1.1.2
-numpy==1.22.3
-numpydoc==0.9.1
 pandas==0.24.2
 Pillow==9.0.1
 pymilvus==0.2.11
 scikit-image==0.15.0
 scikit-learn==0.21.2
-tensorflow-gpu==2.5.3
+tensorflow-gpu
 tornado==6.0.3
 Werkzeug==0.15.4
 ImageHash==4.1.0
@@ -28,4 +25,4 @@ Scrapy==2.6.0
 mysqlclient==2.0.1
 cffi==1.14.0
 redis==3.5.3
-black==22.3.0
+black

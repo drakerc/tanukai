@@ -4,8 +4,8 @@ ALLOWED_HOSTS += [
     "127.0.0.1",
     "localhost",
     "209.239.112.21",
-    "tanukai_api.com",
-    "www.tanukai_api.com",
+    "tanukai.com",
+    "www.tanukai.com",
 ]
 DEBUG = True
 
