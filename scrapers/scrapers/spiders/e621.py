@@ -42,6 +42,7 @@ class E621Scraper(scrapy.Spider):
         data_json = json.loads(response.text)
         posts = data_json.get("posts", [])
         if not posts:
+            self.logger.info("Scraper returned empty results list for URL.", response.url)
             return
 
         last_post_id = posts[-1].get("id")
@@ -50,7 +51,9 @@ class E621Scraper(scrapy.Spider):
             source_id = data.get("id")
 
             if was_already_scraped(self._elasticsearch, source_id, self.name):
+                self.logger.info("Image ID: %s already scraped.", source_id)
                 if not self.param_ignore_scraped == "true":
+                    self.logger.info("Duplicate image encountered, ending scraping...", source_id)
                     # end the scraping the first time we see an already scraped image
                     return
                 yield self._request_next_page(last_post_id)
@@ -61,6 +64,7 @@ class E621Scraper(scrapy.Spider):
             description = data.get("description")
             image_url = data.get("file").get("url")
             if not image_url or ".webm" in image_url or ".swf" in image_url:
+                self.logger.warn("Image %s in not allowed format, URL: %s, ignoring...", source_id, image_url)
                 continue
             image_urls = [image_url]
 

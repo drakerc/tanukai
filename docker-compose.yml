@@ -29,10 +29,10 @@ services:
     networks:
       - image_search
   image_search_milvus:
-    image: milvusdb/milvus:0.9.0-cpu-d051520-cb92b1
+    image: milvusdb/milvus:1.1.1-cpu-d061621-330cc6
     volumes:
       - ./var/milvus/db:/var/lib/milvus/db
-      - ./milvus_config:/var/lib/milvus/conf
+      - ./var/milvus/conf:/var/lib/milvus/conf
       - ./var/milvus/logs:/var/lib/milvus/logs
       - ./var/milvus/wal:/var/lib/milvus/wal
     ports:

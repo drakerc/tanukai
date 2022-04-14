@@ -6,10 +6,10 @@ Keras-Applications==1.0.8
 Keras-Preprocessing==1.1.2
 pandas==0.24.2
 Pillow==9.0.1
-pymilvus==0.2.11
+pymilvus==1.1.1
 scikit-image==0.15.0
 scikit-learn==0.21.2
-tensorflow-gpu
+tensorflow_gpu==2.3.4
 tornado==6.0.3
 Werkzeug==0.15.4
 ImageHash==4.1.0
