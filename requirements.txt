@@ -21,7 +21,7 @@ django-rest-auth==0.9.5
 djangorestframework==3.11.2
 gunicorn==20.0.4
 python-dotenv==0.14.0
-Scrapy==2.6.0
+Scrapy==2.6.2
 mysqlclient==2.0.1
 cffi==1.14.0
 redis==3.5.3
