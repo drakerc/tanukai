@@ -26,3 +26,4 @@ mysqlclient==2.0.1
 cffi==1.14.0
 redis==3.5.3
 black
+pyopenssl==22.0.0

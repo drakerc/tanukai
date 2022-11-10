@@ -24,7 +24,7 @@ export const uploadedSearchFailed = error => {
 export const uploadedSearch = (imageId, paginationFrom = 0, paginationSize = 10) => {
   const partitions = localStorage.getItem("partitions") ? localStorage.getItem("partitions") : ['e621', 'danbooru'];
   // TODO: move default partitions somewhere else, leads to code duplication
-  const maximumRating = localStorage.getItem("maximum_rating") ? localStorage.getItem("maximum_rating") : 'safe';
+  const maximumRating = localStorage.getItem("maximum_rating") ? localStorage.getItem("maximum_rating") : 'explicit';
   const params = new URLSearchParams({
     pagination_from: paginationFrom,
     pagination_size: paginationSize,
