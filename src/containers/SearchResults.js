@@ -206,7 +206,7 @@ class SearchResults extends React.Component {
                       </Modal.Header>
                       <Modal.Content image>
                         <Image
-                          src={baseImageUrl + i.path}
+                          src={baseImageUrl + i.thumbnail_path}
                           wrapped
                         />
                       </Modal.Content>

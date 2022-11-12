@@ -94,7 +94,7 @@ class ImageQueries:
     def find_by_phash(
         self,
         phash: str,
-        minimum_should_match="10%",
+        minimum_should_match: str = "10%",
         pagination_from: int = 0,
         pagination_size: int = 10,
     ) -> dict:
