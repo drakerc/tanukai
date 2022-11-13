@@ -1,6 +1,8 @@
 import logging
+from io import BytesIO
+
 import requests
-from telegram import __version__ as TG_VER
+from telegram import __version__ as TG_VER, MessageEntity, File
 
 try:
     from telegram import __version_info__
@@ -40,17 +42,12 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await update.message.reply_text("Help!")
 
 
-async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Echo the user message."""
-    await update.message.reply_text(update.message.text)
-
-
 def _prepare_results_message(response_json: dict) -> str:
     similar_images = response_json["similar_images"]
 
     reply_message = "Most similar results:\n"
     for i in range(config.SIMILAR_IMAGES_RETURNED):
-        similar_image = similar_images[i]["distance"]
+        similar_image = similar_images[i]
         source_url = similar_image["data"]["source_image_url"]
         similarity = similar_image["distance"]
         is_nsfw = similar_image["data"]["source_rating"] != "safe"
@@ -61,17 +58,16 @@ def _prepare_results_message(response_json: dict) -> str:
 
 
 async def upload_image_search(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    message_url = update.message.text
+    file = await context.bot.get_file(update.message.photo[-1].file_id)
 
-    api_url = f"{TANUKAI_API_URL}/upload-image"
+    api_url = f"{TANUKAI_API_URL}/upload-by-url"
 
     response = requests.post(
         api_url,
-        data={
-            "image": message_url,
-            "partitions": "e621,furaffinity",
+        json={
+            "image_url": file.file_path,
             "maximum_rating": "explicit",
-            "private_image": False
+            "partitions": ["e621", "furaffinity"]
         },
         timeout=15,
         stream=True,
@@ -90,7 +86,7 @@ async def url_image_search(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     response = requests.post(
         api_url,
         json={
-            "image_url": 1,
+            "image_url": update.message.text,
             "maximum_rating": "explicit",
             "partitions": ["e621", "furaffinity"]
         },
@@ -113,15 +109,13 @@ def main() -> None:
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
 
-    application.add_handler(MessageHandler(filters.Filters.entity("URL") | filters.Filters.entity("TEXT_LINK"), url_image_search))
+    application.add_handler(MessageHandler(filters.TEXT & (filters.Entity(MessageEntity.URL) | filters.Entity(MessageEntity.TEXT_LINK)), url_image_search))
 
-    # application.add_handler(MessageHandler(MessageEntity.URL, MessageEntity.TEXT_LINK, url_image_search))
-    # application.add_handler(MessageHandler(MessageEntity.URL, url_image_search))
+    # application.add_handler(MessageHandler(filters.Document.Category("image/"), upload_image_search))
+    application.add_handler(MessageHandler(filters.Document.IMAGE, upload_image_search))
+    application.add_handler(MessageHandler(filters.PHOTO, upload_image_search))
 
-    # application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, url_image_search))
-    application.dispatcher.add_handler(MessageHandler(filters.Filters.document.category("image/"), upload_image_search))
 
-    # Run the bot until the user presses Ctrl-C
     application.run_polling()
 
 
