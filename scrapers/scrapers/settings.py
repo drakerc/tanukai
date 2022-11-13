@@ -83,7 +83,7 @@ IMAGES_THUMBS = {
 }
 
 
-LOG_LEVEL = 'INFO'
+LOG_LEVEL = "INFO"
 LOG_FILE = "scraper_logs.txt"
 
 # Enable and configure the AutoThrottle extension (disabled by default)

@@ -1,6 +1,12 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from tanukai_api.models import UserTag, UploadedImage, UserPartition, UserRating, Settings
+from tanukai_api.models import (
+    UserTag,
+    UploadedImage,
+    UserPartition,
+    UserRating,
+    Settings,
+)
 
 
 class UserSerializer(serializers.ModelSerializer):

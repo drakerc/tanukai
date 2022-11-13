@@ -1,5 +1,7 @@
 from img_match.img_match import ImgMatch
-from tanukai_api.services.img_match.queries.tanukai_image_queries import TanukaiImageQueries
+from tanukai_api.services.img_match.queries.tanukai_image_queries import (
+    TanukaiImageQueries,
+)
 
 
 class TanukaiImgMatch(ImgMatch):

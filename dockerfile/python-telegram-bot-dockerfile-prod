@@ -5,8 +5,6 @@ ADD requirements_telegram_bot.txt /app/
 WORKDIR /app
 
 RUN pip install -r requirements_telegram_bot.txt \
-    && echo "export PYTHONPATH=/app"" >> ~/.bashrc
-
-WORKDIR /app
+    && echo "export PYTHONPATH=\"${PYTHONPATH}:/app\"" >> ~/.bashrc
 
 CMD python3 main.py

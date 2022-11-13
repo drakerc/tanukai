@@ -17,7 +17,7 @@ class FurAffinityScraper(scrapy.Spider):
     cookies = {"a": config.FURAFFINITY_COOKIE_A, "b": config.FURAFFINITY_COOKIE_B}
 
     custom_settings = {
-        'LOG_FILE': 'furaffinity_logs.txt',
+        "LOG_FILE": "furaffinity_logs.txt",
     }
 
     def __init__(self, **kwargs):
@@ -28,9 +28,7 @@ class FurAffinityScraper(scrapy.Spider):
     def start_requests(self):
         url = "https://www.furaffinity.net"
         yield scrapy.Request(
-            url=url,
-            callback=self.parse_homepage,
-            cookies=self.cookies
+            url=url, callback=self.parse_homepage, cookies=self.cookies
         )
 
     def parse_homepage(self, response):
@@ -42,7 +40,7 @@ class FurAffinityScraper(scrapy.Spider):
         yield scrapy.Request(
             url=f"https://www.furaffinity.net/view/{latest_image_id}",
             callback=self.parse_image,
-            cookies=self.cookies
+            cookies=self.cookies,
         )
 
     def parse_image(self, response):
@@ -50,7 +48,11 @@ class FurAffinityScraper(scrapy.Spider):
         source_id = url.split("/")[-1]
         next_image_id = int(source_id) - 1
         if response.status != 200:
-            self.logger.warn("Scraper returned non-200 code: %s for page: %s", response.status, response.url)
+            self.logger.warn(
+                "Scraper returned non-200 code: %s for page: %s",
+                response.status,
+                response.url,
+            )
             # FA sometimes returns 404/400/502 on missing images. Then we will continue to the next one
             yield self._request_fa_image_site(next_image_id)
             return
@@ -58,7 +60,9 @@ class FurAffinityScraper(scrapy.Spider):
         if was_already_scraped(self._elasticsearch, source_id, self.name):
             self.logger.info("Image ID: %s already scraped.", source_id)
             if not self.param_ignore_scraped == "true":
-                self.logger.info("Duplicate image encountered, ending scraping...", source_id)
+                self.logger.info(
+                    "Duplicate image encountered, ending scraping...", source_id
+                )
                 # end the scraping the first time we see an already scraped image
                 return
             yield self._request_fa_image_site(next_image_id)
@@ -69,7 +73,9 @@ class FurAffinityScraper(scrapy.Spider):
         ).get()
         if not created_at:
             # Image does not exist (e.g. system error)
-            self.logger.warn("Image %s does not have created_at, ignoring...", source_id)
+            self.logger.warn(
+                "Image %s does not have created_at, ignoring...", source_id
+            )
             yield self._request_fa_image_site(next_image_id)
             return
         parsed_created_at = datetime.strptime(

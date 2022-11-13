@@ -1,8 +1,8 @@
 import logging
-from io import BytesIO
+import config
 
 import requests
-from telegram import __version__ as TG_VER, MessageEntity, File
+from telegram import __version__ as TG_VER, MessageEntity
 
 try:
     from telegram import __version_info__
@@ -16,7 +16,13 @@ if __version_info__ < (20, 0, 0, "alpha", 1):
         f"visit https://docs.python-telegram-bot.org/en/v{TG_VER}/examples.html"
     )
 from telegram import ForceReply, Update
-from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    ContextTypes,
+    MessageHandler,
+    filters,
+)
 
 # Enable logging
 logging.basicConfig(
@@ -25,7 +31,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 TANUKAI_API_URL = "https://tanukai.com/api/v1"
-from . import config
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -57,7 +62,9 @@ def _prepare_results_message(response_json: dict) -> str:
     return reply_message
 
 
-async def upload_image_search(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def upload_image_search(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     file = await context.bot.get_file(update.message.photo[-1].file_id)
 
     api_url = f"{TANUKAI_API_URL}/upload-by-url"
@@ -67,7 +74,7 @@ async def upload_image_search(update: Update, context: ContextTypes.DEFAULT_TYPE
         json={
             "image_url": file.file_path,
             "maximum_rating": "explicit",
-            "partitions": ["e621", "furaffinity"]
+            "partitions": ["e621", "furaffinity"],
         },
         timeout=15,
         stream=True,
@@ -88,7 +95,7 @@ async def url_image_search(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         json={
             "image_url": update.message.text,
             "maximum_rating": "explicit",
-            "partitions": ["e621", "furaffinity"]
+            "partitions": ["e621", "furaffinity"],
         },
         timeout=15,
         stream=True,
@@ -109,12 +116,20 @@ def main() -> None:
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
 
-    application.add_handler(MessageHandler(filters.TEXT & (filters.Entity(MessageEntity.URL) | filters.Entity(MessageEntity.TEXT_LINK)), url_image_search))
+    application.add_handler(
+        MessageHandler(
+            filters.TEXT
+            & (
+                filters.Entity(MessageEntity.URL)
+                | filters.Entity(MessageEntity.TEXT_LINK)
+            ),
+            url_image_search,
+        )
+    )
 
     # application.add_handler(MessageHandler(filters.Document.Category("image/"), upload_image_search))
     application.add_handler(MessageHandler(filters.Document.IMAGE, upload_image_search))
     application.add_handler(MessageHandler(filters.PHOTO, upload_image_search))
-
 
     application.run_polling()
 
