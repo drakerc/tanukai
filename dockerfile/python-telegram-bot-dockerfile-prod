@@ -1,10 +1,12 @@
 FROM python:3.7-buster
 
-ADD . /app/
+ADD telegram_bot/ /app/
 ADD requirements_telegram_bot.txt /app/
 WORKDIR /app
 
 RUN pip install -r requirements_telegram_bot.txt \
-    && echo "export PYTHONPATH=\"${PYTHONPATH}:/app\"" >> ~/.bashrc
+    && echo "export PYTHONPATH=/app"" >> ~/.bashrc
 
-CMD python3 telegram_bot/main.py
+WORKDIR /app
+
+CMD python3 main.py

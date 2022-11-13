@@ -25,7 +25,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 TANUKAI_API_URL = "https://tanukai.com/api/v1"
-from telegram_bot import config
+from . import config
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
