@@ -13,6 +13,17 @@ services:
       - ./var/.keras:/root/.keras
     networks:
       - image_search
+  image_search_telegram_bot_python:
+    restart: always
+    build:
+      context: ./
+      dockerfile: "dockerfile/python-telegram-bot-dockerfile-prod"
+    environment:
+      - "PYTHONUNBUFFERED=1"
+    volumes:
+      - .:/app
+    networks:
+      - image_search
   image_search_nginx:
     restart: always
     build: ./nginx
