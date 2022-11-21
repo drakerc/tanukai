@@ -9,7 +9,7 @@ Pillow==9.0.1
 pymilvus==1.1.1
 scikit-image==0.15.0
 scikit-learn==0.21.2
-tensorflow_gpu==2.3.4
+tensorflow_gpu==2.9.3
 tornado==6.0.3
 Werkzeug==0.15.4
 ImageHash==4.1.0
