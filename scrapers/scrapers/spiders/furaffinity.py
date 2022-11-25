@@ -1,12 +1,12 @@
-from datetime import datetime
-
 import scrapy
+from dateutil import relativedelta
 from scrapers.items import Image
-from scrapy import Request
-
+from datetime import datetime
 import config
 from img_match.queries.databases import ElasticDatabase
 from scrapers.common import was_already_scraped
+
+from img_match.queries.image_queries import ImageQueries
 
 
 class FurAffinityScraper(scrapy.Spider):
@@ -23,30 +23,113 @@ class FurAffinityScraper(scrapy.Spider):
     def __init__(self, **kwargs):
         self.param_ignore_scraped = False
         super().__init__(**kwargs)
+        if config.INITIALIZE_DBS_IF_NOT_EXIST:
+            ImageQueries().initialize_dbs_if_not_exist(self.name)  # kinda breaks the SRP rule
         self._elasticsearch = ElasticDatabase()
 
     def start_requests(self):
-        url = "https://www.furaffinity.net"
-        yield scrapy.Request(
-            url=url, callback=self.parse_homepage, cookies=self.cookies
+        start_date = datetime(2010, 1, 1)
+        end_date = start_date + relativedelta.relativedelta(months=1)  # 1.02
+
+        yield self._get_new_month_request(start_date, end_date)
+
+    def _get_new_month_request(self, start_date: datetime, end_date: datetime):
+        post_params = {
+            "reset_page": "1",
+            "page": "1",
+            "order-by": "date",
+            "order-direction": "desc",
+            "range": "manual",
+            "range_from": start_date.strftime("%Y-%m-%d"),
+            "range_to": end_date.strftime("%Y-%m-%d"),
+            "rating-general": "1",
+            "rating-mature": "1",
+            "rating-adult": "1",
+            "type-art": "1",
+            "type-photo": "1",
+            "mode": "extended",
+            "q": "fursuit | fursuiter | fursuiting",
+            "do_search": "Search"
+        }
+        return scrapy.FormRequest(
+            url="https://www.furaffinity.net/search/",
+            method="POST",
+            callback=self.parse_search_results,
+            formdata=post_params,
+            cookies=self.cookies,
+            meta={'start_date': start_date, 'page': 0}
         )
 
-    def parse_homepage(self, response):
-        latest_image_id = response.xpath(
-            '//section[@id="gallery-frontpage-submissions"]/figure[1]/@id'
-        ).get()  # e.g. sid-46458850
-        latest_image_id = latest_image_id.split("-")[1]
+    def parse_search_results(self, response):
+        image_urls = response.xpath(
+            '//section[@id="gallery-search-results"]/figure/b/u/a/@href'
+        ).getall()
 
-        yield scrapy.Request(
-            url=f"https://www.furaffinity.net/view/{latest_image_id}",
-            callback=self.parse_image,
+        for link in image_urls:
+            source_id = link.split("/")[-2]
+            if was_already_scraped(self._elasticsearch, source_id, self.name):
+                self.logger.info("Image ID: %s already scraped.", source_id)
+                if not self.param_ignore_scraped == "true":
+                    self.logger.info(
+                        "Duplicate image encountered, ending scraping...", source_id
+                    )
+                    # end the scraping the first time we see an already scraped image
+                    return
+                continue
+            yield scrapy.Request(
+                url=f"https://www.furaffinity.net/view/{source_id}",
+                callback=self.parse_image,
+                    cookies=self.cookies,
+                )
+
+        start_date = response.meta["start_date"]
+        end_date = start_date + relativedelta.relativedelta(months=1)
+
+        next_results_button = response.xpath(
+            '//button[@name="next_page"]/@class'
+        ).get()
+        no_more_results = False
+        if next_results_button and "disabled" in next_results_button:
+            no_more_results = True
+
+        if no_more_results:
+            # go to the next month
+            next_start_date = start_date + relativedelta.relativedelta(months=1)
+            next_end_date = end_date + relativedelta.relativedelta(months=1)
+            print(f"Scraping month {next_start_date} to {next_end_date}")
+            yield self._get_new_month_request(next_start_date, next_end_date)
+            return
+
+        current_page = response.meta["page"] + 1
+        post_params = {
+            "page": str(current_page),
+            "next_page": "Next",
+            "q": "fursuit | fursuiter | fursuiting",
+            "order-by": "date",
+            "order-direction": "desc",
+            "range": "manual",
+            "range_from": start_date.strftime("%Y-%m-%d"),
+            "range_to": end_date.strftime("%Y-%m-%d"),
+            "rating-general": "1",
+            "rating-mature": "1",
+            "rating-adult": "1",
+            "type-art": "1",
+            "type-photo": "1",
+            "mode": "extended",
+        }
+
+        yield scrapy.FormRequest(
+            url="https://www.furaffinity.net/search/",
+            method="POST",
+            callback=self.parse_search_results,
+            formdata=post_params,
             cookies=self.cookies,
+            meta={'start_date': start_date, 'page': current_page}
         )
 
     def parse_image(self, response):
         url = response.url
         source_id = url.split("/")[-1]
-        next_image_id = int(source_id) - 1
         if response.status != 200:
             self.logger.warn(
                 "Scraper returned non-200 code: %s for page: %s",
@@ -54,18 +137,6 @@ class FurAffinityScraper(scrapy.Spider):
                 response.url,
             )
             # FA sometimes returns 404/400/502 on missing images. Then we will continue to the next one
-            yield self._request_fa_image_site(next_image_id)
-            return
-
-        if was_already_scraped(self._elasticsearch, source_id, self.name):
-            self.logger.info("Image ID: %s already scraped.", source_id)
-            if not self.param_ignore_scraped == "true":
-                self.logger.info(
-                    "Duplicate image encountered, ending scraping...", source_id
-                )
-                # end the scraping the first time we see an already scraped image
-                return
-            yield self._request_fa_image_site(next_image_id)
             return
 
         created_at = response.xpath(
@@ -76,7 +147,6 @@ class FurAffinityScraper(scrapy.Spider):
             self.logger.warn(
                 "Image %s does not have created_at, ignoring...", source_id
             )
-            yield self._request_fa_image_site(next_image_id)
             return
         parsed_created_at = datetime.strptime(
             created_at, "%b %d, %Y %I:%M %p"
@@ -84,7 +154,7 @@ class FurAffinityScraper(scrapy.Spider):
         tag_list = response.xpath(
             '//div[@class="section-body"]/span[@class="tags"]/a/text()'
         ).getall()
-        tags = {"general": tag_list}
+        tags = tag_list
         rating = self.rating_mapping.get(
             response.xpath('//div[@class="rating"]/span/text()').get().strip()
         )
@@ -92,6 +162,32 @@ class FurAffinityScraper(scrapy.Spider):
             '//meta[@property="og:description"]/@content'
         ).get()
         image_url = "https:" + response.xpath('//img[@id="submissionImg"]/@src').get()
+
+        category_main = response.xpath(
+            '//span[@class="category-name"]/text()'
+        ).get()
+        category_secondary = response.xpath(
+            '//span[@class="type-name"]/text()'
+        ).get()
+
+        category_string = f"{category_main} > {category_secondary}"
+        if "art" in category_string.lower():
+            return
+
+        species = response.xpath(
+            "//strong[@class='highlight' and ./text()='Species']/parent::div/span/text()"
+        ).get()
+
+        gender = response.xpath(
+            "//strong[@class='highlight' and ./text()='Gender']/parent::div/span/text()"
+        ).get()
+
+        author_url = response.xpath(
+            "//div[@class='submission-id-avatar']/a/@href"
+        ).get()
+        author_name = response.xpath(
+            "//div[@class='submission-id-sub-container']/a/strong/text()"
+        ).get()
 
         image = Image(
             website=self.name,
@@ -102,14 +198,10 @@ class FurAffinityScraper(scrapy.Spider):
             rating=rating,
             description=description,
             image_urls=[image_url],
+            category=category_string,
+            species=species,
+            gender=gender,
+            author_url=f"https://www.furaffinity.net{author_url}",
+            author_name=author_name
         )
         yield image
-
-        yield self._request_fa_image_site(next_image_id)
-
-    def _request_fa_image_site(self, image_id: int) -> Request:
-        return scrapy.Request(
-            url=f"https://www.furaffinity.net/view/{image_id}",
-            callback=self.parse_image,
-            cookies=self.cookies,
-        )

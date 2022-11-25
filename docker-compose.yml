@@ -1,6 +1,6 @@
 version: "3.4"
 services:
-  image_search_python:
+  fursuit_db_python:
     restart: always
     build:
       context: ./
@@ -12,8 +12,8 @@ services:
       - .:/app
       - ./var/.keras:/root/.keras
     networks:
-      - image_search
-  image_search_nginx:
+      - fursuit_db
+  fursuit_db_nginx:
     restart: always
     build: ./nginx
     ports:
@@ -21,14 +21,12 @@ services:
       - "${DOCKER_WEB_SSL_PORT}:443"
     volumes:
       - .:/app
-#      - /media/kkosinski/linux1/images:/app/static/images
-      - ./nginx/letsencrypt:/etc/letsencrypt
     depends_on:
-      - image_search_python
-      - image_search_node
+      - fursuit_db_python
+      - fursuit_db_node
     networks:
-      - image_search
-  image_search_milvus:
+      - fursuit_db
+  fursuit_db_milvus:
     image: milvusdb/milvus:1.1.1-cpu-d061621-330cc6
     volumes:
       - ./var/milvus/db:/var/lib/milvus/db
@@ -40,10 +38,10 @@ services:
       - 19121
       - 9091
     networks:
-      - image_search
+      - fursuit_db
     depends_on:
-      - image_search_python
-  image_search_elastic:
+      - fursuit_db_python
+  fursuit_db_elastic:
     restart: always
     ports:
       - 9200
@@ -59,41 +57,41 @@ services:
         soft: -1
         hard: -1
     networks:
-      - image_search
+      - fursuit_db
     depends_on:
-      - image_search_python
-  image_search_node:
+      - fursuit_db_python
+  fursuit_db_node:
     build:
       context: ./
       dockerfile: dockerfile/node-dockerfile
     working_dir: /app
-    #command: /bin/sh -c "npm install ; npm start"
     ports:
-      - "${NODEJS_PORT}"
+      - 3000:3000
     volumes:
       - .:/app
     networks:
-      - image_search
-  image_search_redis:
+      - fursuit_db
+  fursuit_db_redis:
     restart: always
     ports:
       - 6379
     image: redis:latest
     networks:
-      - image_search
+      - fursuit_db
     volumes:
       - ./var/redis:/data
-  image_search_tensorflow_serving:
+  fursuit_db_tensorflow_serving:
     restart: always
     ports:
-      - 8501
-    image: tensorflow/serving
+      - 8501:8501
+    image: tensorflow/serving:nightly
     networks:
-      - image_search
+      - fursuit_db
     volumes:
-      - ./tanukai_model:/models/tanukai_model/1
+      - ./scrapers/model/1:/models/tanukai_model/1
+#      - ./tanukai_model:/models/tanukai_model/1
     environment:
       - "MODEL_NAME=tanukai_model"
 networks:
-  image_search:
+  fursuit_db:
     driver: "bridge"

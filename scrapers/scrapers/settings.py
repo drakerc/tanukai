@@ -66,19 +66,12 @@ RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 408, 429, 520]
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 # }
 
-# Configure item pipelines
-# See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#    'scrapers.pipelines.ScrapersPipeline': 300,
-# }
-
 ITEM_PIPELINES = {
     "scrapers.pipelines.CustomImagesPipeline": 1,
     "scrapers.pipelines.ProcessingPipeline": 2,
 }
 IMAGES_STORE = config.images_path
 IMAGES_THUMBS = {
-    # 'big': (300, 300),
     "verybig": (700, 700)
 }
 

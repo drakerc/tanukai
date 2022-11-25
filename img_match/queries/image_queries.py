@@ -165,7 +165,7 @@ class ImageQueries:
     def create_milvus_collection(self):
         param = {
             "collection_name": config.milvus_collection_name,
-            "dimension": 1024,
+            "dimension": 1280,
             "index_file_size": 256,  # optional
             "metric_type": MetricType.L2,  # optional
         }

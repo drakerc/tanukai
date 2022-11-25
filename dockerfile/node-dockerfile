@@ -1,7 +1,6 @@
-FROM node:current-alpine
+FROM node:16-alpine
 
-RUN apk update -q && apk add autoconf g++ make automake libtool nasm openssh-client git
+RUN apk update -q && apk add autoconf g++ make automake libtool nasm openssh-client git && export NODE_OPTIONS=--openssl-legacy-provider
 WORKDIR /app
 
 CMD npm install && npm run build && npm i -S serve && yarn global add serve && serve -s build
-#COPY . ./

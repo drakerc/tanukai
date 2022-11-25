@@ -1,4 +1,4 @@
-from typing import Callable, Tuple
+from typing import Callable, Tuple, Optional
 from PIL import Image
 import config
 from img_match.processing.image_finder import ImageFinder
@@ -23,7 +23,7 @@ class ImgMatch:
         add_perceptual_hash: bool = True,
         refresh_index: bool = False,
         image_model: Callable = Image,
-        partition_tag: str = None,
+        partition_tag: Optional[str] = None,
         **image_kwargs
     ) -> str:
         """

@@ -33,3 +33,8 @@ class Image(scrapy.Item):
     )
     image_urls = scrapy.Field()
     images = scrapy.Field()
+    category = scrapy.Field()
+    species = scrapy.Field()
+    gender = scrapy.Field()
+    author_url = scrapy.Field()
+    author_name = scrapy.Field()

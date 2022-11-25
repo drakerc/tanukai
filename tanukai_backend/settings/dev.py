@@ -6,6 +6,8 @@ ALLOWED_HOSTS += [
     "209.239.112.21",
     "tanukai.com",
     "www.tanukai.com",
+    "fursuitdb.com",
+    "www.fursuitdb.com",
 ]
 DEBUG = True
 
@@ -25,4 +27,7 @@ CORS_ORIGIN_WHITELIST = (
     "http://tanukai.com",
     "https://tanukai.com",
     "http://www.tanukai.com",
+    "http://fursuitdb.com",
+    "https://fursuitdb.com",
+    "http://www.fursuitdb.com",
 )

@@ -1,7 +1,7 @@
 Cython==0.29.12
 elasticsearch==7.7.0
 elasticsearch-dsl==7.2.0
-Keras==2.3.1
+Keras==2.10.0
 Keras-Applications==1.0.8
 Keras-Preprocessing==1.1.2
 pandas==0.24.2
@@ -9,9 +9,8 @@ Pillow==9.0.1
 pymilvus==1.1.1
 scikit-image==0.15.0
 scikit-learn==0.21.2
-tensorflow_gpu==2.3.4
+tensorflow==2.10.1
 tornado==6.0.3
-Werkzeug==0.15.4
 ImageHash==4.1.0
 opencv-python==4.2.0.34
 Django==2.2.27

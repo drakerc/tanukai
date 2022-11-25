@@ -25,7 +25,7 @@ class ProcessingPipeline:
     def process_item(self, item, spider):
         image = item.get("images")[0]
         full_path = image["path"]
-        image_path = full_path[len("full/") :]  # without full
+        image_path = full_path[len("full/"):]  # without full
         pil_image = Image.open(f"{config.images_path}/full/{image_path}")
         self.image_match.add_image(
             path=image_path,
@@ -40,6 +40,11 @@ class ProcessingPipeline:
             source_rating=item.get("rating"),
             source_description=item.get("description"),
             source_image_url=image["url"],
+            source_category=item.get("category"),
+            source_species=item.get("species"),
+            source_gender=item.get("gender"),
+            source_author_url=item.get("author_url"),
+            source_author_name=item.get("author_name"),
         )
         return item
 
@@ -77,7 +82,7 @@ class CustomImagesPipeline(ImagesPipeline):
         image.save(buf, "JPEG", quality=self.quality)
         return image, buf
 
-    def file_path(self, request, response=None, info=None):
+    def file_path(self, request, response=None, info=None, *, item=None):
         spider_name = info.spider.name
         image_guid = hashlib.sha1(to_bytes(request.url)).hexdigest()
         return "full/%s/%s/%s/%s.jpg" % (

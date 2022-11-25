@@ -1,6 +1,6 @@
 version: "3.4"
 services:
-  image_search_python:
+  fursuit_db_python:
     restart: always
     build:
       context: ./
@@ -12,8 +12,8 @@ services:
       - .:/app
       - ./var/.keras:/root/.keras
     networks:
-      - image_search
-  image_search_telegram_bot_python:
+      - fursuit_db
+  fursuit_db_telegram_bot_python:
     restart: always
     build:
       context: ./
@@ -23,8 +23,8 @@ services:
     volumes:
       - ./telegram_bot:/app
     networks:
-      - image_search
-  image_search_nginx:
+      - fursuit_db
+  fursuit_db_nginx:
     restart: always
     build: ./nginx
     ports:
@@ -34,12 +34,12 @@ services:
       - .:/app
       - ./nginx/letsencrypt:/etc/letsencrypt
     depends_on:
-      - image_search_python
-      - image_search_node
+      - fursuit_db_python
+      - fursuit_db_node
     networks:
-      - image_search
+      - fursuit_db
     command: "/bin/sh -c 'while :; do sleep 24h & wait $${!}; certbot renew; nginx -s reload; done & nginx -g \"daemon off;\"'"
-  image_search_milvus:
+  fursuit_db_milvus:
     image: milvusdb/milvus:1.1.1-cpu-d061621-330cc6
     volumes:
       - ./var/milvus/db:/var/lib/milvus/db
@@ -47,10 +47,10 @@ services:
       - ./var/milvus/logs:/var/lib/milvus/logs
       - ./var/milvus/wal:/var/lib/milvus/wal
     networks:
-      - image_search
+      - fursuit_db
     depends_on:
-      - image_search_python
-  image_search_elastic:
+      - fursuit_db_python
+  fursuit_db_elastic:
     restart: always
     image: docker.elastic.co/elasticsearch/elasticsearch:${DOCKER_ELASTICSEARCH_VERSION}
     volumes:
@@ -64,10 +64,10 @@ services:
         soft: -1
         hard: -1
     networks:
-      - image_search
+      - fursuit_db
     depends_on:
-      - image_search_python
-  image_search_node:
+      - fursuit_db_python
+  fursuit_db_node:
     build:
       context: ./
       dockerfile: dockerfile/node-dockerfile
@@ -77,8 +77,8 @@ services:
     volumes:
       - .:/app
     networks:
-      - image_search
-  image_search_mysql:
+      - fursuit_db
+  fursuit_db_mysql:
     image: mysql:8.0.17
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -86,23 +86,23 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     networks:
-      - image_search
-  image_search_redis:
+      - fursuit_db
+  fursuit_db_redis:
     restart: always
     image: redis:latest
     networks:
-      - image_search
+      - fursuit_db
     volumes:
       - ./var/redis:/data
-  image_search_tensorflow_serving:
+  fursuit_db_tensorflow_serving:
     restart: always
     image: tensorflow/serving
     networks:
-      - image_search
+      - fursuit_db
     volumes:
-      - ./tanukai_model:/models/tanukai_model/1
+      - ./fursuit_db_model:/models/fursuit_db_model/1
     environment:
-      - "MODEL_NAME=tanukai_model"
+      - "MODEL_NAME=fursuit_db_model"
 networks:
-  image_search:
+  fursuit_db:
     driver: "bridge"
