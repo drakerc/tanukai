@@ -33,7 +33,7 @@ class FurAffinityScraper(scrapy.Spider):
 
         yield self._get_new_month_request(start_date, end_date)
 
-    def _get_new_month_request(self, start_date: datetime, end_date: datetime):
+    def _get_new_month_request(self, start_date: datetime, end_date: datetime, scrape_next_month: bool = True):
         post_params = {
             "reset_page": "1",
             "page": "1",
@@ -57,7 +57,7 @@ class FurAffinityScraper(scrapy.Spider):
             callback=self.parse_search_results,
             formdata=post_params,
             cookies=self.cookies,
-            meta={'start_date': start_date, 'page': 0}
+            meta={'start_date': start_date, 'page': 0, 'scrape_next_month': scrape_next_month}
         )
 
     def parse_search_results(self, response):
@@ -75,6 +75,19 @@ class FurAffinityScraper(scrapy.Spider):
             f"PAGE: Scraping page {response.meta['page']} between {start_date.strftime('%Y-%m-%d')}"
             f" and {end_date.strftime('%Y-%m-%d')}"
         )
+
+        query_stats = response.xpath('//div[@id="query-stats"]/text()').get()
+        query_stats_total = int(query_stats.split()[4][:-2])
+        if query_stats_total > 5000:
+            # This is hacky. FA does not return more than 5000 results. So in order to get all
+            # of them, we will run another scrape from the middle of the month to the end of the
+            # month (so we will limit the amount of results) and hope for the best
+            next_start_date = start_date + relativedelta.relativedelta(days=15)
+            next_end_date = start_date + relativedelta.relativedelta(months=1)
+
+            self.logger.info(f"OVERFLOW: Scraping month {next_start_date} to {next_end_date}."
+                             f" Total results: {query_stats_total}")
+            yield self._get_new_month_request(next_start_date, next_end_date, False)
 
         image_urls = response.xpath(
             '//section[@id="gallery-search-results"]/figure/b/u/a/@href'
@@ -101,10 +114,11 @@ class FurAffinityScraper(scrapy.Spider):
             '//button[@name="next_page"]/@class'
         ).get()
         no_more_results = False
-        if next_results_button and "disabled" in next_results_button:
+        if len(image_urls) == 0 or (next_results_button and "disabled" in next_results_button):
             no_more_results = True
 
-        if no_more_results:
+        scrape_next_month = response.meta.get('scrape_next_month', True)
+        if no_more_results and scrape_next_month:
             # go to the next month
             next_start_date = start_date + relativedelta.relativedelta(months=1)
             next_end_date = end_date + relativedelta.relativedelta(months=1)
