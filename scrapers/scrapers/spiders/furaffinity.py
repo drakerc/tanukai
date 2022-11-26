@@ -76,7 +76,7 @@ class FurAffinityScraper(scrapy.Spider):
             f" and {end_date.strftime('%Y-%m-%d')}"
         )
 
-        query_stats = response.xpath('//div[@id="query-stats"]/text()').get()
+        query_stats = response.xpath('//div[@id="query-stats"]/text()').getall()[-1]
         query_stats_total = int(query_stats.split()[4][:-2])
         if query_stats_total > 5000:
             # This is hacky. FA does not return more than 5000 results. So in order to get all
