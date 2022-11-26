@@ -11,6 +11,7 @@ from img_match.queries.image_queries import ImageQueries
 FA_MAXIMUM_RESULTS = 5000
 FA_RESULTS_PER_PAGE = 48
 LAST_POSSIBLE_PAGE = int(FA_MAXIMUM_RESULTS / FA_RESULTS_PER_PAGE)
+REQUESTS_START_DATE = datetime(2010, 1, 1)
 
 
 class FurAffinityScraper(scrapy.Spider):
@@ -32,10 +33,9 @@ class FurAffinityScraper(scrapy.Spider):
         self._elasticsearch = ElasticDatabase()
 
     def start_requests(self):
-        start_date = datetime(2010, 1, 1)
-        end_date = start_date + relativedelta.relativedelta(months=1)  # 1.02
+        end_date = REQUESTS_START_DATE + relativedelta.relativedelta(months=1)  # 1.02
 
-        yield self._get_new_month_request(start_date, end_date)
+        yield self._get_new_month_request(REQUESTS_START_DATE, end_date)
 
     def _get_new_month_request(self, start_date: datetime, end_date: datetime, scrape_next_month: bool = True):
         post_params = {
@@ -83,7 +83,7 @@ class FurAffinityScraper(scrapy.Spider):
         scrape_next_month = response.meta.get('scrape_next_month', True)
         query_stats = response.xpath('//div[@id="query-stats"]/text()').getall()[-1]
         query_stats_total = int(query_stats.split()[4][:-2])
-        if query_stats_total > FA_MAXIMUM_RESULTS and response.meta["page"] == 0 and scrape_next_month:
+        if query_stats_total > FA_MAXIMUM_RESULTS and response.meta["page"] == LAST_POSSIBLE_PAGE and scrape_next_month:
             # This is hacky. FA does not return more than 5000 results. So in order to get all
             # of them, we will run another scrape from the middle of the month to the end of the
             # month (so we will limit the amount of results) and hope for the best
