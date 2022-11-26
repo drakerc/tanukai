@@ -61,6 +61,21 @@ class FurAffinityScraper(scrapy.Spider):
         )
 
     def parse_search_results(self, response):
+        start_date = response.meta["start_date"]
+        end_date = start_date + relativedelta.relativedelta(months=1)
+
+        current_date = datetime.now()
+        if start_date > current_date:
+            # If our start date is in the future, FA will start returning all results. So we stop
+            # here
+            self.logger.info(f"NEXT MONTH: Scraping ends on Start Date: {start_date}")
+            return
+
+        self.logger.info(
+            f"PAGE: Scraping page {response.meta['page']} between {start_date.strftime('%Y-%m-%d')}"
+            f" and {end_date.strftime('%Y-%m-%d')}"
+        )
+
         image_urls = response.xpath(
             '//section[@id="gallery-search-results"]/figure/b/u/a/@href'
         ).getall()
@@ -68,7 +83,7 @@ class FurAffinityScraper(scrapy.Spider):
         for link in image_urls:
             source_id = link.split("/")[-2]
             if was_already_scraped(self._elasticsearch, source_id, self.name):
-                self.logger.info("Image ID: %s already scraped.", source_id)
+                # self.logger.info("Image ID: %s already scraped.", source_id)
                 if not self.param_ignore_scraped == "true":
                     self.logger.info(
                         "Duplicate image encountered, ending scraping...", source_id
@@ -82,9 +97,6 @@ class FurAffinityScraper(scrapy.Spider):
                     cookies=self.cookies,
                 )
 
-        start_date = response.meta["start_date"]
-        end_date = start_date + relativedelta.relativedelta(months=1)
-
         next_results_button = response.xpath(
             '//button[@name="next_page"]/@class'
         ).get()
@@ -96,7 +108,8 @@ class FurAffinityScraper(scrapy.Spider):
             # go to the next month
             next_start_date = start_date + relativedelta.relativedelta(months=1)
             next_end_date = end_date + relativedelta.relativedelta(months=1)
-            print(f"Scraping month {next_start_date} to {next_end_date}")
+
+            self.logger.info(f"NEXT MONTH: Scraping month {next_start_date} to {next_end_date}")
             yield self._get_new_month_request(next_start_date, next_end_date)
             return
 
