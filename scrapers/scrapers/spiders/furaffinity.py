@@ -8,6 +8,10 @@ from scrapers.common import was_already_scraped
 
 from img_match.queries.image_queries import ImageQueries
 
+FA_MAXIMUM_RESULTS = 5000
+FA_RESULTS_PER_PAGE = 48
+LAST_POSSIBLE_PAGE = int(FA_MAXIMUM_RESULTS / FA_RESULTS_PER_PAGE)
+
 
 class FurAffinityScraper(scrapy.Spider):
     name = "furaffinity"
@@ -76,9 +80,10 @@ class FurAffinityScraper(scrapy.Spider):
             f" and {end_date.strftime('%Y-%m-%d')}"
         )
 
+        scrape_next_month = response.meta.get('scrape_next_month', True)
         query_stats = response.xpath('//div[@id="query-stats"]/text()').getall()[-1]
         query_stats_total = int(query_stats.split()[4][:-2])
-        if query_stats_total > 5000:
+        if query_stats_total > FA_MAXIMUM_RESULTS and response.meta["page"] == 0 and scrape_next_month:
             # This is hacky. FA does not return more than 5000 results. So in order to get all
             # of them, we will run another scrape from the middle of the month to the end of the
             # month (so we will limit the amount of results) and hope for the best
@@ -117,7 +122,6 @@ class FurAffinityScraper(scrapy.Spider):
         if len(image_urls) == 0 or (next_results_button and "disabled" in next_results_button):
             no_more_results = True
 
-        scrape_next_month = response.meta.get('scrape_next_month', True)
         if no_more_results and scrape_next_month:
             # go to the next month
             next_start_date = start_date + relativedelta.relativedelta(months=1)
@@ -127,9 +131,12 @@ class FurAffinityScraper(scrapy.Spider):
             yield self._get_new_month_request(next_start_date, next_end_date)
             return
 
-        current_page = response.meta["page"] + 1
+        next_page = response.meta["page"] + 1
+        if next_page > LAST_POSSIBLE_PAGE:
+            return
+
         post_params = {
-            "page": str(current_page),
+            "page": str(next_page),
             "next_page": "Next",
             "q": "fursuit | fursuiter | fursuiting",
             "order-by": "date",
@@ -151,7 +158,7 @@ class FurAffinityScraper(scrapy.Spider):
             callback=self.parse_search_results,
             formdata=post_params,
             cookies=self.cookies,
-            meta={'start_date': start_date, 'page': current_page}
+            meta={'start_date': start_date, 'page': next_page}
         )
 
     def parse_image(self, response):
