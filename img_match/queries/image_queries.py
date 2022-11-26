@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from typing import Callable
 from elasticsearch_dsl import Q, Index
@@ -6,6 +7,10 @@ import config
 from img_match.models.image import Image
 from img_match.queries.databases import ElasticDatabase, MilvusDatabase
 from milvus import IndexType, MetricType
+
+
+es_logger = logging.getLogger('elasticsearch')
+es_logger.setLevel(logging.WARNING)
 
 
 class ImageQueries:

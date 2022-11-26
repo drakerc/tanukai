@@ -217,4 +217,6 @@ class FurAffinityScraper(scrapy.Spider):
             author_url=f"https://www.furaffinity.net{author_url}",
             author_name=author_name
         )
+        self.logger.info(f"ADD: Adding image {image_url}")
+
         yield image
