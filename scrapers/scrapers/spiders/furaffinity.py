@@ -138,7 +138,7 @@ class FurAffinityScraper(scrapy.Spider):
         post_params = {
             "page": str(next_page),
             "next_page": "Next",
-            "q": "fursuit | fursuiter | fursuiting",
+            "q": "fursuit | fursuiter | fursuiting | suit",
             "order-by": "date",
             "order-direction": "desc",
             "range": "manual",

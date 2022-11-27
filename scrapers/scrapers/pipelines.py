@@ -7,6 +7,7 @@
 import hashlib
 
 from PIL import Image
+from scrapy.exceptions import DropItem
 
 from tanukai_api.services.img_match.tanukai_img_match import TanukaiImgMatch
 from scrapy.pipelines.images import ImagesPipeline
@@ -23,7 +24,10 @@ class ProcessingPipeline:
         self.image_match = TanukaiImgMatch()
 
     def process_item(self, item, spider):
-        image = item.get("images")[0]
+        images = item.get("images")
+        if not images:
+            raise DropItem(f"Item {item.get('url')} does not have images.")
+        image = images[0]
         full_path = image["path"]
         image_path = full_path[len("full/"):]  # without full
         pil_image = Image.open(f"{config.images_path}/full/{image_path}")
