@@ -33,7 +33,7 @@ class RedditRFurryScraper(scrapy.Spider):
 
         url_params = {
             "subreddit": self.param_subreddit,
-            "size": "500"
+            "size": "500",
         }
 
         yield scrapy.Request(
@@ -89,7 +89,9 @@ class RedditRFurryScraper(scrapy.Spider):
         description = post["title"]
         author_name = post["author"]
 
-        if flair != "Fursuit" or "fursuit" not in description.lower():
+        if flair == "Fursuit" or "fursuit" in description.lower():
+            pass
+        else:
             return
 
         media_metadata = post.get("media_metadata", [])
