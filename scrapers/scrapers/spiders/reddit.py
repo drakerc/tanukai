@@ -16,7 +16,7 @@ class RedditScraper(scrapy.Spider):
     handle_httpstatus_list = [200, 201, 400, 403, 502]
 
     custom_settings = {
-        "LOG_FILE": "reddit.txt",
+        "LOG_FILE": "reddit_logs.txt",
     }
 
     def __init__(self, **kwargs):
@@ -92,6 +92,8 @@ class RedditScraper(scrapy.Spider):
         if media_metadata:
             for media_item in media_metadata.values():  # Reddit gallery
                 image_urls = media_item.get('p', [])
+                if not image_urls:
+                    continue
                 high_quality_image_url = image_urls[-1]["u"].replace("amp;", '')
                 image = Image(
                     website=self.name,
