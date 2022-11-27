@@ -33,7 +33,7 @@ class FurAffinityScraper(scrapy.Spider):
         self._elasticsearch = ElasticDatabase()
 
     def start_requests(self):
-        end_date = REQUESTS_START_DATE + relativedelta.relativedelta(months=1)  # 1.02
+        end_date = REQUESTS_START_DATE + relativedelta.relativedelta(months=1)
 
         yield self._get_new_month_request(REQUESTS_START_DATE, end_date)
 
@@ -61,12 +61,12 @@ class FurAffinityScraper(scrapy.Spider):
             callback=self.parse_search_results,
             formdata=post_params,
             cookies=self.cookies,
-            meta={'start_date': start_date, 'page': 0, 'scrape_next_month': scrape_next_month}
+            meta={'start_date': start_date, 'end_date': end_date, 'page': 0, 'scrape_next_month': scrape_next_month}
         )
 
     def parse_search_results(self, response):
         start_date = response.meta["start_date"]
-        end_date = start_date + relativedelta.relativedelta(months=1)
+        end_date = response.meta["end_date"]
 
         current_date = datetime.now()
         if start_date > current_date:
@@ -88,7 +88,7 @@ class FurAffinityScraper(scrapy.Spider):
             # of them, we will run another scrape from the middle of the month to the end of the
             # month (so we will limit the amount of results) and hope for the best
             next_start_date = start_date + relativedelta.relativedelta(days=15)
-            next_end_date = start_date + relativedelta.relativedelta(months=1)
+            next_end_date = end_date
 
             self.logger.info(f"OVERFLOW: Scraping month {next_start_date} to {next_end_date}."
                              f" Total results: {query_stats_total}")
@@ -125,7 +125,7 @@ class FurAffinityScraper(scrapy.Spider):
         if no_more_results and scrape_next_month:
             # go to the next month
             next_start_date = start_date + relativedelta.relativedelta(months=1)
-            next_end_date = end_date + relativedelta.relativedelta(months=1)
+            next_end_date = next_start_date + relativedelta.relativedelta(months=1)
 
             self.logger.info(f"NEXT MONTH: Scraping month {next_start_date} to {next_end_date}")
             yield self._get_new_month_request(next_start_date, next_end_date)
@@ -158,7 +158,7 @@ class FurAffinityScraper(scrapy.Spider):
             callback=self.parse_search_results,
             formdata=post_params,
             cookies=self.cookies,
-            meta={'start_date': start_date, 'page': next_page}
+            meta={'start_date': start_date, 'end_date': end_date, 'page': next_page}
         )
 
     def parse_image(self, response):
