@@ -13,6 +13,7 @@ from img_match.queries.image_queries import ImageQueries
 
 class RedditRFurryScraper(scrapy.Spider):
     name = "reddit_r_furry"
+    real_scraper_name = "reddit"
     handle_httpstatus_list = [200, 201, 400, 403, 502]
 
     custom_settings = {
@@ -23,7 +24,7 @@ class RedditRFurryScraper(scrapy.Spider):
         self.param_ignore_scraped = False
         super().__init__(**kwargs)
         if config.INITIALIZE_DBS_IF_NOT_EXIST:
-            ImageQueries().initialize_dbs_if_not_exist(self.name)  # kinda breaks the SRP rule
+            ImageQueries().initialize_dbs_if_not_exist(self.real_scraper_name)  # kinda breaks the SRP rule
         self._elasticsearch = ElasticDatabase()
 
     def start_requests(self):
@@ -50,7 +51,7 @@ class RedditRFurryScraper(scrapy.Spider):
 
         for post in posts:
             source_id = post["id"]
-            if was_already_scraped(self._elasticsearch, source_id, self.name):
+            if was_already_scraped(self._elasticsearch, source_id, self.real_scraper_name):
                 # self.logger.info("Image ID: %s already scraped.", source_id)
                 if not self.param_ignore_scraped == "true":
                     self.logger.info(
@@ -99,7 +100,7 @@ class RedditRFurryScraper(scrapy.Spider):
                     continue
                 high_quality_image_url = image_urls[-1]["u"].replace("amp;", '')
                 image = Image(
-                    website=self.name,
+                    website=self.real_scraper_name,
                     url=url,
                     id=source_id,
                     created_at=parsed_created_at.isoformat(),
@@ -118,7 +119,7 @@ class RedditRFurryScraper(scrapy.Spider):
             for preview_image in preview_images:  # New single images
                 image_url = preview_image["source"]["url"].replace("amp;", '')
                 image = Image(
-                    website=self.name,
+                    website=self.real_scraper_name,
                     url=url,
                     id=source_id,
                     created_at=parsed_created_at.isoformat(),
@@ -136,7 +137,7 @@ class RedditRFurryScraper(scrapy.Spider):
         if is_reddit_media_domain:
             image_url = post["url"].replace("amp;", '')
             image = Image(
-                website=self.name,
+                website=self.real_scraper_name,
                 url=url,
                 id=source_id,
                 created_at=parsed_created_at.isoformat(),
