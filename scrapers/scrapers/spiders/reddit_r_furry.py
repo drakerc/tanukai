@@ -36,7 +36,6 @@ class RedditRFurryScraper(scrapy.Spider):
         url_params = {
             "subreddit": self.param_subreddit,
             "size": "500",
-            "before": "1350439740"
         }
 
         yield scrapy.Request(
