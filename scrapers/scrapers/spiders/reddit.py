@@ -149,6 +149,7 @@ class RedditScraper(scrapy.Spider):
         domain = post.get("domain")
         if "imgur" in domain:
             image_url = post["url"].replace("amp;", '')
+            self.logger.info(f"IMGUR: Adding image {image_url}")
 
             imgur_links = imgur_downloader(image_url, True)
             for imgur_link in imgur_links:

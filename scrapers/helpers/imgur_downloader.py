@@ -24,6 +24,8 @@ import urllib.parse
 import urllib.request
 import unicodedata
 
+logger = logging.getLogger("imgur_downloader")
+
 
 __doc__ = """
 Quickly and easily download images from Imgur.
@@ -458,8 +460,5 @@ def imgur_downloader(url, print_only=True):
             return urls
 
     except ImgurException as e:
-        print(("Error: " + e.msg))
-        print("")
-        print("How to use")
-        print("=============")
-        print(__doc__)
+        logger.info("Error downloading from Imgur: %s", e.msg)
+        return []
