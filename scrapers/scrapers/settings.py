@@ -74,7 +74,7 @@ IMAGES_STORE = config.images_path
 IMAGES_THUMBS = {
     "verybig": (700, 700)
 }
-
+MEDIA_ALLOW_REDIRECTS = True
 
 LOG_LEVEL = "INFO"
 LOG_FILE = "scraper_logs.txt"

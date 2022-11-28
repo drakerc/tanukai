@@ -2,6 +2,7 @@ import json
 from urllib.parse import urlencode
 
 import scrapy
+from helpers.imgur_downloader import imgur_downloader
 from scrapers.items import Image
 from datetime import datetime
 import config
@@ -14,10 +15,11 @@ from img_match.queries.image_queries import ImageQueries
 class RedditRFurryScraper(scrapy.Spider):
     name = "reddit_r_furry"
     real_scraper_name = "reddit"
-    handle_httpstatus_list = [200, 201, 400, 403, 502]
+    handle_httpstatus_list = [200, 201, 301]
 
     custom_settings = {
         "LOG_FILE": "reddit_r_furry_logs.txt",
+        "MEDIA_ALLOW_REDIRECTS": True
     }
 
     def __init__(self, **kwargs):
@@ -34,6 +36,7 @@ class RedditRFurryScraper(scrapy.Spider):
         url_params = {
             "subreddit": self.param_subreddit,
             "size": "500",
+            "before": "1350439740"
         }
 
         yield scrapy.Request(
@@ -151,3 +154,23 @@ class RedditRFurryScraper(scrapy.Spider):
             )
             yield image
             self.logger.info(f"ADD: Adding image {image_url}")
+
+        domain = post.get("domain")
+        if "imgur" in domain:
+            image_url = post["url"].replace("amp;", '')
+
+            imgur_links = imgur_downloader(image_url, True)
+            for imgur_link in imgur_links:
+                image = Image(
+                    website=self.real_scraper_name,
+                    url=url,
+                    id=source_id,
+                    created_at=parsed_created_at.isoformat(),
+                    tags=tags,
+                    rating=rating,
+                    description=description,
+                    image_urls=[imgur_link],
+                    author_name=author_name
+                )
+                yield image
+                self.logger.info(f"ADD: Adding image {image_url}")

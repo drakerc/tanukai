@@ -2,6 +2,7 @@ import json
 from urllib.parse import urlencode
 
 import scrapy
+from helpers.imgur_downloader import imgur_downloader
 from scrapers.items import Image
 from datetime import datetime
 import config
@@ -145,3 +146,22 @@ class RedditScraper(scrapy.Spider):
             )
             yield image
             self.logger.info(f"ADD: Adding image {image_url}")
+        domain = post.get("domain")
+        if "imgur" in domain:
+            image_url = post["url"].replace("amp;", '')
+
+            imgur_links = imgur_downloader(image_url, True)
+            for imgur_link in imgur_links:
+                image = Image(
+                    website=self.name,
+                    url=url,
+                    id=source_id,
+                    created_at=parsed_created_at.isoformat(),
+                    tags=tags,
+                    rating=rating,
+                    description=description,
+                    image_urls=[imgur_link],
+                    author_name=author_name
+                )
+                yield image
+                self.logger.info(f"ADD: Adding image {image_url}")
