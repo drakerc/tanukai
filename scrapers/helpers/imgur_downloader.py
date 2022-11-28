@@ -24,6 +24,10 @@ import urllib.parse
 import urllib.request
 import unicodedata
 
+import requests
+
+from config import IMGUR_CLIENT_ID
+
 logger = logging.getLogger("imgur_downloader")
 
 
@@ -116,8 +120,8 @@ class ImgurDownloader:
         imgur_url = self.get_all_format_url(imgur_url)
         # e.g.: imgur.com/a/p5wLR -> imgur.com/a/p5wLR/all
         try:
-            self.response = urllib.request.urlopen(url=imgur_url)
-            response_code = self.response.getcode()
+            self.response = requests.get(url=imgur_url)
+            response_code = self.response.status_code
         except Exception as e:
             self.response = False
             try:
@@ -125,12 +129,12 @@ class ImgurDownloader:
             except AttributeError:
                 raise e
 
-        if not self.response or self.response.getcode() != 200:
-            raise ImgurException("[ImgurDownloader] HTTP Response Code %d"
-                                 % response_code)
+        if not self.response or self.response.status_code != 200:
+            error_msg = "[ImgurDownloader] HTTP Response Code %d, headers: %d, text: %d", response_code, self.response.headers, self.response.text
+            raise ImgurException(error_msg)
 
         # Read in the images now so we can get stats and stuff:
-        html = self.response.read().decode('utf-8')
+        html = self.response.text
 
         # default album_title
         self.album_title = self.main_key
@@ -413,6 +417,19 @@ def imgur_downloader(url, print_only=True):
     else:
         return [f"{url.replace('http://', 'https://').replace('https://imgur.com', 'https://i.imgur.com')}.jpg"]
 
+    split_url_by_slash = url.split('/')
+    album_hash = split_url_by_slash[-1]
+    response = requests.get(f"https://api.imgur.com/3/album/{album_hash}",
+                           headers={"Authorization": f"Client-ID {IMGUR_CLIENT_ID}"}
+                           )
+    if response.status_code != 200:
+        logger.warning(f"Imgur url {url} returned {response.status_code}, headers: {response.headers}, text: {response.text}")
+        return []
+
+    response_json = response.json()
+    images = response_json.get("data", {}).get("images", [])
+    return [image.get("link") for image in images]
+
     if not url:
         # Print out the help message and exit:
         print(__doc__)
@@ -460,5 +477,5 @@ def imgur_downloader(url, print_only=True):
             return urls
 
     except ImgurException as e:
-        logger.info("Error downloading from Imgur: %s", e.msg)
+        logger.warning("Error downloading from Imgur: %s", e.msg)
         return []

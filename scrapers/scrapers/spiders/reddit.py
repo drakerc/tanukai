@@ -146,7 +146,8 @@ class RedditScraper(scrapy.Spider):
             )
             yield image
             self.logger.info(f"ADD: Adding image {image_url}")
-        domain = post.get("domain")
+
+        domain = post.get("domain", '')
         if "imgur" in domain:
             image_url = post["url"].replace("amp;", '')
             self.logger.info(f"IMGUR: Adding image {image_url}")
