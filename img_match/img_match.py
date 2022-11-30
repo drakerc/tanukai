@@ -59,7 +59,7 @@ class ImgMatch:
         img: Image = None,
         mark_subimage: bool = False,
         pagination_from: int = 0,
-        pagination_size: int = 10,
+        pagination_size: int = 20,
         partition_tags: list = None,
     ) -> Tuple[dict, str]:
         if not img:

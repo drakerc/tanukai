@@ -34,7 +34,7 @@ class SearchResults extends React.Component {
     searchResults: null,
     activePage: 1,
     paginationFrom: 0,
-    paginationSize: 10,
+    paginationSize: 20,
     maxPaginationPages: 5,
     imgs: [],
     uploadedImg: []
@@ -45,7 +45,7 @@ class SearchResults extends React.Component {
       ignoreQueryPrefix: true
     });
     if (query.pagination_from) {
-      this.setState({ activePage: (query.pagination_from / 10) + 1 });
+      this.setState({ activePage: (query.pagination_from / 20) + 1 });
     }
 
     const imageId = this.props.match.params.imageId;
@@ -87,7 +87,7 @@ class SearchResults extends React.Component {
 
     if (dbImageId && dbImageId !== prevProps.match.params.dbImageId) {
       const imageId = this.props.match.params.dbImageId;
-      this.setState({activePage: currentQuery.pagination_from ? (currentQuery.pagination_from / 10) + 1 : 1});
+      this.setState({activePage: currentQuery.pagination_from ? (currentQuery.pagination_from / 20) + 1 : 1});
       this.props.databaseSearch(imageId, currentQuery.pagination_from, currentQuery.pagination_size);
     }
   }

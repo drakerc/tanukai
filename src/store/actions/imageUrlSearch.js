@@ -21,8 +21,8 @@ export const imageUrlSearchFailed = error => {
   };
 };
 
-export const imageUrlSearch = (imageUrl, paginationFrom = 0, paginationSize = 10) => {
-  const partitions = localStorage.getItem("partitions") ? localStorage.getItem("partitions").split(',') : ['e621', 'danbooru'];
+export const imageUrlSearch = (imageUrl, paginationFrom = 0, paginationSize = 20) => {
+  const partitions = localStorage.getItem("partitions") ? localStorage.getItem("partitions").split(',') : ['furaffinity', 'reddit'];
   const maximumRating = localStorage.getItem("maximum_rating") ? localStorage.getItem("maximum_rating") : 'explicit';
 
   return dispatch => {

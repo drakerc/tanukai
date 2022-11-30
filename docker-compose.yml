@@ -19,6 +19,8 @@ services:
     expose:
       - "80"
       - "443"
+#    ports:
+#      - 80:80
     volumes:
       - .:/app
     depends_on:
